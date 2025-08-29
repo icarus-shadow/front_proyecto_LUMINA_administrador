@@ -1,0 +1,14 @@
+:root{
+    --main-color:  #d0dccb;
+    --secondary-color:  #d7c7be;
+    --comlementary-color:  #b3c5ba;
+    --buttons-color:  #88c3b5;
+    --text-color:  #6d6168;
+    --success-color: #7fa98f;
+    --error-color: #c97a7a;
+}
+
+body{
+    background-color: #373B41;
+}
+
