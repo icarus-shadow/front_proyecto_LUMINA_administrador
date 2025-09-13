@@ -13,6 +13,7 @@ interface DinamicTableProps{
     onEdit: (row: any) => void;
 }
 
+let url = 'http://25.38.51.52:8000/'
 
 const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEdit}) => {
 
@@ -29,7 +30,7 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                     ...col,
                     renderCell: (params: any) => (
                         <img
-                            src={`http://25.38.51.52:8000/${params.value}`}
+                            src={`${url}${params.value}`}
                             alt="Producto"
                             style={{width: '100%', height: 'auto', maxHeight: '50px', objectFit: 'contain'}}
                         />
@@ -57,14 +58,13 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
     const paginationModel = {page: 0, pageSize: 8}
 
     return(
-        <Paper sx={{height: 500, width: "100%"}} role="region" aria-label="tabla dinamica">
+        <Paper sx={{height: "80vh", width: "100%"}} role="region" aria-label="tabla dinamica">
             <DataGrid
                 rows={tableRows}
                 columns={columnasBotones}
                 localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                 initialState={{pagination:{paginationModel}}}
                 pageSizeOptions={[5,8,10,50,100]}
-                checkboxSelection
                 disableRowSelectionOnClick
                 sx={{border: 0}}
             />

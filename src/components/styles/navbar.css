@@ -7,6 +7,7 @@
     flex-direction: row;
     background-color: var(--secondary-color);
     border-radius: 10px;
+    margin-bottom: 1%;
 }
 .contMain {
     width: 85%;
