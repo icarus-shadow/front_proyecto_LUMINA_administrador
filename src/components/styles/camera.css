@@ -1,0 +1,6 @@
+.sinCamera {
+    width: 100%;
+    maxWidth: 500px;
+    borderRadius: 10px;
+    background-color: black;
+}
