@@ -1,0 +1,10 @@
+.contMain {
+    background-color: rgba(var(--primary-rgb), 0.21);
+    position: fixed;
+    top: 10%;
+    right: 2vw;
+    padding: 1%;
+    border-radius: 15px;
+    height: 60%;
+    z-index: 99;
+}

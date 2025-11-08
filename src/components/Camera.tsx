@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import  { useEffect, useRef, useState } from "react";
 import "./styles/camera.css"
 
-interface cameraProps {
-    state: boolean;
-}
 
-const Camera: React.FC<cameraProps> = ({state}) => {
+
+const Camera = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -37,17 +35,13 @@ const Camera: React.FC<cameraProps> = ({state}) => {
             {error ? (
                 <p>{error}</p>
             ) : (
-                state ?
-                    (
-                      <div className="sinCamera"></div>
-                    ) : (
+
                     <video
                         ref={videoRef}
                         autoPlay
                         playsInline
                         style={{ width: "100%", maxWidth: "500px", borderRadius: "10px" }}
                     />
-                    )
             )}
         </div>
     );
