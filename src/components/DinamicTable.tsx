@@ -14,7 +14,7 @@ interface DinamicTableProps{
 }
 
 
-export const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEdit}) => {
+const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEdit}) => {
 
     const [tableRows, setTableRows] = React.useState<any[]>([]);
 
@@ -29,8 +29,8 @@ export const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelet
                     ...col,
                     renderCell: (params: any) => (
                         <img
-                            src={`${params.value}`}
-                            alt=""
+                            src={`http://25.38.51.52:8000/${params.value}`}
+                            alt="Producto"
                             style={{width: '100%', height: 'auto', maxHeight: '50px', objectFit: 'contain'}}
                         />
                     )
@@ -57,7 +57,7 @@ export const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelet
     const paginationModel = {page: 0, pageSize: 8}
 
     return(
-        <Paper sx={{height: 800, width: "73vw", marginLeft: 4, backgroundColor: "var(--background)"}} role="region" aria-label="tabla dinamica">
+        <Paper sx={{height: 500, width: "100%"}} role="region" aria-label="tabla dinamica">
             <DataGrid
                 rows={tableRows}
                 columns={columnasBotones}
@@ -66,37 +66,10 @@ export const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelet
                 pageSizeOptions={[5,8,10,50,100]}
                 checkboxSelection
                 disableRowSelectionOnClick
-                sx={{
-                    backgroundColor: 'rgba(var(--secondary-rgb), 0.1)',
-                    border: 0,
-                    marginTop: 5,
-                    '& .MuiDataGrid-Headers': {
-                        backgroundColor: 'var(--background)',
-                        color: 'var(--background)',
-                        fontSize: '1.1rem',
-                        fontWeight: 'bold',
-                    },
-                    '& .MuiDataGrid-row': {
-                        backgroundColor: 'rgba(var(--secondary-rgb), 0.3)',
-                        '&:hover': {
-                            backgroundColor: 'var(--background)',
-                        },
-                        '&.Mui-selected': {
-                            backgroundColor: 'rgba(var(--secondary-rgb), 0.4)',
-                            '&:hover': {
-                                backgroundColor: 'var(--background)',
-                            },
-                        },
-                    },
-                    '& .MuiDataGrid-cell': {
-                        fontFamily: 'Roboto, sans-serif',
-                        fontSize: '1rem',
-                        color: 'var(--text)',
-                        borderBottom: '1px solid var(--background)',
-                    },
-                }}
+                sx={{border: 0}}
             />
         </Paper>
     )
 }
 
+export default DinamicTable;

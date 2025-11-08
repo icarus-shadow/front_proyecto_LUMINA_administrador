@@ -29,7 +29,8 @@
     "react-i18next": "^15.7.3",
     "react-qr-code": "^2.0.18",
     "react-router-dom": "^7.6.3",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
