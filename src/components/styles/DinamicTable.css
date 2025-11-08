@@ -3,8 +3,6 @@
 .dinamic-table-container {
   margin-top: 20px;
   background-color: var(--background);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -116,7 +114,6 @@
 /* Estilos para la imagen en las celdas */
 .dinamic-table-container .MuiDataGrid-cell img {
   border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilos para el scrollbar */
@@ -130,7 +127,6 @@
 
 .dinamic-table-container .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb {
   background: rgba(var(--primary-rgb), 0.8);
-  border-radius: 4px;
 }
 
 .dinamic-table-container .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb:hover {

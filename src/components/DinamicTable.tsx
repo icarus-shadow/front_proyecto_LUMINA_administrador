@@ -10,8 +10,8 @@ import './styles/DinamicTable.css';
 interface DinamicTableProps{
     rows: any[];
     columns: GridColDef[];
-    onDelete: (id: number, codigo: string) => void;
-    onEdit: (row: any) => void;
+    onDelete?: (id: number, codigo: string) => void;
+    onEdit?: (row: any) => void;
 }
 
 
@@ -37,7 +37,8 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                     )
                 }
                 : col
-        ), {
+        ),
+        ...(onEdit && onDelete ? [{
             field: "actions",
             headerName: "Acciones",
             width: 100,
@@ -52,7 +53,7 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                     </IconButton>
                 </>
             )
-        }
+        }] : [])
     ]
 
     const paginationModel = {page: 0, pageSize: 8}
