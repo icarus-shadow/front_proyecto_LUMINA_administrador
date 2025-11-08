@@ -1,0 +1,138 @@
+/* Estilos para la tabla dinámica usando variables CSS del root */
+
+.dinamic-table-container {
+  margin-top: 20px;
+  background-color: var(--background);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.dinamic-table-container .MuiPaper-root {
+  background-color: var(--background) !important;
+}
+
+.dinamic-table-container .MuiDataGrid-root {
+  background-color: var(--background);
+  color: var(--text);
+  border: none;
+}
+
+.dinamic-table-container .MuiDataGrid-columnHeaders {
+  background-color: rgba(var(--background-rgb), 0.7) !important;
+  color: var(--text);
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.3);
+}
+
+.dinamic-table-container .MuiDataGrid-columnHeader {
+  background-color: rgba(var(--background-rgb), 0.7) !important;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.dinamic-table-container .MuiDataGrid-row {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+.dinamic-table-container .MuiDataGrid-row:hover {
+  background-color: rgba(var(--primary-rgb), 0.1) !important;
+}
+
+.dinamic-table-container .MuiDataGrid-row.Mui-selected {
+  background-color: rgba(var(--secondary-rgb), 0.1) !important;
+}
+
+.dinamic-table-container .MuiDataGrid-cell {
+  color: var(--text);
+  border-bottom: none;
+}
+
+.dinamic-table-container .MuiDataGrid-cell:focus {
+  outline: none;
+}
+
+.dinamic-table-container .MuiDataGrid-footerContainer {
+  background-color: var(--background) !important;
+  color: var(--text);
+  border-top: 1px solid rgba(var(--primary-rgb), 0.3);
+}
+
+.dinamic-table-container .MuiTablePagination-root {
+  color: var(--text);
+}
+
+.dinamic-table-container .MuiTablePagination-selectLabel {
+  color: var(--text);
+}
+
+.dinamic-table-container .MuiTablePagination-displayedRows {
+  color: var(--text);
+}
+
+.dinamic-table-container .MuiSelect-select {
+  color: var(--text);
+}
+
+.dinamic-table-container .MuiTablePagination-actions .MuiIconButton-root {
+  color: var(--text);
+}
+
+.dinamic-table-container .MuiDataGrid-toolbarContainer {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+.dinamic-table-container .MuiButton-root {
+  color: var(--primary);
+}
+
+.dinamic-table-container .MuiButton-root:hover {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.dinamic-table-container .MuiCheckbox-root {
+  color: var(--primary);
+}
+
+.dinamic-table-container .MuiCheckbox-root.Mui-checked {
+  color: var(--secondary);
+}
+
+.dinamic-table-container .MuiIconButton-root {
+  color: var(--primary);
+}
+
+.dinamic-table-container .MuiIconButton-root:hover {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Estilos específicos para las acciones */
+.dinamic-table-container .actions-column {
+  display: flex;
+  gap: 8px;
+}
+
+/* Estilos para la imagen en las celdas */
+.dinamic-table-container .MuiDataGrid-cell img {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para el scrollbar */
+.dinamic-table-container .MuiDataGrid-virtualScroller::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dinamic-table-container .MuiDataGrid-virtualScroller::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.dinamic-table-container .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary-rgb), 0.8);
+  border-radius: 4px;
+}
+
+.dinamic-table-container .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary-rgb), 0.9);
+}

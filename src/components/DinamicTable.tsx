@@ -4,6 +4,7 @@ import {Edit, Delete } from '@mui/icons-material';
 import {DataGrid} from "@mui/x-data-grid";
 import { esES } from "@mui/x-data-grid/locales";
 import type {GridColDef} from "@mui/x-data-grid";
+import './styles/DinamicTable.css';
 
 
 interface DinamicTableProps{
@@ -29,8 +30,8 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                     ...col,
                     renderCell: (params: any) => (
                         <img
-                            src={`http://25.38.51.52:8000/${params.value}`}
-                            alt="Producto"
+                            src={`${params.value}`}
+                            alt=""
                             style={{width: '100%', height: 'auto', maxHeight: '50px', objectFit: 'contain'}}
                         />
                     )
@@ -57,7 +58,7 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
     const paginationModel = {page: 0, pageSize: 8}
 
     return(
-        <Paper sx={{height: 500, width: "100%"}} role="region" aria-label="tabla dinamica">
+        <Paper className="dinamic-table-container" sx={{height: 500, width: "75vw"}} role="region" aria-label="tabla dinamica">
             <DataGrid
                 rows={tableRows}
                 columns={columnasBotones}

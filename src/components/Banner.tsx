@@ -1,9 +1,22 @@
-import "../../public/icon.svg"
+import logo from '../assets/icon.svg';
 
 const Banner = () => {
-return(
-    <></>
-)
-}
+  return (
+    <div style={{
+      width: '100%',
+      height: '80px',
+      background: 'linear-gradient(to right, var(--primary) 1%, transparent 30%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      padding: '0 20px',
+        borderRadius: '10px',
+      boxSizing: 'border-box',
+    }}>
+      <img src={logo} alt="Lumina Logo" style={{ height: '60px', marginRight: '20px' }} />
+      <span style={{ color: 'var(--text)', fontSize: '36px', fontWeight: 'bold' }}>lumina</span>
+    </div>
+  );
+};
 
 export default Banner
