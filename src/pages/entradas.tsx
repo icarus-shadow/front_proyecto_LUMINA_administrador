@@ -35,13 +35,13 @@ const Entradas = () => {
         console.log('Editar:', row);
     };
 
-    const handleDelete = (id: number, codigo: string) => {
-        console.log('Eliminar:', id, 'y código:', codigo);
+    const handleDelete = (id: number) => {
+        console.log('Eliminar:', id);
     };
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ mb: 2 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: "var(--text)"}}>
                 Elementos Dentro de la Institución
             </Typography>
             <DinamicTable

@@ -1,5 +1,3 @@
-// Datos de prueba simulando el backend para un sistema de gestión de ingreso y egreso de dispositivos y elementos en una institución.
-
 // Interfaces para los datos
 interface Usuario {
   id: number;

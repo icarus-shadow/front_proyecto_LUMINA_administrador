@@ -7,11 +7,16 @@ import Entradas from './pages/entradas.tsx';
 import Salidas from './pages/salidas.tsx';
 import ContNav from "./components/ContNav.tsx";
 import Banner from "./components/Banner.tsx";
+import {useAppDispatch} from "./services/redux/hooks";
 
 function App() {
+    const dispatch = useAppDispatch();
+
+
     return (
         <Router>
                 <Banner />
+            {}
                 <ContNav/>
                 <Routes>
                     <Route path="/" element={<Navigate to="/usuarios" replace />} />

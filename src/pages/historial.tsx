@@ -69,7 +69,7 @@ const Historial = () => {
 
     // Columnas para la tabla de historial
     const columnasHistorial: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'id', headerName: 'ID', minWidth: 70 },
         { field: 'fechaFormateada', headerName: 'Fecha', width: 120 },
         { field: 'usuarioNombre', headerName: 'Usuario', width: 200 },
         { field: 'elementoNombre', headerName: 'Elemento', width: 200 },
