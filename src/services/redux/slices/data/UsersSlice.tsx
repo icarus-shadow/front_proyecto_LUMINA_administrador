@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {users} from "../../api/Users.tsx";
-import type {usersState} from "./interfacesData";
+import {users} from "../../../api/data/Users.tsx";
+import type {usersState} from "../interfacesData.tsx";
 
 // Define the initial state using that type
 const initialState: usersState[] = []
@@ -11,7 +11,7 @@ export const fetchUsers = createAsyncThunk('users/list', async() =>{
 })
 
 export const usersSlice = createSlice({
-    name: 'counter',
+    name: 'users',
     initialState,
     reducers: {
     },

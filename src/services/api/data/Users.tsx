@@ -1,4 +1,4 @@
-import {instance} from "./baseApi.tsx";
+import {instance} from "../baseApi.tsx";
 
 const endpoint = "users"
 

@@ -78,7 +78,7 @@ interface User {
     formacion: string;
 }
 
-interface dataLogin {
+export interface dataLogin {
     user: User;
     token: string;
     token_type: string;
