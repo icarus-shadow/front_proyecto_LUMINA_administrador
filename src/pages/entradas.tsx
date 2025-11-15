@@ -31,13 +31,13 @@ const Entradas = () => {
     ];
 
     // Funciones básicas para editar y eliminar
-    const handleEdit = (row: any) => {
-        console.log('Editar:', row);
-    };
-
-    const handleDelete = (id: number) => {
-        console.log('Eliminar:', id);
-    };
+    // const handleEdit = (row: any) => {
+    //     console.log('Editar:', row);
+    // };
+    //
+    // const handleDelete = (id: number) => {
+    //     console.log('Eliminar:', id);
+    // };
 
     return (
         <Box>

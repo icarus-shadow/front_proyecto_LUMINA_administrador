@@ -79,13 +79,13 @@ const Historial = () => {
     ];
 
     // Funciones básicas para editar y eliminar
-    const handleEdit = (row: any) => {
-        console.log('Editar:', row);
-    };
-
-    const handleDelete = (id: number, codigo: string) => {
-        console.log('Eliminar:', id, 'y código:', codigo);
-    };
+    // const handleEdit = (row: any) => {
+    //     console.log('Editar:', row);
+    // };
+    //
+    // const handleDelete = (id: number, codigo: string) => {
+    //     console.log('Eliminar:', id, 'y código:', codigo);
+    // };
 
     return (
         <Box>
