@@ -1,14 +1,51 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import {users} from "../../../api/data/Users.tsx";
-import type {usersState} from "../interfacesData.tsx";
+import type {responseDelete, responseUsersSlice} from "../../../../interfacesData.tsx";
 
 // Define the initial state using that type
-const initialState: usersState[] = []
+const initialState: responseUsersSlice = {
+    fetchSuccess:  null,
+    deleteSuccess: null,
+    addSuccess: null,
+    updateSuccess: null,
+    success: null,
+    data: [],
+}
 
-export const fetchUsers = createAsyncThunk('users/list', async() =>{
-    const res = await users.getAll();
-    return res.data as usersState[]
+export const fetchUsers = createAsyncThunk(
+    'users/list',
+    async() => {
+    try {
+        const response = await users.getAll();
+        if (!response.data) {
+            throw new Error('Respuesta inválida del servidor');
+        }
+        console.log(response)
+        return response as responseUsersSlice;
+    } catch (error) {
+        console.error("[usersSlice] error al obtener usuarios", error)
+        throw error;
+    }
 })
+
+export const deleteUser = createAsyncThunk(
+    'users/delete',
+    async(id: number, {dispatch}) => {
+        try {
+            const response = await  users.deleteUser(id);
+            console.log(response);
+            if (!response){
+                throw new Error('Respuesta inválida del servidor');
+            }
+            dispatch(fetchUsers());
+
+            return response as responseDelete;
+        } catch (error) {
+            console.error("[usersSlice] error al eliminar el usuario", error)
+            throw error;
+        }
+    }
+)
 
 export const usersSlice = createSlice({
     name: 'users',
@@ -16,12 +53,24 @@ export const usersSlice = createSlice({
     reducers: {
     },
     extraReducers: (builder) =>{
-        builder.addCase(
-            fetchUsers.fulfilled, (_state, action) => {
-            return action.payload
-        })
+        builder
+            //fetch
+            .addCase(fetchUsers.pending, (state) => {
+                state.fetchSuccess = null;
+            })
+            .addCase(fetchUsers.fulfilled, (state, action) => {
+                state.data = action.payload.data;
+                state.fetchSuccess = action.payload.success
+            })
+
+            //delete
+            .addCase(deleteUser.pending, (state) => {
+                state.deleteSuccess = null;
+            })
+            .addCase(deleteUser.fulfilled, (state, action) => {
+                state.deleteSuccess = action.payload.success
+            })
     }
 })
 
-export const { } = usersSlice.actions
 export default usersSlice.reducer

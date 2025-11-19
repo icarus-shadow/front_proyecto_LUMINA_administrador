@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Auth} from "../../api/Auth.tsx";
-import type {responseLogin, userAuthState} from "./interfacesData.tsx";
+import type {responseLogin, userAuthState} from "../../../interfacesData.tsx";
 
 
 export const login = createAsyncThunk(
@@ -14,7 +14,6 @@ export const login = createAsyncThunk(
 
             const response = await Auth.login(credentials);
 
-            console.log(response)
             if (!response.data) {
                 throw new Error('Respuesta inválida del servidor');
             }
@@ -47,7 +46,6 @@ export const authSlice = createSlice({
         builder
 
             .addCase(login.fulfilled, (state, action) => {
-                console.log(action.payload)
                 state.user = action.payload.data.user;
                 state.token = action.payload.data.token;
             });

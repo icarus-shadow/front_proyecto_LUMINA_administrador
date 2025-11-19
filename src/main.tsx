@@ -7,6 +7,7 @@ import {Provider} from 'react-redux'
 import {store} from './services/redux/store'
 import { PrimeReactProvider } from "@primereact/core";
 import Aura from '@primeuix/themes/aura';
+import {AlertProvider} from "./components/AlertSystem.tsx";
 
 const theme = {
     preset: Aura
@@ -15,9 +16,11 @@ const theme = {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <Provider store={store}>
-          <PrimeReactProvider  theme={theme}>
-              <App />
-          </PrimeReactProvider>
+          <AlertProvider>
+            <PrimeReactProvider  theme={theme}>
+                <App />
+            </PrimeReactProvider>
+          </AlertProvider>
       </Provider>
   </StrictMode>,
 )

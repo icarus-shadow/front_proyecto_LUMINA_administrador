@@ -25,13 +25,13 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
 
     const columnasBotones = [
         ...columns.map(col =>
-            col.field === 'url_ruta_img'
+            col.field === 'path_foto'
                 ? {
                     ...col,
                     renderCell: (params: any) => (
                         <img
-                            src={`${params.value}`}
-                            alt=""
+                            src={`https://lumina-testing.onrender.com/api/${params.value}`}
+                            alt="image"
                             style={{width: '100%', height: 'auto', maxHeight: '50px', objectFit: 'contain'}}
                         />
                     )
@@ -59,7 +59,7 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
     const paginationModel = {page: 0, pageSize: 8}
 
     return(
-        <Paper className="dinamic-table-container" sx={{height: 500, width: "75vw"}} role="region" aria-label="tabla dinamica">
+        <Paper className="dinamic-table-container" sx={{height: 700, width: "75vw"}} role="region" aria-label="tabla dinamica">
             <DataGrid
                 rows={tableRows}
                 columns={columnasBotones}

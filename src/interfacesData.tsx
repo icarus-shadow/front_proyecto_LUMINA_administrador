@@ -1,6 +1,8 @@
-export interface usersState {
+// intefaces data
+interface users {
     id: number;
     role_id: number;
+    role: role;
     formacion_id: number;
     nombre: string;
     apellido: string;
@@ -14,7 +16,7 @@ export interface usersState {
     token: string;
 }
 
-export interface elementsState {
+interface elements {
     id: number;
     sn_equipo: string;
     marca: string;
@@ -25,14 +27,14 @@ export interface elementsState {
     path_foto_equipo_implemento: string;
 }
 
-export interface subElementsState {
+interface subElements {
     id: number;
     nombre_elemento: string;
     path_foto_elemento: string;
     equipos_o_elementos_id: number;
 }
 
-export interface historialState {
+interface historial {
     id: number;
     usuario_id: number;
     equipos_o_elementos_id: number;
@@ -40,7 +42,7 @@ export interface historialState {
     salida: string;
 }
 
-export interface formacionState {
+interface formacion {
     id: number;
     tipos_programas_id: number;
     ficha: string;
@@ -49,7 +51,7 @@ export interface formacionState {
     fecha_fin_programa: string;
 }
 
-export interface nivelFormacionState {
+interface nivelFormacion {
     id: number;
     nivel_formacion: string;
 }
@@ -59,8 +61,6 @@ interface role {
     id: number;
     nombre_rol: string;
 }
-
-// login interfaces
 
 interface User {
     id: number;
@@ -84,11 +84,29 @@ export interface dataLogin {
     token_type: string;
 }
 
+// responses interfaces
+
+export interface responseDelete {
+    success: boolean | null;
+    message: string | null;
+}
+
+export interface responseUsersSlice {
+    fetchSuccess: boolean | null;
+    deleteSuccess: boolean | null;
+    addSuccess: boolean | null;
+    updateSuccess: boolean | null;
+    success: boolean | null;
+    data: users[] | null[];
+}
+
 export interface responseLogin {
     success: boolean;
     message: string;
     data: dataLogin;
 }
+
+// states redux
 
 export interface userAuthState {
     user: User | null;
