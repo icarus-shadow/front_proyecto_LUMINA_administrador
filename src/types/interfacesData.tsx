@@ -62,7 +62,7 @@ interface role {
     nombre_rol: string;
 }
 
-interface User {
+export interface User {
     id: number;
     role_id: number;
     formacion_id: string;

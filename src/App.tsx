@@ -9,15 +9,16 @@ import Salidas from './pages/salidas.tsx';
 import ContNav from "./components/ContNav.tsx";
 import Banner from "./components/Banner.tsx";
 import {useAppSelector} from "./services/redux/hooks";
+import UsersEffects from "./services/useEffects/users.tsx";
 
 function App() {
     const { user, token } = useAppSelector((state) => state.authReducer);
     const isAuthenticated = !!token && !!user;
-    
 
     return (
         <Router>
             <Banner/>
+            <UsersEffects />
             {isAuthenticated ? (
                 <>
                     <ContNav/>

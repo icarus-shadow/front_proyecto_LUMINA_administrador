@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import {users} from "../../../api/data/Users.tsx";
-import type {responseDelete, responseUsersSlice} from "../../../../interfacesData.tsx";
+import type {responseDelete, responseUsersSlice} from "../../../../types/interfacesData.tsx";
 
 // Define the initial state using that type
 const initialState: responseUsersSlice = {

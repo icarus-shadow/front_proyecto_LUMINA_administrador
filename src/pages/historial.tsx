@@ -4,6 +4,7 @@ import { Box, Typography, TextField, Button, ButtonGroup } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import { usuarios, elementos, historial } from '../mockData';
 import type { GridColDef } from "@mui/x-data-grid";
+import HistoryChannel from "../../historyChannel.tsx";
 
 const Historial = () => {
     const [fechaFiltro, setFechaFiltro] = React.useState('');
@@ -143,6 +144,10 @@ const Historial = () => {
                     columns={columnasHistorial}
                 />
             </Box>
+
+
+            <HistoryChannel />
+
         </Box>
     );
 };

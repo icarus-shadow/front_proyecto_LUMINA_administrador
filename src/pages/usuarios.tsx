@@ -5,36 +5,18 @@ import DinamicTable from '../components/DinamicTable';
 import type { GridColDef,  GridValueGetter} from "@mui/x-data-grid";
 import {useAppDispatch, useAppSelector } from '../services/redux/hooks';
 import {deleteUser, fetchUsers} from "../services/redux/slices/data/UsersSlice.tsx";
-import {useAlert} from "../components/AlertSystem.tsx";
 
 const Usuarios = () => {
-    const { showAlert } = useAlert()
 
     const dispatch = useAppDispatch();
     const data = useAppSelector((state) => state.usersReducer.data);
-    const fetchSuccess = useAppSelector((state) => state.usersReducer.fetchSuccess);
-    const deleteSuccess = useAppSelector((state) => state.usersReducer.deleteSuccess);
 
 
     React.useEffect(() => {
         dispatch(fetchUsers())
     }, []);
 
-    React.useEffect (()=> {
-        if (fetchSuccess == true){
-            showAlert("success", "usuarios actualizados");
-        } else if (fetchSuccess == false) {
-            showAlert("error", "error al actualizar la información")
-        }
-    }, [fetchSuccess]);
 
-    React.useEffect(() => {
-        if (deleteSuccess == true) {
-            showAlert("success", "usuario eliminado correctamente")
-        } else if (deleteSuccess == false) {
-            showAlert("error", "error al eliminar el usuario")
-        }
-    }, [deleteSuccess])
 
     const columnasUsuarios: GridColDef[] = [
         { field: 'nombre', headerName: 'Nombre', flex: 1 },

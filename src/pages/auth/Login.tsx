@@ -5,9 +5,16 @@ import {login} from "../../services/redux/slices/AuthSlice.tsx";
 
 
 const Login = () => {
+
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const dispatch = useAppDispatch();
+
+    const ValidateInfo = (email: string, password: string) => {
+        if (password.length < 6) {
+
+        }
+    }
 
     const handleSubmit = () => {
         dispatch(login({email, password}));
@@ -25,7 +32,7 @@ const Login = () => {
                 <div className="passwordLabel">contraseña</div>
                 <input type="password" className="passwordInput" value={password} onChange={(e) => setPassword(e.target.value)}/>
             </div>
-            <button className="signInButton" onClick={handleSubmit}>ingresar</button>
+            <button type={"button"} className="signInButton" onClick={handleSubmit}>ingresar</button>
         </div>
     )
 }

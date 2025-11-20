@@ -1,4 +1,5 @@
 import {instance} from "../baseApi.tsx";
+import type {User} from "../../../types/interfacesData.tsx";
 
 const endpoint = "admin/users"
 
@@ -24,7 +25,21 @@ export const users = {
             }
             throw new Error('Invalid response format');
         } catch (e) {
-            console.error("Error en elimiar el usuario:", e);
+            console.error("Error en eliminar el usuario:", e);
+            throw e;
+        }
+    },
+
+    addUser: async function(data: User) {
+        try {
+            const response = await instance.post(endpoint, data);
+            console.log(response);
+            if (response.data) {
+                return response.data;
+            }
+            throw new Error('Invalid response format');
+        } catch (e) {
+            console.error("Error al agregar el usuario:", e);
             throw e;
         }
     }
