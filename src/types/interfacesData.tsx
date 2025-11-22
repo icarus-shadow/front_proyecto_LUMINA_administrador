@@ -35,6 +35,7 @@ interface subElements {
 }
 
 interface historial {
+    fechaFormateada: string | number | Date;
     id: number;
     usuario_id: number;
     equipos_o_elementos_id: number;

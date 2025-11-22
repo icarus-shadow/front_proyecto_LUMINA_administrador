@@ -24,6 +24,7 @@ export const fetchHistory = createAsyncThunk(
             if (!response.data) {
                 throw new Error('Respuesta inválida del servidor');
             }
+            return response;
         } catch (error) {
             console.error("[historySlice] error al obtener historial", error)
             throw error;
@@ -37,6 +38,16 @@ export const historySlice = createSlice({
     reducers: {},
     extraReducers: (builder) =>{
         builder
+            .addCase(fetchHistory.pending, (state) => {
+                state.success = null;
+            })
+            .addCase(fetchHistory.fulfilled, (state, action) => {
+                state.data = action.payload.data;
+                state.success = action.payload.success;
+            })
+            .addCase(fetchHistory.rejected, (state) => {
+                state.success = false;
+            })
     }
 
 })
