@@ -4,9 +4,18 @@ import { Box, Typography, TextField, Button, ButtonGroup } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import { usuarios, elementos, historial } from '../mockData';
 import type { GridColDef } from "@mui/x-data-grid";
-import HistoryChannel from "../../historyChannel.tsx";
+import {useAppDispatch} from "../services/redux/hooks.tsx";
+import {useEffect} from "react";
+import {fetchHistory} from "../services/redux/slices/data/historySlice.tsx";
+
 
 const Historial = () => {
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(fetchHistory())
+    }, []);
+
     const [fechaFiltro, setFechaFiltro] = React.useState('');
     const [periodoFiltro, setPeriodoFiltro] = React.useState<'dia' | 'semana' | 'mes' | ''>('');
 
@@ -144,10 +153,6 @@ const Historial = () => {
                     columns={columnasHistorial}
                 />
             </Box>
-
-
-            <HistoryChannel />
-
         </Box>
     );
 };

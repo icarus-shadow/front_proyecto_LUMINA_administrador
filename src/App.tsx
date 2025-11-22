@@ -10,6 +10,7 @@ import ContNav from "./components/ContNav.tsx";
 import Banner from "./components/Banner.tsx";
 import {useAppSelector} from "./services/redux/hooks";
 import UsersEffects from "./services/useEffects/users.tsx";
+import {HistoryEffects} from "./services/useEffects/history.tsx";
 
 function App() {
     const { user, token } = useAppSelector((state) => state.authReducer);
@@ -18,7 +19,10 @@ function App() {
     return (
         <Router>
             <Banner/>
+
             <UsersEffects />
+            <HistoryEffects />
+
             {isAuthenticated ? (
                 <>
                     <ContNav/>

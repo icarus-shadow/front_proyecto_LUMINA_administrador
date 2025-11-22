@@ -1,0 +1,136 @@
+/* Estilos generales para el formulario de login */
+.contForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--secondary-rgb), 0.58);
+    height: 603px;
+    padding: 15px;
+    font-family: 'Arial', sans-serif;
+    width: 507px;
+    border-radius: 30px;
+}
+
+.header {
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text);
+    font-weight: bold;
+    font-size: 32px;
+}
+
+.line {
+    width: 100%;
+    max-width: 320px;
+    height: 3px;
+    background-color: var(--background);
+    margin-bottom: 30px;
+}
+
+.contEmail, .contPassword {
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 20px;
+}
+
+.emailLabel, .passwordLabel {
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.emailInput, .passwordInput {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.emailInput:focus, .passwordInput:focus {
+    outline: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.passwordInputContainer {
+    position: relative;
+}
+
+.passwordToggleButton {
+    position: absolute;
+    right: -35px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error {
+    color: #ff6b6b;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.signInButton {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+}
+
+.signInButton:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+.signInButton:active {
+    transform: translateY(0);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .contForm {
+        padding: 10px;
+    }
+    .header, .line, .contEmail, .contPassword, .signInButton {
+        max-width: 100%;
+    }
+    .emailInput, .passwordInput {
+        font-size: 14px;
+        padding: 8px;
+    }
+    .signInButton {
+        font-size: 14px;
+        padding: 8px;
+    }
+}

@@ -40,6 +40,8 @@ interface historial {
     equipos_o_elementos_id: number;
     ingreso: string;
     salida: string;
+    equipo: elements;
+    usuario: users;
 }
 
 interface formacion {
@@ -85,6 +87,11 @@ export interface dataLogin {
 }
 
 // responses interfaces
+
+export interface responseHistory {
+    success: boolean | null;
+    data: historial[] | null;
+}
 
 export interface responseDelete {
     success: boolean | null;

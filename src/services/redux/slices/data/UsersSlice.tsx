@@ -20,7 +20,6 @@ export const fetchUsers = createAsyncThunk(
         if (!response.data) {
             throw new Error('Respuesta inválida del servidor');
         }
-        console.log(response)
         return response as responseUsersSlice;
     } catch (error) {
         console.error("[usersSlice] error al obtener usuarios", error)
@@ -50,8 +49,7 @@ export const deleteUser = createAsyncThunk(
 export const usersSlice = createSlice({
     name: 'users',
     initialState,
-    reducers: {
-    },
+    reducers: {},
     extraReducers: (builder) =>{
         builder
             //fetch
