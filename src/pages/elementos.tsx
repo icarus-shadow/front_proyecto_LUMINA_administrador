@@ -2,12 +2,18 @@
 import * as React from 'react';
 import { Box, Typography } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
-import { usuarios, elementos } from '../mockData';
 import type { GridColDef } from "@mui/x-data-grid";
+import { useAppDispatch, useAppSelector } from "../services/redux/hooks.tsx";
 
 const Elementos = () => {
+    const dispatch = useAppDispatch();
+    const elementos = useAppSelector((state) => state.elementsReducer.data)
+    const usuarios = useAppSelector((state) => state.usersReducer.data)
+
+
     // Función para combinar datos de elementos con usuarios
     const getElementosConUsuario = () => {
+        if (!elementos) return [];
         return elementos.map(elemento => {
             const usuario = usuarios.find(u => u.id === elemento.asignadoA);
             return {

@@ -41,6 +41,15 @@
   background-color: rgba(var(--secondary-rgb), 0.1) !important;
 }
 
+.dinamic-table-container .MuiDataGrid-row:last-child {
+  border-bottom: none;
+  margin-bottom: 5px;
+}
+
+.dinamic-table-container .MuiDataGrid-row:last-child .MuiDataGrid-cell {
+  border-bottom: none !important;
+}
+
 .dinamic-table-container .MuiDataGrid-cell {
   color: var(--text);
   border-bottom: none;

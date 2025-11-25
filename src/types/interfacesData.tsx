@@ -34,8 +34,7 @@ interface subElements {
     equipos_o_elementos_id: number;
 }
 
-interface historial {
-    fechaFormateada: string | number | Date;
+export interface historial {
     id: number;
     usuario_id: number;
     equipos_o_elementos_id: number;
@@ -88,6 +87,11 @@ export interface dataLogin {
 }
 
 // responses interfaces
+
+export interface responseElements {
+    success: boolean | null;
+    data: elements[] | null;
+}
 
 export interface responseHistory {
     success: boolean | null;

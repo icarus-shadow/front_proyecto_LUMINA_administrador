@@ -1,17 +1,5 @@
-import React, { useState, useEffect } from "react";
-
-// =============================
-// Color Variables (Editable)
-// =============================
-export const COLORS = {
-    backdrop: "rgba(0,0,0,0.5)",
-    modalBg: "white",
-    title: "#1f2937",
-    text: "#374151",
-    primary: "#3b82f6",
-    primaryHover: "#2563eb",
-    border: "#e5e7eb",
-};
+import React, { useState, useEffect, useRef } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, type SelectChangeEvent } from "@mui/material";
 
 // =============================
 // Types
@@ -19,16 +7,17 @@ export const COLORS = {
 export interface FieldConfig {
     name: string;
     label: string;
-    type: "text" | "number" | "email" | "textarea";
+    type: "text" | "number" | "email" | "textarea" | "select";
     placeholder?: string;
     required?: boolean;
+    options?: { label: string; value: any }[];
 }
 
 interface ModalFormProps {
     isOpen: boolean;
     title: string;
     fields: FieldConfig[];
-    initialValues?: Record<string, any>;
+    initialValue?: Record<string, any>;
     onClose: () => void;
     onSubmit: (data: Record<string, any>) => void;
 }
@@ -37,21 +26,18 @@ interface ModalFormProps {
 // Reusable Modal Form Component
 // =============================
 const ModalForm: React.FC<ModalFormProps> = ({
-                                                 isOpen,
-                                                 title,
-                                                 fields,
-                                                 initialValues = {},
-                                                 onClose,
-                                                 onSubmit,
-                                             }) => {
-    const [formData, setFormData] = useState<Record<string, any>>({});
-
-    useEffect(() => {
-        setFormData(initialValues);
-    }, [initialValues]);
+                                                    isOpen,
+                                                    title,
+                                                    fields,
+                                                    initialValue = {},
+                                                    onClose,
+                                                    onSubmit,
+                                                }) => {
+    const [formData, setFormData] = useState<Record<string, any>>(initialValue);
+    const prevInitialValuesRef = useRef<Record<string, any> | null>(null);
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<any>
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -62,83 +48,110 @@ const ModalForm: React.FC<ModalFormProps> = ({
         onSubmit(formData);
     };
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        if (isOpen && JSON.stringify(initialValue) !== JSON.stringify(prevInitialValuesRef.current)) {
+            setFormData(initialValue);
+            prevInitialValuesRef.current = initialValue;
+        }
+    }, [isOpen, initialValue]);
 
     return (
-        <div
-            className="fixed inset-0 flex items-center justify-center p-4"
-            style={{ background: COLORS.backdrop }}
-        >
-            <div
-                className="rounded-2xl shadow-xl w-full max-w-lg p-6"
-                style={{ background: COLORS.modalBg }}
-            >
-                <h2
-                    className="text-2xl font-semibold mb-4"
-                    style={{ color: COLORS.title }}
-                >
-                    {title}
-                </h2>
-
+        <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+            <DialogTitle sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>{title}</DialogTitle>
+            <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {fields.map((field) => (
-                        <div key={field.name} className="flex flex-col gap-1">
-                            <label className="font-medium" style={{ color: COLORS.text }}>
-                                {field.label}
-                            </label>
-
-                            {field.type === "textarea" ? (
-                                <textarea
-                                    name={field.name}
-                                    placeholder={field.placeholder}
-                                    required={field.required}
-                                    value={formData[field.name] || ""}
-                                    onChange={handleChange}
-                                    className="border rounded-lg p-2"
-                                    style={{ borderColor: COLORS.border }}
-                                />
-                            ) : (
-                                <input
-                                    type={field.type}
-                                    name={field.name}
-                                    placeholder={field.placeholder}
-                                    required={field.required}
-                                    value={formData[field.name] || ""}
-                                    onChange={handleChange}
-                                    className="border rounded-lg p-2"
-                                    style={{ borderColor: COLORS.border }}
-                                />
-                            )}
-                        </div>
+                        field.type === "select" ? (
+                            <Select
+                                key={field.name}
+                                label={field.label}
+                                name={field.name}
+                                value={formData[field.name] || ""}
+                                onChange={handleChange}
+                                required={field.required}
+                                sx={{
+                                    '& .MuiInputLabel-root': { color: 'var(--text)' },
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': { borderColor: 'var(--text)' },
+                                        '&:hover fieldset': { borderColor: 'var(--accent)' },
+                                        '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
+                                        backgroundColor: 'var(--background)',
+                                        color: 'var(--text)',
+                                    },
+                                    '& .MuiInputBase-input': { color: 'var(--text)' },
+                                    width: '100%',
+                                }}
+                            >
+                                {field.options?.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        ) : (
+                            <TextField
+                                key={field.name}
+                                label={field.label}
+                                name={field.name}
+                                type={field.type === "textarea" ? undefined : field.type}
+                                placeholder={field.placeholder}
+                                required={field.required}
+                                value={formData[field.name] || ""}
+                                onChange={handleChange}
+                                multiline={field.type === "textarea"}
+                                rows={field.type === "textarea" ? 4 : undefined}
+                                sx={{
+                                    '& .MuiInputLabel-root': { color: 'var(--text)' },
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': { borderColor: 'var(--text)' },
+                                        '&:hover fieldset': { borderColor: 'var(--accent)' },
+                                        '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
+                                        backgroundColor: 'var(--background)',
+                                        color: 'var(--text)',
+                                    },
+                                    '& .MuiInputBase-input': { color: 'var(--text)' },
+                                }}
+                            />
+                        )
                     ))}
-
-                    <div className="flex justify-end gap-3 mt-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 rounded-lg border"
-                            style={{ borderColor: COLORS.border, color: COLORS.text }}
-                        >
-                            Cancelar
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="px-4 py-2 rounded-lg text-white"
-                            style={{ background: COLORS.primary }}
-                            onMouseOver={(e) =>
-                                (e.currentTarget.style.background = COLORS.primaryHover)
-                            }
-                            onMouseOut={(e) =>
-                                (e.currentTarget.style.background = COLORS.primary)
-                            }
-                        >
-                            Guardar
-                        </button>
-                    </div>
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+            <DialogActions sx={{ backgroundColor: 'var(--background)' }}>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 rounded-lg border"
+                    style={{
+                        background: 'var(--text)',
+                        color: 'var(--background)',
+                        borderColor: 'var(--text)'
+                    }}
+                    onMouseOver={(e) =>
+                        (e.currentTarget.style.background = 'var(--accent)')
+                    }
+                    onMouseOut={(e) =>
+                        (e.currentTarget.style.background = 'var(--text)')
+                    }
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => handleSubmit(new Event('submit') as any)}
+                    className="px-4 py-2 rounded-lg text-white"
+                    style={{ background: 'var(--primary)' }}
+                    onMouseOver={(e) =>
+                        (e.currentTarget.style.background = 'var(--primaryHover)')
+                    }
+                    onMouseOut={(e) =>
+                        (e.currentTarget.style.background = 'var(--primary)')
+                    }
+                >
+                    Guardar
+                </button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
