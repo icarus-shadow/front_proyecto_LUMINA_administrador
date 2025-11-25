@@ -55,6 +55,10 @@ const Usuarios = () => {
         dispatch(deleteUser(id));
     };
 
+    const handleView = (row: any) => {
+        console.log('data:', row)
+    }
+
     return (
         <Box>
             <Typography variant="h4" sx={{ mb: 2, color: 'var(--text)' }}>
@@ -65,6 +69,7 @@ const Usuarios = () => {
                 columns={columnasUsuarios}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onView={handleView}
             />
         </Box>
     );

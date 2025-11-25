@@ -15,12 +15,10 @@ const Elementos = () => {
     const getElementosConUsuario = () => {
         if (!elementos) return [];
         return elementos.map(elemento => {
-            const usuario = usuarios.find(u => u.id === elemento.asignadoA);
+            const usuario = usuarios.find(u => u.id === elemento.usuarios.id);
             return {
                 ...elemento,
                 usuarioNombre: usuario ? usuario.nombre : 'Desconocido',
-                usuarioEmail: usuario ? usuario.email : '',
-                usuarioDepartamento: usuario ? usuario.departamento : ''
             };
         });
     };

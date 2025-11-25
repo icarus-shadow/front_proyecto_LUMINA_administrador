@@ -41,6 +41,10 @@ const Historial = () => {
     });
     const [filename, setFilename] = React.useState('reporte_horarios');
 
+    const handleView = (row: any) => {
+        setSelectedRecord(row);
+        setDetailModalOpen(true);
+    }
     // Función para obtener el historial completo con filtros
     const getHistorialCompleto = () => {
         let filteredHistorial = (historyData || []).map(entry => {
@@ -125,19 +129,6 @@ const Historial = () => {
         },
         { field: 'usuarioNombreCompleto', headerName: 'Usuario',  flex: 1 },
         { field: 'marcaEquipo', headerName: 'Marca del Equipo',  flex: 0.7 },
-        {
-            field: 'acciones',
-            headerName: 'Acciones',
-            flex: 1.5,
-            renderCell: (params) => (
-                <Button variant="outlined" onClick={() => {
-                    setSelectedRecord(params.row);
-                    setDetailModalOpen(true);
-                }}>
-                    Ver más información
-                </Button>
-            )
-        },
     ];
 
     // Función para generar el reporte en PDF
@@ -238,6 +229,7 @@ const Historial = () => {
                 <DinamicTable
                     rows={getHistorialCompleto()}
                     columns={columnasHistorial}
+                    onView={handleView}
                 />
             </Box>
             <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="md" fullWidth>

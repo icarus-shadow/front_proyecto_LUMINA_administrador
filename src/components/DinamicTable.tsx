@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {IconButton, Paper} from "@mui/material";
-import {Edit, Delete } from '@mui/icons-material';
+import {Edit, Delete, Visibility } from '@mui/icons-material';
 import {DataGrid} from "@mui/x-data-grid";
 import { esES } from "@mui/x-data-grid/locales";
 import type {GridColDef} from "@mui/x-data-grid";
@@ -12,10 +12,11 @@ interface DinamicTableProps{
     columns: GridColDef[];
     onDelete?: (id: number, codigo: string) => void;
     onEdit?: (row: any) => void;
+    onView?: (row: any) => void;
 }
 
 
-const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEdit}) => {
+const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEdit, onView}) => {
 
     const [tableRows, setTableRows] = React.useState<any[]>([]);
 
@@ -38,19 +39,27 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                 }
                 : col
         ),
-        ...(onEdit && onDelete ? [{
+        ...(onView || onEdit || onDelete ? [{
             field: "actions",
             headerName: "Acciones",
-            width: 100,
+            flex: 1.1,
             renderCell:(params: any)=>(
                 <>
-                    <IconButton color="primary" onClick={()=> onEdit(params.row)}>
-                        <Edit />
-                    </IconButton>
-
-                    <IconButton color="primary" onClick={()=> onDelete(params.row.id, params.row.codigo)}>
-                        <Delete />
-                    </IconButton>
+                    {onView && (
+                        <IconButton color="primary" onClick={()=> onView(params.row)}>
+                            <Visibility />
+                        </IconButton>
+                    )}
+                    {onEdit && (
+                        <IconButton color="primary" onClick={()=> onEdit(params.row)}>
+                            <Edit />
+                        </IconButton>
+                    )}
+                    {onDelete && (
+                        <IconButton color="primary" onClick={()=> onDelete(params.row.id, params.row.codigo)}>
+                            <Delete />
+                        </IconButton>
+                    )}
                 </>
             )
         }] : [])
@@ -66,8 +75,6 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                 localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                 initialState={{pagination:{paginationModel}}}
                 pageSizeOptions={[5,8,10,50,100]}
-                checkboxSelection
-                disableRowSelectionOnClick
                 sx={{border: 0}}
             />
         </Paper>

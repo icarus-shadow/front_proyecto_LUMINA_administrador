@@ -5,6 +5,7 @@ import type {responseElements} from "../../../../types/interfacesData.tsx";
 const initialState: responseElements = {
     success: null,
     data: null,
+    count: 0,
 }
 
 export const  fetchElements = createAsyncThunk(
@@ -31,6 +32,7 @@ export const elementsSlice = createSlice({
             .addCase(fetchElements.fulfilled, (state, action) => {
                 state.success = action.payload.success;
                 state.data = action.payload.data;
+                state.count = state.data?.length || 0;
             })
     }
 })

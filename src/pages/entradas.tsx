@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, Select, MenuItem, TextField } from "@mui/material";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DinamicTable from '../components/DinamicTable';
 import { history } from '../services/api/data/history';
 import type { GridColDef } from "@mui/x-data-grid";
@@ -9,6 +10,15 @@ import type { historial } from '../types/interfacesData';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import dayjs from 'dayjs';
+
+// Declaración de tipos para jspdf-autotable
+declare module 'jspdf' {
+  interface jsPDF {
+    lastAutoTable: {
+      finalY: number;
+    };
+  }
+}
 
 const Entradas = () => {
     const [historyData, setHistoryData] = useState<historial[]>([]);
@@ -46,6 +56,7 @@ const Entradas = () => {
                 fecha_entrada: item.ingreso,
                 usuarioNombre: item.usuario.nombre,
                 equipoNombre: item.equipo.marca || item.equipo.sn_equipo,
+                marcaEquipo: item.equipo.marca,
                 descripcion: item.equipo.descripcion,
                 usuarioNombreCompleto: `${item.usuario.nombre} ${item.usuario.apellido}`,
                 tipoElemento: item.equipo.tipo_elemento,
@@ -106,7 +117,6 @@ const Entradas = () => {
     // Función para generar el reporte en PDF
     const exportToPDF = () => {
         const doc = new jsPDF();
-        const data = activeEntries;
 
         // Título centrado
         doc.setFontSize(18);
@@ -117,42 +127,107 @@ const Entradas = () => {
         doc.setFontSize(12);
         doc.text(`Fecha de generación: ${fechaGeneracion}`, 20, 35);
 
-        // Columnas de la tabla
-        const tableColumns = ['ID', 'Fecha de Entrada', 'Usuario', 'Equipo', 'Descripción'];
+        let yPosition = 45;
 
-        // Filas de la tabla
-        const tableRows = data.map(row => [
-            row.id,
-            dayjs(row.fecha_entrada).format('DD/MM/YYYY HH:mm'),
-            row.usuarioNombre || '',
-            row.equipoNombre || '',
-            row.descripcion || '',
-        ]);
+        // Sección Hoy
+        doc.setFontSize(14);
+        doc.text('Entradas Activas de Hoy', 20, yPosition);
+        yPosition += 10;
 
-        // Generar la tabla con autoTable
-        autoTable(doc, {
-            head: [tableColumns],
-            body: tableRows,
-            startY: 45,
-            styles: {
-                fontSize: 8,
-                cellPadding: 3,
-                lineColor: [0, 0, 0],
-                lineWidth: 0.1,
-            },
-            headStyles: {
-                fillColor: [41, 128, 185],
-                textColor: 255,
-                fontStyle: 'bold',
-            },
-            alternateRowStyles: {
-                fillColor: [245, 245, 245],
-            },
-            margin: { top: 45 },
-        });
+        if (filteredTodaysEntries.length > 0) {
+            const tableColumns = ['ID', 'Fecha de Entrada', 'Usuario', 'Equipo', 'Descripción'];
+            const tableRows = filteredTodaysEntries.map(row => [
+                row.id,
+                dayjs(row.fecha_entrada).format('DD/MM/YYYY HH:mm'),
+                row.usuarioNombre || '',
+                row.equipoNombre || '',
+                row.descripcion || '',
+            ]);
+
+            autoTable(doc, {
+                head: [tableColumns],
+                body: tableRows,
+                startY: yPosition,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.1,
+                },
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245],
+                },
+                margin: { top: yPosition },
+            });
+            yPosition = doc.lastAutoTable.finalY + 10;
+        } else {
+            // Banner
+            const pageWidth = doc.internal.pageSize.width;
+            const bannerHeight = 15;
+            doc.setFillColor(41, 128, 185);
+            doc.rect(30, yPosition, pageWidth - 60, bannerHeight, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.text('sin entradas en este dia', pageWidth / 2, yPosition + bannerHeight / 2 + 4, { align: 'center' });
+            yPosition += bannerHeight + 10;
+        }
+
+        // Sección Otras Fechas
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(14);
+        doc.text('Entradas Activas de Otras Fechas', 20, yPosition);
+        yPosition += 10;
+
+        if (filteredOtherEntries.length > 0) {
+            const tableColumns = ['ID', 'Fecha de Entrada', 'Usuario', 'Equipo', 'Descripción'];
+            const tableRows = filteredOtherEntries.map(row => [
+                row.id,
+                dayjs(row.fecha_entrada).format('DD/MM/YYYY HH:mm'),
+                row.usuarioNombre || '',
+                row.equipoNombre || '',
+                row.descripcion || '',
+            ]);
+
+            autoTable(doc, {
+                head: [tableColumns],
+                body: tableRows,
+                startY: yPosition,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.1,
+                },
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245],
+                },
+                margin: { top: yPosition },
+            });
+            yPosition = doc.lastAutoTable.finalY + 10;
+        } else {
+            // Banner
+            const pageWidth = doc.internal.pageSize.width;
+            const bannerHeight = 15;
+            doc.setFillColor(41, 128, 185);
+            doc.rect(30, yPosition, pageWidth - 60, bannerHeight, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.text('sin entradas anteriores', pageWidth / 2, yPosition + bannerHeight / 2 + 4, { align: 'center' });
+            yPosition += bannerHeight + 10;
+        }
 
         // Guardar el PDF
-        doc.save('entradas_activas.pdf');
+        doc.save(`entradas_activas ${fechaGeneracion}.pdf`);
     };
 
     // Columnas para la tabla de entradas
@@ -161,33 +236,18 @@ const Entradas = () => {
         { field: 'usuarioNombre', headerName: 'Usuario', width: 200 },
         { field: 'equipoNombre', headerName: 'Equipo', width: 200, filterable: false },
         { field: 'descripcion', headerName: 'Descripción', width: 250, filterable: false },
-        {
-            field: 'acciones',
-            headerName: 'Acciones',
-            flex: 1.5,
-            renderCell: (params) => (
-                <Button variant="outlined" onClick={() => {
-                    setSelectedRecord(params.row);
-                    setDetailModalOpen(true);
-                }}>
-                    Ver más información
-                </Button>
-            )
-        },
     ];
 
-    // Funciones básicas para editar y eliminar
-    // const handleEdit = (row: any) => {
-    //     console.log('Editar:', row);
-    // };
-    //
-    // const handleDelete = (id: number) => {
-    //     console.log('Eliminar:', id);
-    // };
+
+     const handleView = (row: any) => {
+        setSelectedRecord(row);
+        setDetailModalOpen(true);
+     };
+
 
     return (
         <Box>
-            <Button variant="contained" onClick={exportToPDF} sx={{ mb: 2, marginTop: 5 }}>
+            <Button variant="contained" onClick={exportToPDF} disabled={filteredTodaysEntries.length === 0 && filteredOtherEntries.length === 0} sx={{ mb: 2, marginTop: 5, '&.Mui-disabled': { backgroundColor: 'var(--primary)', border: '2px solid var(--accent)', color: 'white', opacity: 1 } }}>
                 Generar Reporte PDF
             </Button>
             <Box sx={{ mb: 4 }}>
@@ -199,32 +259,91 @@ const Entradas = () => {
                         value={userFilterToday}
                         onChange={(e) => setUserFilterToday(e.target.value)}
                         displayEmpty
-                        sx={{ minWidth: 200, color: 'var(--text)' }}
+                        sx={{
+                            minWidth: 200,
+                            color: 'var(--text)',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'var(--text)' },
+                                '&:hover fieldset': { borderColor: 'var(--text)' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--text)' }
+                            },
+                            '& .MuiSelect-select': { color: 'var(--text)' },
+                            '& .MuiSelect-icon': { color: 'var(--text)' }
+                        }}
                     >
-                        <MenuItem value="">Todos los usuarios</MenuItem>
-                        {uniqueUsers.map(user => <MenuItem key={user} value={user}>{user}</MenuItem>)}
+                        <MenuItem value="" sx={{ color: 'var(--text)' }}>Todos los usuarios</MenuItem>
+                        {uniqueUsers.map(user => <MenuItem key={user} value={user} sx={{ color: 'var(--text)' }}>{user}</MenuItem>)}
                     </Select>
                     <TextField
                         label="Hora desde"
                         type="time"
                         value={hourFromToday}
                         onChange={(e) => setHourFromToday(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ width: 150, color: 'var(--text)' }}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        InputProps={{
+                            endAdornment: <AccessTimeIcon sx={{ color: 'var(--text)' }} />
+                        }}
+                        sx={{
+                            width: 150,
+                            color: 'var(--text)',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'var(--text)' },
+                                '&:hover fieldset': { borderColor: 'var(--text)' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--text)' }
+                            },
+                            '& .MuiInputLabel-root': { color: 'var(--text)' },
+                            '& .MuiInputBase-input': { color: 'var(--text)' },
+                            '& .MuiInputBase-input::placeholder': { color: 'var(--text)' },
+                            '& .MuiInputAdornment-root': { color: 'var(--text)' }
+                        }}
                     />
                     <TextField
                         label="Hora hasta"
                         type="time"
                         value={hourToToday}
                         onChange={(e) => setHourToToday(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ width: 150, color: 'var(--text)' }}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        InputProps={{
+                            endAdornment: <AccessTimeIcon sx={{ color: 'var(--text)' }} />
+                        }}
+                        sx={{
+                            width: 150,
+                            color: 'var(--text)',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'var(--text)' },
+                                '&:hover fieldset': { borderColor: 'var(--text)' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--text)' }
+                            },
+                            '& .MuiInputLabel-root': { color: 'var(--text)' },
+                            '& .MuiInputBase-input': { color: 'var(--text)' },
+                            '& .MuiInputBase-input::placeholder': { color: 'var(--text)' },
+                            '& .MuiInputAdornment-root': { color: 'var(--text)' }
+                        }}
                     />
                 </Box>
-                <DinamicTable
-                    rows={filteredTodaysEntries}
-                    columns={columnasEntradas}
-                />
+                {filteredTodaysEntries.length === 0 ? (
+                    <Box sx={{
+                        textAlign: 'center',
+                        mt: 4,
+                        p: 3,
+                        backgroundColor: 'var(--primary)',
+                        color: 'var(--text)',
+                        borderRadius: 2,
+                        boxShadow: 3,
+                        border: '2px solid var(--accent)',
+                        width: "70vw",
+                    }}>
+                        <Typography variant="h6">
+                            sin entradas en este dia
+                        </Typography>
+                    </Box>
+                ) : (
+                    <DinamicTable
+                        rows={filteredTodaysEntries}
+                        columns={columnasEntradas}
+                        onView={handleView}
+                    />
+                )}
             </Box>
             <Box>
                 <Typography variant="h5" sx={{ mb: 1, color: "var(--text)"}}>
@@ -235,32 +354,91 @@ const Entradas = () => {
                         value={userFilterOther}
                         onChange={(e) => setUserFilterOther(e.target.value)}
                         displayEmpty
-                        sx={{ minWidth: 200, color: 'var(--text)' }}
+                        sx={{
+                            minWidth: 200,
+                            color: 'var(--text)',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'var(--text)' },
+                                '&:hover fieldset': { borderColor: 'var(--text)' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--text)' }
+                            },
+                            '& .MuiSelect-select': { color: 'var(--text)' },
+                            '& .MuiSelect-icon': { color: 'var(--text)' }
+                        }}
                     >
-                        <MenuItem value="">Todos los usuarios</MenuItem>
-                        {uniqueUsers.map(user => <MenuItem key={user} value={user}>{user}</MenuItem>)}
+                        <MenuItem value="" sx={{ color: 'var(--text)' }}>Todos los usuarios</MenuItem>
+                        {uniqueUsers.map(user => <MenuItem key={user} value={user} sx={{ color: 'var(--text)' }}>{user}</MenuItem>)}
                     </Select>
                     <TextField
                         label="Hora desde"
                         type="time"
                         value={hourFromOther}
                         onChange={(e) => setHourFromOther(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ width: 150, color: 'var(--text)' }}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        InputProps={{
+                            endAdornment: <AccessTimeIcon sx={{ color: 'var(--text)' }} />
+                        }}
+                        sx={{
+                            width: 150,
+                            color: 'var(--text)',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'var(--text)' },
+                                '&:hover fieldset': { borderColor: 'var(--text)' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--text)' }
+                            },
+                            '& .MuiInputLabel-root': { color: 'var(--text)' },
+                            '& .MuiInputBase-input': { color: 'var(--text)' },
+                            '& .MuiInputBase-input::placeholder': { color: 'var(--text)' },
+                            '& .MuiInputAdornment-root': { color: 'var(--text)' }
+                        }}
                     />
                     <TextField
                         label="Hora hasta"
                         type="time"
                         value={hourToOther}
                         onChange={(e) => setHourToOther(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ width: 150, color: 'var(--text)' }}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        InputProps={{
+                            endAdornment: <AccessTimeIcon sx={{ color: 'var(--text)' }} />
+                        }}
+                        sx={{
+                            width: 150,
+                            color: 'var(--text)',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'var(--text)' },
+                                '&:hover fieldset': { borderColor: 'var(--text)' },
+                                '&.Mui-focused fieldset': { borderColor: 'var(--text)' }
+                            },
+                            '& .MuiInputLabel-root': { color: 'var(--text)' },
+                            '& .MuiInputBase-input': { color: 'var(--text)' },
+                            '& .MuiInputBase-input::placeholder': { color: 'var(--text)' },
+                            '& .MuiInputAdornment-root': { color: 'var(--text)' }
+                        }}
                     />
                 </Box>
-                <DinamicTable
-                    rows={filteredOtherEntries}
-                    columns={columnasEntradas}
-                />
+                {filteredOtherEntries.length === 0 ? (
+                    <Box sx={{
+                        textAlign: 'center',
+                        mt: 4,
+                        p: 3,
+                        backgroundColor: 'var(--primary)',
+                        color: 'var(--text)',
+                        borderRadius: 2,
+                        boxShadow: 3,
+                        border: '2px solid var(--accent)',
+                        width: "70vw",
+                    }}>
+                        <Typography variant="h6">
+                            sin entradas anteriores
+                        </Typography>
+                    </Box>
+                ) : (
+                    <DinamicTable
+                        rows={filteredOtherEntries}
+                        columns={columnasEntradas}
+                        onView={handleView}
+                    />
+                )}
             </Box>
             <Dialog open={detailModalOpen} onClose={() => setDetailModalOpen(false)} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
                 <DialogTitle sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>Detalles del Registro</DialogTitle>

@@ -10,6 +10,7 @@ const initialState: responseUsersSlice = {
     updateSuccess: null,
     success: null,
     data: [],
+    count: 0,
 }
 
 export const fetchUsers = createAsyncThunk(
@@ -59,6 +60,7 @@ export const usersSlice = createSlice({
             .addCase(fetchUsers.fulfilled, (state, action) => {
                 state.data = action.payload.data;
                 state.fetchSuccess = action.payload.success
+                state.count = state.data?.length || 0;
             })
 
             //delete
@@ -67,6 +69,7 @@ export const usersSlice = createSlice({
             })
             .addCase(deleteUser.fulfilled, (state, action) => {
                 state.deleteSuccess = action.payload.success
+                state.count = state.data?.length || 0;
             })
     }
 })

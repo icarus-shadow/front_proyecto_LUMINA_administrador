@@ -6,6 +6,7 @@ import {history} from "../../../api/data/history.tsx";
 const initialState: responseHistory = {
     success: null,
     data: null,
+    count: 0,
 }
 
 export const reloadHistory = createAsyncThunk(
@@ -44,6 +45,7 @@ export const historySlice = createSlice({
             .addCase(fetchHistory.fulfilled, (state, action) => {
                 state.data = action.payload.data;
                 state.success = action.payload.success;
+                state.count = state.data?.length || 0;
             })
             .addCase(fetchHistory.rejected, (state) => {
                 state.success = false;

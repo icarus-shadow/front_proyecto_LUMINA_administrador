@@ -25,6 +25,7 @@ interface elements {
     descripcion: string;
     qr_hash: string;
     path_foto_equipo_implemento: string;
+    usuarios: users
 }
 
 interface subElements {
@@ -91,11 +92,13 @@ export interface dataLogin {
 export interface responseElements {
     success: boolean | null;
     data: elements[] | null;
+    count: number;
 }
 
 export interface responseHistory {
     success: boolean | null;
     data: historial[] | null;
+    count: number;
 }
 
 export interface responseDelete {
@@ -110,6 +113,7 @@ export interface responseUsersSlice {
     updateSuccess: boolean | null;
     success: boolean | null;
     data: users[] | null[];
+    count: number;
 }
 
 export interface responseLogin {
