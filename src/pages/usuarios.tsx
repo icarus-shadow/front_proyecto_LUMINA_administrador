@@ -2,9 +2,9 @@
 import * as React from 'react';
 import { Box, Typography } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
-import type { GridColDef,  GridValueGetter} from "@mui/x-data-grid";
-import {useAppDispatch, useAppSelector } from '../services/redux/hooks';
-import {deleteUser, fetchUsers} from "../services/redux/slices/data/UsersSlice.tsx";
+import type { GridColDef, GridValueGetter } from "@mui/x-data-grid";
+import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
+import { deleteUser } from "../services/redux/slices/data/UsersSlice.tsx";
 
 const Usuarios = () => {
 
@@ -13,7 +13,6 @@ const Usuarios = () => {
 
 
     React.useEffect(() => {
-        dispatch(fetchUsers())
     }, []);
 
 

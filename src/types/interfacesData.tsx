@@ -28,7 +28,8 @@ interface elements {
     usuarios: users
 }
 
-interface subElements {
+
+export interface subElements {
     id: number;
     nombre_elemento: string;
     path_foto_elemento: string;
@@ -45,7 +46,7 @@ export interface historial {
     usuario: users;
 }
 
-interface formacion {
+export interface formacion {
     id: number;
     tipos_programas_id: number;
     ficha: string;
@@ -120,6 +121,19 @@ export interface responseLogin {
     success: boolean;
     message: string;
     data: dataLogin;
+}
+
+
+export interface responseFormation {
+    success: boolean | null;
+    data: formacion[] | null;
+    count: number;
+}
+
+export interface responseSubElements {
+    success: boolean | null;
+    data: subElements[] | null;
+    count: number;
 }
 
 // states redux
