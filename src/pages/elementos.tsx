@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Box, Typography } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import type { GridColDef } from "@mui/x-data-grid";
-import { useAppDispatch, useAppSelector } from "../services/redux/hooks.tsx";
+import { useAppSelector } from "../services/redux/hooks.tsx";
 
 const Elementos = () => {
-    const dispatch = useAppDispatch();
+
     const elementos = useAppSelector((state) => state.elementsReducer.data)
     const usuarios = useAppSelector((state) => state.usersReducer.data)
 

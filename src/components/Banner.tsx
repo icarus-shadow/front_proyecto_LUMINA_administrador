@@ -2,8 +2,11 @@ import logo from '../assets/icon.svg';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ModalForm, { type FieldConfig } from './modalForm';
+import { useAppSelector } from '../services/redux/hooks';
 
 const Banner = () => {
+  const { user, token } = useAppSelector((state) => state.authReducer);
+  const isAuthenticated = !!token && !!user;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'usuario' | 'elemento' | null>(null);
   const navigate = useNavigate();
@@ -38,39 +41,42 @@ const Banner = () => {
   };
 
   return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
     <div style={{
-      width: '700px',
-      height: '110px',
-      background: 'linear-gradient(to right, var(--secondary) 0%, transparent 83%)',
       display: 'flex',
+      flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 20px',
-      borderRadius: '10px',
-      boxSizing: 'border-box',
     }}>
-      <a href="/" style={{
+      <div style={{
+        width: '700px',
+        height: '110px',
+        background: 'linear-gradient(to right, var(--secondary) 0%, transparent 83%)',
         display: 'flex',
         alignItems: 'center',
-        textDecoration: 'none',
+        justifyContent: 'space-between',
+        padding: '0 20px',
+        borderRadius: '10px',
+        boxSizing: 'border-box',
       }}>
-        <img src={logo} alt="Lumina Logo" style={{ height: '80px', marginRight: '20px' }} />
-        <span style={{ color: 'var(--text)', fontSize: '50px', fontWeight: 'bold' }}>LUMINA</span>
-      </a>
-      <ModalForm
-        isOpen={isModalOpen}
-        title={modalType === 'usuario' ? 'Agregar Usuario' : 'Agregar Elemento'}
-        fields={modalType === 'usuario' ? userFields : elementFields}
-        initialValue={{}}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleModalSubmit}
-      />
-    </div>
+        <a href="/" style={{
+          display: 'flex',
+          alignItems: 'center',
+          textDecoration: 'none',
+        }}>
+          <img src={logo} alt="Lumina Logo" style={{ height: '80px', marginRight: '20px' }} />
+          <span style={{ color: 'var(--text)', fontSize: '50px', fontWeight: 'bold' }}>LUMINA</span>
+        </a>
+
+        <ModalForm
+          isOpen={isModalOpen}
+          title={modalType === 'usuario' ? 'Agregar Usuario' : 'Agregar Elemento'}
+          fields={modalType === 'usuario' ? userFields : elementFields}
+          initialValue={{}}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleModalSubmit}
+        />
+
+      </div>
+      {isAuthenticated && (
         <div style={{ display: 'flex', gap: '20px', marginLeft: '50px' }}>
           <button onClick={() => handleButtonClick('usuario', '/usuarios')} style={{
             marginLeft: '60px',
@@ -98,7 +104,8 @@ const Banner = () => {
             Agregar Nuevo Elemento
           </button>
         </div>
-      </div>
+      )}
+    </div>
   );
 };
 

@@ -1,16 +1,17 @@
 // @ts-ignore
 import * as React from 'react';
-import { Box, Typography, TextField, Button,
-    Dialog, DialogTitle, DialogContent, DialogActions, Autocomplete, FormControl, InputLabel, Select, MenuItem, Avatar } from "@mui/material";
+import {
+    Box, Typography, TextField, Button,
+    Dialog, DialogTitle, DialogContent, DialogActions, Autocomplete, FormControl, InputLabel, Select, MenuItem, Avatar
+} from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import type { GridColDef } from "@mui/x-data-grid";
-import {useAppDispatch, useAppSelector} from "../services/redux/hooks.tsx";
-import {useEffect} from "react";
-import {fetchHistory} from "../services/redux/slices/data/historySlice.tsx";
-import {fetchUsers} from "../services/redux/slices/data/UsersSlice.tsx";
+import { useAppSelector } from "../services/redux/hooks.tsx";
+import { useEffect } from "react";
+
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type {RootState} from "../services/redux/store.tsx";
+import type { RootState } from "../services/redux/store.tsx";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -21,13 +22,11 @@ dayjs.extend(isBetween);
 
 
 const Historial = () => {
-    const dispatch = useAppDispatch();
+
     const users = useAppSelector((state: RootState) => state.usersReducer.data);
     const historyData = useAppSelector((state: RootState) => state.historyReduce.data);
 
     useEffect(() => {
-        dispatch(fetchHistory())
-        dispatch(fetchUsers())
     }, []);
 
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -127,8 +126,8 @@ const Historial = () => {
                 return dayjs(params.value).format('DD/MM/YYYY HH:mm');
             }
         },
-        { field: 'usuarioNombreCompleto', headerName: 'Usuario',  flex: 1 },
-        { field: 'marcaEquipo', headerName: 'Marca del Equipo',  flex: 0.7 },
+        { field: 'usuarioNombreCompleto', headerName: 'Usuario', flex: 1 },
+        { field: 'marcaEquipo', headerName: 'Marca del Equipo', flex: 0.7 },
     ];
 
     // Función para generar el reporte en PDF
