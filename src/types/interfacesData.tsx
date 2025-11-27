@@ -55,7 +55,7 @@ export interface formacion {
     fecha_fin_programa: string;
 }
 
-interface nivelFormacion {
+export interface nivelFormacion {
     id: number;
     nivel_formacion: string;
 }
@@ -133,6 +133,12 @@ export interface responseFormation {
 export interface responseSubElements {
     success: boolean | null;
     data: subElements[] | null;
+    count: number;
+}
+
+export interface responseLevelFormation {
+    success: boolean | null;
+    data: nivelFormacion[] | null;
     count: number;
 }
 
