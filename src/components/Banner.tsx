@@ -5,6 +5,7 @@ import ModalForm, { type FieldConfig } from './modalForm';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
 import { fetchFormations } from '../services/redux/slices/data/formationSlice';
 import { addUser } from '../services/redux/slices/data/UsersSlice';
+import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
 import type { AddUserPayload } from '../types/interfacesData';
 import type { RootState } from '../services/redux/store';
 
@@ -16,12 +17,16 @@ const Banner = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
+  const subElements = useAppSelector((state: RootState) => state.subElementsReducer.data);
 
   useEffect(() => {
     if (formations && formations.length === 0) {
       dispatch(fetchFormations());
     }
-  }, [dispatch, formations?.length]);
+    if (subElements && subElements.length === 0) {
+      dispatch(fetchSubElements());
+    }
+  }, [dispatch, formations?.length, subElements?.length]);
 
   const leftFields: FieldConfig[] = [
     { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
@@ -36,13 +41,8 @@ const Banner = () => {
     { name: 'path_foto', label: 'Foto', type: 'file', accept: 'image/*' },
   ];
 
-  const handleAddFormation = () => {
-    // TODO: implementar lógica para agregar nueva formación
-  };
-
   const rightFields: FieldConfig[] = [
     { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({value: f.id, label: f.nombre_programa})) || [] },
-    { type: 'button', label: '+', onClick: handleAddFormation },
   ];
 
   const leftTitle = 'Información del Usuario';
@@ -55,6 +55,10 @@ const Banner = () => {
     { name: 'color', label: 'Color', type: 'text', required: true },
     { name: 'tipo_elemento', label: 'Tipo Elemento', type: 'text', required: true },
     { name: 'descripcion', label: 'Descripción', type: 'textarea', required: true },
+  ];
+
+  const elementRightFields: FieldConfig[] = [
+    { name: 'subElements', label: 'Elementos Adicionales', type: 'multiSelect', options: subElements?.map(s => ({value: s.id, label: s.nombre_elemento})) || [] },
   ];
 
   const handleButtonClick = (type: 'usuario' | 'elemento', path: string) => {
@@ -115,9 +119,9 @@ const Banner = () => {
           isOpen={isModalOpen}
           title={modalType === 'usuario' ? 'Agregar Usuario' : 'Agregar Elemento'}
           leftFields={modalType === 'usuario' ? leftFields : elementFields}
-          rightFields={modalType === 'usuario' ? rightFields : []}
-          leftTitle={modalType === 'usuario' ? leftTitle : 'Campos'}
-          rightTitle={modalType === 'usuario' ? rightTitle : 'Campos'}
+          rightFields={modalType === 'usuario' ? rightFields : elementRightFields}
+          leftTitle={modalType === 'usuario' ? leftTitle : 'Información del Elemento'}
+          rightTitle={modalType === 'usuario' ? rightTitle : 'Elementos Adicionales'}
           bannerMessage={modalType === 'usuario' ? bannerMessage : undefined}
           initialValue={{}}
           onClose={() => setIsModalOpen(false)}

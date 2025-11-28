@@ -69,7 +69,8 @@ export const editUSer = createAsyncThunk(
     'users/edit',
     async (payload: EditUserPayload, {dispatch} ) => {
         try {
-            const response = await users.editUser(payload);
+            const {id, ...userData} = payload;
+            const response = await users.editUser(id, userData);
             if (!response){
                 throw new Error('Respuesta inválida del servidor');
             }

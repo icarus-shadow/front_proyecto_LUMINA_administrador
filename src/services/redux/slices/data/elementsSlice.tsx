@@ -23,6 +23,54 @@ export const  fetchElements = createAsyncThunk(
         }
     })
 
+export const addElement = createAsyncThunk(
+    'elements/add',
+    async(formData: FormData, {dispatch}) => {
+        try {
+            const response = await elements.agregar(formData);
+            if (!response.data) {
+                throw new Error('Respuesta invalida del servidor');
+            }
+            dispatch(fetchElements());
+            return response.data;
+        } catch (error) {
+            console.error("[elementsSlice] error al agregar elemento", error);
+            throw error;
+        }
+    })
+
+export const deleteElement = createAsyncThunk(
+    'elements/delete',
+    async(id: string, {dispatch}) => {
+        try {
+            const response = await elements.eliminar(id);
+            if (!response.data) {
+                throw new Error('Respuesta invalida del servidor');
+            }
+            dispatch(fetchElements());
+            return response.data;
+        } catch (error) {
+            console.error("[elementsSlice] error al eliminar elemento", error);
+            throw error;
+        }
+    })
+
+export const editElement = createAsyncThunk(
+    'elements/edit',
+    async({id, formData}: {id: string, formData: FormData}, {dispatch}) => {
+        try {
+            const response = await elements.editar(id, formData);
+            if (!response.data) {
+                throw new Error('Respuesta invalida del servidor');
+            }
+            dispatch(fetchElements());
+            return response.data;
+        } catch (error) {
+            console.error("[elementsSlice] error al editar elemento", error);
+            throw error;
+        }
+    })
+
 export const elementsSlice = createSlice({
     name: 'elements',
     initialState,
@@ -30,10 +78,10 @@ export const elementsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchElements.fulfilled, (state, action) => {
-                state.success = action.payload.success;
                 state.data = action.payload.data;
                 state.count = state.data?.length || 0;
             })
+
     }
 })
 

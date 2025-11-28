@@ -11,7 +11,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 export type FieldConfig = {
     name: string;
     label: string;
-    type: "text" | "number" | "email" | "textarea" | "select" | "file" | "password";
+    type: "text" | "number" | "email" | "textarea" | "select" | "file" | "password" | "multiSelect";
     placeholder?: string;
     required?: boolean;
     options?: { label: string; value: any }[];
@@ -238,6 +238,39 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         ))}
                     </Select>
                     {touched[field.name] && errors[field.name] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name]}</FormHelperText>}
+                </FormControl>
+            );
+        } else if (field.type === "multiSelect") {
+            return (
+                <FormControl fullWidth sx={{ margin: 1 }}>
+                    <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
+                    {field.options?.map((option) => (
+                        <div key={option.value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                            <input
+                                type="checkbox"
+                                id={`${field.name}-${option.value}`}
+                                name={field.name}
+                                value={option.value}
+                                checked={(formData[field.name] || []).includes(option.value)}
+                                onChange={(e) => {
+                                    const { checked, value } = e.target;
+                                    setFormData((prev) => {
+                                        const current = prev[field.name] || [];
+                                        if (checked) {
+                                            return { ...prev, [field.name]: [...current, value] };
+                                        } else {
+                                            return { ...prev, [field.name]: current.filter((v: any) => v !== value) };
+                                        }
+                                    });
+                                    setTouched((prev) => ({ ...prev, [field.name]: true }));
+                                }}
+                                style={{ marginRight: '8px' }}
+                            />
+                            <label htmlFor={`${field.name}-${option.value}`} style={{ color: 'var(--text)' }}>
+                                {option.label}
+                            </label>
+                        </div>
+                    ))}
                 </FormControl>
             );
         } else if (field.type === "button") {
