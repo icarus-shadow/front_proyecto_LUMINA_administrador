@@ -50,4 +50,25 @@ export const users = {
         }
     },
 
+    editUser: async function(userData: any) {
+        try {
+            const formData = new FormData();
+            for (const key in userData) {
+                formData.append(key, userData[key]);
+            }
+            const response = await instance.post(endpoint, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            if (response.data) {
+                return response.data;
+            }
+            throw new Error('Invalid response format');
+        } catch (e) {
+            console.error("Error en editar usuario:", e);
+            throw e;
+        }
+    },
+
 }

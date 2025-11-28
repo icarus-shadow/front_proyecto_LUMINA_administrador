@@ -2,9 +2,13 @@
 import * as React from 'react';
 import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button, Avatar } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
+import ModalForm, { type FieldConfig } from '../components/modalForm';
 import type { GridColDef, GridValueGetter } from "@mui/x-data-grid";
 import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
-import { deleteUser } from "../services/redux/slices/data/UsersSlice.tsx";
+import { deleteUser, editUSer, addUser } from "../services/redux/slices/data/UsersSlice.tsx";
+import { fetchFormations } from '../services/redux/slices/data/formationSlice';
+import type { RootState } from '../services/redux/store';
+import type { EditUserPayload, AddUserPayload } from '../types/interfacesData';
 import '../components/styles/modal.css';
 
 const Usuarios = () => {
@@ -12,13 +16,20 @@ const Usuarios = () => {
     const dispatch = useAppDispatch();
     const data = useAppSelector((state) => state.usersReducer.data);
     const elements = useAppSelector((state) => state.elementsReducer.data);
+    const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
 
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [selectedUserForEdit, setSelectedUserForEdit] = React.useState<any>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
 
 
     React.useEffect(() => {
-    }, []);
+        if (formations && formations.length === 0) {
+            dispatch(fetchFormations());
+        }
+    }, [dispatch, formations?.length]);
 
 
 
@@ -50,8 +61,53 @@ const Usuarios = () => {
         },
     ];
 
+    // Campos para edición
+    const editLeftFields: FieldConfig[] = [
+        { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
+        { name: 'nombre', label: 'Nombre', type: 'text', required: true },
+        { name: 'apellido', label: 'Apellido', type: 'text', required: true },
+        { name: 'tipo_documento', label: 'Tipo Documento', type: 'text', required: true },
+        { name: 'documento', label: 'Documento', type: 'text', required: true },
+        { name: 'edad', label: 'Edad', type: 'number', required: true },
+        { name: 'numero_telefono', label: 'Número Teléfono', type: 'text', required: true },
+        { name: 'email', label: 'Email', type: 'email', required: true },
+        { name: 'path_foto', label: 'Foto', type: 'file', accept: 'image/*' },
+    ];
+
+    const editRightFields: FieldConfig[] = [
+        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({value: f.id, label: f.nombre_programa})) || [] },
+    ];
+
+    const editLeftTitle = 'Información del Usuario';
+    const editRightTitle = 'Formación';
+    const editBannerMessage = formations?.length === 0 ? 'No hay formaciones disponibles' : undefined;
+
+    // Campos para agregar usuario
+    const addLeftFields: FieldConfig[] = [
+        { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
+        { name: 'nombre', label: 'Nombre', type: 'text', required: true },
+        { name: 'apellido', label: 'Apellido', type: 'text', required: true },
+        { name: 'tipo_documento', label: 'Tipo Documento', type: 'text', required: true },
+        { name: 'documento', label: 'Documento', type: 'text', required: true },
+        { name: 'edad', label: 'Edad', type: 'number', required: true },
+        { name: 'numero_telefono', label: 'Número Teléfono', type: 'text', required: true },
+        { name: 'email', label: 'Email', type: 'email', required: true },
+        { name: 'password', label: 'Contraseña', type: 'password', required: true },
+        { name: 'path_foto', label: 'Foto', type: 'file', accept: 'image/*' },
+    ];
+
+    const addRightFields: FieldConfig[] = [
+        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({value: f.id, label: f.nombre_programa})) || [] },
+    ];
+
+    const addLeftTitle = 'Información del Usuario';
+    const addRightTitle = 'Formación';
+    const addBannerMessage = formations?.length === 0 ? 'No hay formaciones disponibles' : undefined;
+
     // Funciones básicas para editar y eliminar
     const handleEdit = (row: any) => {
+        setSelectedUserForEdit(row);
+        setIsEditModalOpen(true);
     };
 
     const handleDelete = (id: number) => {
@@ -63,11 +119,54 @@ const Usuarios = () => {
         setIsModalOpen(true);
     }
 
+    const handleEditSubmit = (data: Record<string, any>) => {
+        const payload: EditUserPayload = {
+            id: selectedUserForEdit.id,
+            role_id: data.role_id,
+            formacion_id: data.formacion_id || null,
+            nombre: data.nombre,
+            apellido: data.apellido,
+            tipo_documento: data.tipo_documento,
+            documento: data.documento,
+            edad: data.edad,
+            numero_telefono: data.numero_telefono,
+            email: data.email,
+            path_foto: data.path_foto,
+        };
+        dispatch(editUSer(payload));
+        setIsEditModalOpen(false);
+    }
+
+    const handleAddSubmit = (data: Record<string, any>) => {
+        const payload: AddUserPayload = {
+            role_id: data.role_id,
+            formacion_id: data.formacion_id || null,
+            nombre: data.nombre,
+            apellido: data.apellido,
+            tipo_documento: data.tipo_documento,
+            documento: data.documento,
+            edad: data.edad,
+            numero_telefono: data.numero_telefono,
+            email: data.email,
+            password: data.password,
+            path_foto: data.path_foto,
+        };
+        dispatch(addUser(payload));
+        setIsAddModalOpen(false);
+    }
+
     return (
         <Box>
             <Typography variant="h4" sx={{ mb: 2, color: 'var(--text)' }}>
                 Lista de Usuarios
             </Typography>
+            <Button
+                variant="contained"
+                onClick={() => setIsAddModalOpen(true)}
+                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)' }}
+            >
+                Agregar Usuario
+            </Button>
             <DinamicTable
                 rows={data}
                 columns={columnasUsuarios}
@@ -85,7 +184,7 @@ const Usuarios = () => {
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
                                     <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, alignSelf: 'flex-start', fontWeight: 'bold' }}>Información del Usuario</Typography>
                                     {selectedUser.path_foto && (
-                                        <Avatar src={selectedUser.path_foto} alt={selectedUser.nombre} sx={{ width: 100, height: 100, mb: 2, border: '4px solid var(--secondary)', borderRadius: '50%' }} />
+                                        <Avatar src={`https://lumina-testing.onrender.com/api/images/${selectedUser.path_foto}`} alt={selectedUser.nombre} sx={{ width: 100, height: 100, mb: 2, border: '4px solid var(--secondary)', borderRadius: '50%' }} />
                                     )}
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Nombre:</strong> {selectedUser.nombre}</Typography>
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Apellido:</strong> {selectedUser.apellido}</Typography>
@@ -120,6 +219,40 @@ const Usuarios = () => {
                     <Button onClick={() => setIsModalOpen(false)} sx={{ color: 'white', backgroundColor: '#f44336', '&:hover': { backgroundColor: '#d32f2f' }, fontSize: '1.1rem', padding: '8px 16px' }}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
+            <ModalForm
+                isOpen={isEditModalOpen}
+                title="Editar Usuario"
+                leftFields={editLeftFields}
+                rightFields={editRightFields}
+                leftTitle={editLeftTitle}
+                rightTitle={editRightTitle}
+                bannerMessage={editBannerMessage}
+                initialValue={selectedUserForEdit ? {
+                    role_id: selectedUserForEdit.role_id,
+                    nombre: selectedUserForEdit.nombre,
+                    apellido: selectedUserForEdit.apellido,
+                    tipo_documento: selectedUserForEdit.tipo_documento,
+                    documento: selectedUserForEdit.documento,
+                    edad: selectedUserForEdit.edad,
+                    numero_telefono: selectedUserForEdit.numero_telefono,
+                    email: selectedUserForEdit.email,
+                    formacion_id: selectedUserForEdit.formacion_id,
+                } : {}}
+                onClose={() => setIsEditModalOpen(false)}
+                onSubmit={handleEditSubmit}
+            />
+            <ModalForm
+                isOpen={isAddModalOpen}
+                title="Agregar Usuario"
+                leftFields={addLeftFields}
+                rightFields={addRightFields}
+                leftTitle={addLeftTitle}
+                rightTitle={addRightTitle}
+                bannerMessage={addBannerMessage}
+                initialValue={{}}
+                onClose={() => setIsAddModalOpen(false)}
+                onSubmit={handleAddSubmit}
+            />
         </Box>
     );
 };

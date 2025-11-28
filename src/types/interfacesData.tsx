@@ -157,6 +157,20 @@ export interface AddUserPayload {
     password: string;
 }
 
+export interface EditUserPayload {
+    id: number;
+    role_id: number;
+    formacion_id: number | null;
+    nombre: string;
+    apellido: string;
+    tipo_documento: string;
+    documento: string;
+    edad: number | null;
+    numero_telefono: string | null;
+    path_foto: File | null;
+    email: string;
+}
+
 export interface userAuthState {
     user: User | null;
     token: string | null;

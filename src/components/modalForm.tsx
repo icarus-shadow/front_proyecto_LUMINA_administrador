@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem,
-    Grid, Typography, FormControl, InputLabel, FormHelperText, Alert
+    Grid, Typography, FormControl, InputLabel, FormHelperText, Alert, IconButton, InputAdornment
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 // =============================
 // Types
@@ -10,7 +11,7 @@ import {
 export type FieldConfig = {
     name: string;
     label: string;
-    type: "text" | "number" | "email" | "textarea" | "select" | "file";
+    type: "text" | "number" | "email" | "textarea" | "select" | "file" | "password";
     placeholder?: string;
     required?: boolean;
     options?: { label: string; value: any }[];
@@ -71,6 +72,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
     const prevInitialValuesRef = useRef<Record<string, any> | null>(null);
     const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
 
     const resetForm = () => {
         setFormData(initialValue);
@@ -78,6 +80,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
         setTouched({});
         setIsFormValid(false);
         setShowAlert(false);
+        setShowPassword({});
     };
 
     // Funciones de validación
@@ -111,9 +114,23 @@ const ModalForm: React.FC<ModalFormProps> = ({
         return '';
     };
 
+    const validatePassword = (value: any): string => {
+        if (value && value.length < 8) {
+            return 'La contraseña debe tener al menos 8 caracteres';
+        }
+        return '';
+    };
+
     const validateField = (_name: string, value: any, field: FieldConfig): string => {
         if (field.type === 'file') {
             return validateFile(value, field);
+        }
+        if (field.type === 'password') {
+            let error = validateRequired(value, field.required || false);
+            if (!error) {
+                error = validatePassword(value);
+            }
+            return error;
         }
         let error = validateRequired(value, field.required || false);
         if (!error) {
@@ -167,6 +184,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             setTouched({});
             setIsFormValid(false);
             setShowAlert(false);
+            setShowPassword({});
             prevInitialValuesRef.current = initialValue;
         }
     }, [isOpen, initialValue]);
@@ -241,6 +259,46 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         {field.label}
                     </button>
                 </FormControl>
+            );
+        } else if (field.type === "password") {
+            return (
+                <TextField
+                    key={field.name}
+                    label={field.label}
+                    name={field.name}
+                    type={showPassword[field.name] ? "text" : "password"}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    value={formData[field.name] || ""}
+                    onChange={handleChange}
+                    error={touched[field.name] && !!errors[field.name]}
+                    helperText={touched[field.name] ? errors[field.name] : ''}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => setShowPassword(prev => ({ ...prev, [field.name]: !prev[field.name] }))}
+                                    edge="end"
+                                    sx={{ color: 'var(--text)' }}
+                                >
+                                    {showPassword[field.name] ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                    sx={{
+                        '& .MuiInputLabel-root': { color: 'var(--text)' },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': { borderColor: 'var(--text)' },
+                            '&:hover fieldset': { borderColor: 'var(--accent)' },
+                            '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
+                            backgroundColor: 'var(--background)',
+                            color: 'var(--text)',
+                        },
+                        '& .MuiInputBase-input': { color: 'var(--text)' },
+                        margin: 1,
+                    }}
+                />
             );
         } else {
             return (
