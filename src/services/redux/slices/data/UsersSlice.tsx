@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import {users} from "../../../api/data/Users.tsx";
-import type {responseDelete, responseUsersSlice} from "../../../../types/interfacesData.tsx";
+import type {responseDelete, responseUsersSlice, AddUserPayload} from "../../../../types/interfacesData.tsx";
 
 // Define the initial state using that type
 const initialState: responseUsersSlice = {
@@ -47,6 +47,24 @@ export const deleteUser = createAsyncThunk(
     }
 )
 
+export const addUser = createAsyncThunk(
+    'users/add',
+    async(payload: AddUserPayload, {dispatch}) => {
+        try {
+            const response = await users.addUser(payload);
+            if (!response){
+                throw new Error('Respuesta inválida del servidor');
+            }
+            dispatch(fetchUsers());
+
+            return response as responseDelete;
+        } catch (error) {
+            console.error("[usersSlice] error al agregar usuario", error)
+            throw error;
+        }
+    }
+)
+
 export const usersSlice = createSlice({
     name: 'users',
     initialState,
@@ -70,6 +88,14 @@ export const usersSlice = createSlice({
             .addCase(deleteUser.fulfilled, (state, action) => {
                 state.deleteSuccess = action.payload.success
                 state.count = state.data?.length || 0;
+            })
+
+            //add
+            .addCase(addUser.pending, (state) => {
+                state.addSuccess = null;
+            })
+            .addCase(addUser.fulfilled, (state, action) => {
+                state.addSuccess = action.payload.success
             })
     }
 })

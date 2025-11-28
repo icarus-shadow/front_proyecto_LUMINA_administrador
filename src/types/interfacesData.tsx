@@ -28,7 +28,6 @@ interface elements {
     usuarios: users
 }
 
-
 export interface subElements {
     id: number;
     nombre_elemento: string;
@@ -92,7 +91,7 @@ export interface dataLogin {
 
 export interface responseElements {
     success: boolean | null;
-    data: elements[] | null;
+    data: elements[] | null[];
     count: number;
 }
 
@@ -143,6 +142,20 @@ export interface responseLevelFormation {
 }
 
 // states redux
+
+export interface AddUserPayload {
+    role_id: number;
+    formacion_id: number | null;
+    nombre: string;
+    apellido: string;
+    tipo_documento: string;
+    documento: string;
+    edad: number | null;
+    numero_telefono: string | null;
+    path_foto: File | null;
+    email: string;
+    password: string;
+}
 
 export interface userAuthState {
     user: User | null;

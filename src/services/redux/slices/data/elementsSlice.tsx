@@ -4,7 +4,7 @@ import type {responseElements} from "../../../../types/interfacesData.tsx";
 
 const initialState: responseElements = {
     success: null,
-    data: null,
+    data: [],
     count: 0,
 }
 

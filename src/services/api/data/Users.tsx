@@ -1,5 +1,4 @@
 import {instance} from "../baseApi.tsx";
-import type {User} from "../../../types/interfacesData.tsx";
 
 const endpoint = "admin/users"
 
@@ -30,17 +29,25 @@ export const users = {
         }
     },
 
-    addUser: async function(data: User) {
+    addUser: async function(userData: any) {
         try {
-            const response = await instance.post(endpoint, data);
-            console.log(response);
+            const formData = new FormData();
+            for (const key in userData) {
+                formData.append(key, userData[key]);
+            }
+            const response = await instance.post(endpoint, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             if (response.data) {
                 return response.data;
             }
             throw new Error('Invalid response format');
         } catch (e) {
-            console.error("Error al agregar el usuario:", e);
+            console.error("Error en agregar usuario:", e);
             throw e;
         }
-    }
+    },
+
 }

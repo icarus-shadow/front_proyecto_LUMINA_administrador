@@ -1,6 +1,6 @@
 import {instance} from "../baseApi.tsx";
 
-const endpoint = "admin/elements"
+const endpoint = "admin/equipos-elementos"
 
 export const elements = {
     getAll: function() {

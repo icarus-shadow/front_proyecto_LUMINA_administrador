@@ -27,3 +27,72 @@
     font-size: 20px;
     cursor: pointer;
 }
+
+/* Styles for MUI Dialog modal in elementos.tsx */
+.MuiDialogContent-root {
+    text-align: left !important;
+    padding: 0 !important;
+}
+
+.MuiDialogContent-root img {
+    display: block;
+    margin: 0 auto;
+}
+
+/* Button styles for modal form */
+.btn-cancel {
+    background: var(--button-cancel-bg);
+    color: var(--button-cancel-color);
+    border: 1px solid var(--button-cancel-border);
+    border-radius: var(--button-border-radius);
+    padding: var(--button-padding);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-cancel:hover {
+    background: var(--button-cancel-hover-bg);
+}
+
+.btn-save {
+    background: var(--button-save-bg);
+    color: var(--button-save-color);
+    border: none;
+    border-radius: var(--button-border-radius);
+    padding: var(--button-padding);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-save:hover {
+    background: var(--button-save-hover-bg);
+}
+
+/* Additional button styles */
+.btn-primary {
+    background: var(--button-save-bg);
+    color: var(--button-save-color);
+    border: none;
+    border-radius: var(--button-border-radius);
+    padding: var(--button-padding);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: var(--button-save-hover-bg);
+}
+
+.btn-secondary {
+    background: var(--button-cancel-bg);
+    color: var(--button-cancel-color);
+    border: 1px solid var(--button-cancel-border);
+    border-radius: var(--button-border-radius);
+    padding: var(--button-padding);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+    background: var(--button-cancel-hover-bg);
+}

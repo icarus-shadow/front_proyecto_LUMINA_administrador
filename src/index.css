@@ -11,6 +11,19 @@
     --secondary-rgb: 89, 122, 255;
     --accent-rgb:225, 34, 177;
 
+    --primary-hover: #6b8ce6;
+
+    --button-border-radius: 0.5rem;
+    --button-padding: 0.5rem 1rem;
+
+    --button-cancel-bg: var(--text);
+    --button-cancel-color: var(--background);
+    --button-cancel-border: var(--text);
+    --button-cancel-hover-bg: var(--accent);
+
+    --button-save-bg: var(--primary);
+    --button-save-color: white;
+    --button-save-hover-bg: var(--primary-hover);
 
     --success-color: #7fa98f;
     --error-color: #c97a7a;
