@@ -184,11 +184,11 @@ const Historial = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ mb: 2 }}>
+            <Typography variant="h4" sx={{ mb: 2, color: "var(--text)"}}>
                 Historial General
             </Typography>
             <Box>
-                <Typography variant="h6" sx={{ mb: 2 }}>
+                <Typography variant="h6" sx={{ mb: 2, color: "var(--text)"}}>
                     Filtros de Historial
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
@@ -216,6 +216,16 @@ const Historial = () => {
                         value={filename}
                         onChange={(e) => setFilename(e.target.value)}
                         size="small"
+                        sx={{
+                            '& .MuiInputLabel-root': {color: 'var(--text)'},
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {borderColor: 'var(--text)'},
+                                '& input': {color: 'var(--text)'}
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {color: 'var(--text)'},
+                            '& .MuiOutlinedInput-root:hover fieldset': {borderColor: 'var(--text)'},
+                            '& .MuiOutlinedInput-root.Mui-focused fieldset': {borderColor: 'var(--text)'}
+                        }}
                     />
                     <Button
                         variant="contained"
@@ -280,7 +290,7 @@ const Historial = () => {
                 <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
                     {selectedRecord && (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
-                            <Box sx={{ display: 'flex', gap: 3 }}>
+                            <Box sx={{ display: 'flex', gap: 3, p: 3 }}>
                                 {/* Sección Usuario Izquierda */}
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--primary-rgb), 0.1)', borderRadius: 2, border: '1px solid rgba(var(--primary-rgb), 0.3)' }}>
                                     <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2, fontWeight: 'bold' }}>Usuario</Typography>

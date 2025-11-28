@@ -57,7 +57,7 @@ const Elementos = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ mb: 2 }}>
+            <Typography variant="h4" sx={{ mb: 2,  color: "var(--text)"}}>
                 Lista de Elementos
             </Typography>
             <Box>
@@ -74,7 +74,7 @@ const Elementos = () => {
                 <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
                     {selectedRecord && (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
-                            <Box sx={{ display: 'flex', gap: 3 }}>
+                            <Box sx={{ display: 'flex', gap: 3, p: 4 }}>
                                 {/* Sección Elemento Izquierda */}
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--primary-rgb), 0.1)', borderRadius: 2, border: '1px solid rgba(var(--primary-rgb), 0.3)' }}>
                                     <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2, alignSelf: 'flex-start', fontWeight: 'bold' }}>Elemento</Typography>

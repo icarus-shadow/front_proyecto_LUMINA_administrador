@@ -170,18 +170,14 @@ const Salidas = () => {
                         '& .MuiSelect-icon': { color: 'var(--text)' }
                     }}
                 >
-                    <MenuItem value="" sx={{ color: 'var(--text)' }}>Todos los usuarios</MenuItem>
-                    {uniqueUsers.map(user => <MenuItem key={user} value={user} sx={{ color: 'var(--text)' }}>{user}</MenuItem>)}
+                    <MenuItem value="" sx={{ color: 'var(--background)' }}>Todos los usuarios</MenuItem>
+                    {uniqueUsers.map(user => <MenuItem key={user} value={user} sx={{ color: 'var(--background)' }}>{user}</MenuItem>)}
                 </Select>
                 <TextField
                     label="Hora desde"
                     type="time"
                     value={hourFrom}
                     onChange={(e) => setHourFrom(e.target.value)}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    InputProps={{
-                        endAdornment: <AccessTimeIcon sx={{ color: 'var(--text)' }} />
-                    }}
                     sx={{
                         width: 150,
                         color: 'var(--text)',
@@ -201,10 +197,6 @@ const Salidas = () => {
                     type="time"
                     value={hourTo}
                     onChange={(e) => setHourTo(e.target.value)}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    InputProps={{
-                        endAdornment: <AccessTimeIcon sx={{ color: 'var(--text)' }} />
-                    }}
                     sx={{
                         width: 150,
                         color: 'var(--text)',
@@ -248,7 +240,7 @@ const Salidas = () => {
                 <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
                     {selectedRecord && (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
-                            <Box sx={{ display: 'flex', gap: 3 }}>
+                            <Box sx={{ display: 'flex', gap: 3, p: 3 }}>
                                 {/* Sección Usuario Izquierda */}
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--primary-rgb), 0.1)', borderRadius: 2, border: '1px solid rgba(var(--primary-rgb), 0.3)' }}>
                                     <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2, fontWeight: 'bold' }}>Usuario</Typography>

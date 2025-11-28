@@ -80,7 +80,7 @@ const Usuarios = () => {
                 <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
                     {selectedUser && (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
-                            <Box sx={{ display: 'flex', gap: 3 }}>
+                            <Box sx={{ display: 'flex', gap: 3, p: 4 }}>
                                 {/* Sección Izquierda: Información del Usuario */}
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
                                     <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, alignSelf: 'flex-start', fontWeight: 'bold' }}>Información del Usuario</Typography>

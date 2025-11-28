@@ -280,14 +280,14 @@ const ModalForm: React.FC<ModalFormProps> = ({
             <DialogTitle sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>{title}</DialogTitle>
             {bannerMessage && <Alert severity={bannerSeverity || 'info'} sx={{ margin: 2 }}>{bannerMessage}</Alert>}
             {showAlert && <Alert severity="error" sx={{ margin: 2 }}>Por favor, complete los campos requeridos antes de enviar.</Alert>}
-            <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
+            <DialogContent sx={{ backgroundColor: 'var(--background)', justifyContent: "center", maxWidth: 1400, color: 'var(--text)' }}>
                 <form onSubmit={handleSubmit}>
-                    <Grid sx={{ minWidth: 950, justifyContent: 'space-evenly', p: 4 }} container spacing={4}>
-                        <Grid md={6} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2,  backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
+                    <Grid sx={{ minWidth: 950, justifyContent: 'space-around', p: 4 }} container spacing={4}>
+                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2,  backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5,}}>
                             <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveLeftTitle}</Typography>
                             {effectiveLeftFields.map(renderField)}
                         </Grid>
-                        <Grid md={6} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2,  backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
+                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2,  backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5,}}>
                             <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveRightTitle}</Typography>
                             {effectiveRightFields.map(renderField)}
                         </Grid>
