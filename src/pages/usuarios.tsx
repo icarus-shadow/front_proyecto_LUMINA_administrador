@@ -45,19 +45,19 @@ const Usuarios = () => {
             field: 'ficha',
             headerName: 'ficha',
             flex: 0.7,
-            valueGetter: ((_value, row) => row.formacion?.ficha) as GridValueGetter<any>,
+            valueGetter: ((_value, row) => row && row.formacion && row.formacion.ficha ? row.formacion.ficha : '') as GridValueGetter<any>,
         },
         {
             field: 'formacion',
             headerName: 'nombre formación',
             flex: 1.3,
-            valueGetter: ((_value, row) => row.formacion?.nombre_programa) as GridValueGetter<any>,
+            valueGetter: ((_value, row) => row && row.formacion && row.formacion.nombre_programa ? row.formacion.nombre_programa : '') as GridValueGetter<any>,
         },
         {
             field: 'role',
             headerName: 'Rol',
             flex: 0.5,
-            valueGetter: ((_value, row) => row.role?.nombre_rol) as GridValueGetter<any>,
+            valueGetter: ((_value, row) => row && row.role && row.role.nombre_rol ? row.role.nombre_rol : '') as GridValueGetter<any>,
         },
     ];
 

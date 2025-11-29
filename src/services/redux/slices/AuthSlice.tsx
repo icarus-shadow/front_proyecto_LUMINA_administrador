@@ -1,6 +1,19 @@
+
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Auth} from "../../api/Auth.tsx";
 import type {responseLogin, userAuthState} from "../../../types/interfacesData.tsx";
+// Logout asíncrono
+export const logoutAsync = createAsyncThunk(
+    'auth/logout',
+    async (_, { rejectWithValue }) => {
+        try {
+            await Auth.logout();
+            return true;
+        } catch (error) {
+            return rejectWithValue(error instanceof Error ? error.message : 'Error en el cierre de sesión');
+        }
+    }
+);
 
 
 export const login = createAsyncThunk(
@@ -34,22 +47,18 @@ const initialState: userAuthState = {
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {
-        logout: (state) =>{
-            state.user = null;
-            state.token = null;
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
-
             .addCase(login.fulfilled, (state, action) => {
                 state.user = action.payload.data.user;
                 state.token = action.payload.data.token;
+            })
+            .addCase(logoutAsync.fulfilled, (state) => {
+                state.user = null;
+                state.token = null;
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
             });
     },
 });
-
-export const { logout } = authSlice.actions;

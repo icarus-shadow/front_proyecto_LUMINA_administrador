@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ModalForm, { type FieldConfig } from './modalForm';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
+import { logoutAsync } from '../services/redux/slices/AuthSlice';
 import { fetchFormations } from '../services/redux/slices/data/formationSlice';
 import { addUser } from '../services/redux/slices/data/UsersSlice';
 import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
@@ -89,6 +90,11 @@ const Banner = () => {
     setIsModalOpen(false);
   };
 
+  const handleLogout = async () => {
+    await dispatch(logoutAsync());
+    navigate('/login');
+  };
+
   return (
     <div style={{
       display: 'flex',
@@ -155,6 +161,18 @@ const Banner = () => {
             height: '70px',
           }}>
             Agregar Nuevo Elemento
+          </button>
+          <button onClick={handleLogout} style={{
+            padding: '10px 15px',
+            backgroundColor: 'var(--danger, #e74c3c)',
+            color: 'white',
+            borderRadius: '5px',
+            border: 'none',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            height: '70px',
+          }}>
+            Cerrar sesión
           </button>
         </div>
       )}

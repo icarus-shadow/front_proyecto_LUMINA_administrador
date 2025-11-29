@@ -22,4 +22,14 @@ export const Auth = {
             throw error;
         }
     },
+    logout: async function () {
+        try {
+            // El token ya se incluye automáticamente por el interceptor de axios
+            const response = await instance.post('auth/logout');
+            return response.data;
+        } catch (error) {
+            console.error("Error en logout:", error);
+            throw error;
+        }
+    },
 }
