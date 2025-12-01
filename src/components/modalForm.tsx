@@ -29,7 +29,7 @@ export type FieldConfig = {
 interface ModalFormProps {
     isOpen: boolean;
     title: string;
-    fields?: FieldConfig[]; // Mantener para compatibilidad, pero usar leftFields y rightFields
+    fields?: FieldConfig[];
     leftFields?: FieldConfig[];
     rightFields?: FieldConfig[];
     leftTitle?: string;
@@ -45,6 +45,7 @@ interface ModalFormProps {
 // =============================
 // Reusable Modal Form Component
 // =============================
+
 const ModalForm: React.FC<ModalFormProps> = ({
     isOpen,
     title,

@@ -36,12 +36,9 @@ export const elements = {
     },
     editar: async function(id: string, formData: FormData) {
         try {
-            const response = await instance.put(`${endpoint}/${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await instance.put(`${endpoint}/${id}`, formData);
             return response;
+
         } catch (error) {
             console.error("Error al editar elemento:", error);
             throw error;

@@ -163,7 +163,7 @@ const Usuarios = () => {
             <Button
                 variant="contained"
                 onClick={() => setIsAddModalOpen(true)}
-                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)' }}
+                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)', display: "none"}}
             >
                 Agregar Usuario
             </Button>

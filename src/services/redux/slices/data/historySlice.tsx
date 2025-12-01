@@ -1,6 +1,6 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import type {responseHistory} from "../../../../types/interfacesData.tsx";
-import {history} from "../../../api/data/history.tsx";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { responseHistory, historial } from "../../../../types/interfacesData.tsx";
+import { history } from "../../../api/data/history.tsx";
 
 
 const initialState: responseHistory = {
@@ -11,8 +11,8 @@ const initialState: responseHistory = {
 
 export const reloadHistory = createAsyncThunk(
     'reloadHistory',
-    async () => {
-
+    async (historyData: historial[]) => {
+        return historyData;
     }
 )
 
@@ -37,8 +37,12 @@ export const historySlice = createSlice({
     name: 'history',
     initialState,
     reducers: {},
-    extraReducers: (builder) =>{
+    extraReducers: (builder) => {
         builder
+            .addCase(reloadHistory.fulfilled, (state, action) => {
+                state.data = action.payload;
+                state.count = action.payload.length;
+            })
             .addCase(fetchHistory.pending, (state) => {
                 state.success = null;
             })

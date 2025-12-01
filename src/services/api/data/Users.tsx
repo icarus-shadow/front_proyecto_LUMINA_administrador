@@ -52,15 +52,7 @@ export const users = {
 
     editUser: async function(id: number, userData: any) {
         try {
-            const formData = new FormData();
-            for (const key in userData) {
-                formData.append(key, userData[key]);
-            }
-            const response = await instance.put(`${endpoint}/${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await instance.put(`${endpoint}/${id}`, userData);
             if (response.data) {
                 return response.data;
             }

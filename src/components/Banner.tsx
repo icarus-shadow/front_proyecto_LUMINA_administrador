@@ -29,17 +29,52 @@ const Banner = () => {
     }
   }, [dispatch, formations?.length, subElements?.length]);
 
+  const tiposDocumentos = [
+    {
+      value: 'CC',
+      label: 'Cedula de Ciudadania (CC)'
+    },
+    {
+      value: 'TI',
+      label: 'Tarjeta de Identidad (TI)'
+    },
+    {
+      value: 'RC',
+      label: 'Registro Civil (RC)'
+    },
+    {
+      value: 'CR',
+      label: 'Contraseña REgistraduria'
+    },
+    {
+      value: 'CE',
+      label: 'Cedula de Extranjeria (CE)'
+    },
+    {
+      value: 'Pasaporte',
+      label: 'Pasaporte'
+    },
+    {
+      value: 'PEP',
+      label: 'Permiso Especial de Permanencia (PEP)'
+    },
+    {
+      value: 'DIE',
+      label: 'Documento de Identificación Extranjero (DIE)'
+    }
+  ]
+
   const leftFields: FieldConfig[] = [
     { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
     { name: 'nombre', label: 'Nombre', type: 'text', required: true },
     { name: 'apellido', label: 'Apellido', type: 'text', required: true },
-    { name: 'tipo_documento', label: 'Tipo Documento', type: 'text', required: true },
+    { name: 'tipo_documento', label: 'Tipo Documento', type: 'select', required: true, options: tiposDocumentos.map(tc => ({value: tc.value, label: tc.label}))},
     { name: 'documento', label: 'Documento', type: 'text', required: true },
     { name: 'edad', label: 'Edad', type: 'number', required: true },
     { name: 'numero_telefono', label: 'Número Teléfono', type: 'text', required: true },
     { name: 'email', label: 'Email', type: 'email', required: true },
-    { name: 'password', label: 'Contraseña', type: 'text', required: true },
-    { name: 'path_foto', label: 'Foto', type: 'file', accept: 'image/*' },
+    { name: 'password', label: 'Contraseña', type: 'password', required: true },
+    { name: 'path_foto', label: 'Foto', type: 'file', required:true,  },
   ];
 
   const rightFields: FieldConfig[] = [
