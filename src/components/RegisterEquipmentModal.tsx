@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import './styles/RegisterEquipmentModal.css';
 import { InputText } from 'primereact/inputtext';
@@ -8,7 +8,7 @@ import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { Checkbox } from 'primereact/checkbox';
 import { FileUpload } from 'primereact/fileupload';
-import { Toast } from 'primereact/toast';
+import CustomAlert from './CustomAlert';
 
 import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
 import { fetchUsers } from '../services/redux/slices/data/UsersSlice';
@@ -23,7 +23,6 @@ interface RegisterEquipmentModalProps {
 
 const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible, onHide }) => {
     const dispatch = useAppDispatch();
-    const toast = useRef<Toast>(null);
 
     // Redux Data
     const users = useAppSelector((state: RootState) => state.usersReducer.data);
@@ -46,6 +45,17 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
 
     // Loading State
     const [loading, setLoading] = useState(false);
+
+    // Alert State
+    const [alert, setAlert] = useState<{
+        visible: boolean;
+        severity: 'error' | 'success' | 'warning' | 'info';
+        message: string;
+    }>({ visible: false, severity: 'info', message: '' });
+
+    const showAlert = (severity: 'error' | 'success' | 'warning' | 'info', message: string) => {
+        setAlert({ visible: true, severity, message });
+    };
 
     useEffect(() => {
         if (visible) {
@@ -81,7 +91,7 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
     const handleSubmit = async () => {
         // Validations
         if (!snEquipo || !tipoElemento || !selectedFile) {
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Por favor complete los campos obligatorios (SN, Tipo, Foto)', life: 3000 });
+            showAlert('error', 'Por favor complete los campos obligatorios (SN, Tipo, Foto)');
             return;
         }
 
@@ -101,12 +111,12 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
 
         try {
             await dispatch(addElement(formData)).unwrap();
-            toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Equipo registrado correctamente', life: 3000 });
+            showAlert('success', 'Equipo registrado correctamente');
             resetForm();
-            onHide();
+            setTimeout(() => onHide(), 1500);
         } catch (error) {
             console.error(error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Error al registrar el equipo', life: 3000 });
+            showAlert('error', 'Error al registrar el equipo. Por favor intente nuevamente.');
         } finally {
             setLoading(false);
         }
@@ -150,7 +160,12 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                 borderBottom: '2px solid var(--secondary)'
             }}
         >
-            <Toast ref={toast} />
+            <CustomAlert
+                visible={alert.visible}
+                severity={alert.severity}
+                message={alert.message}
+                onClose={() => setAlert({ ...alert, visible: false })}
+            />
 
             <div className="grid" style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
                 {/* Left Column: Equipment Form */}
