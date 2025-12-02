@@ -7,7 +7,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
 import { FileUpload } from 'primereact/fileupload';
-import { Message } from 'primereact/message';
+import { useAlert } from './AlertSystem';
 import { Checkbox } from 'primereact/checkbox';
 import './styles/ModalForm.css';
 
@@ -78,14 +78,13 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
     const prevInitialValuesRef = useRef<Record<string, any> | null>(null);
-    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const { showAlert } = useAlert();
 
     const resetForm = () => {
         setFormData(initialValue);
         setErrors({});
         setTouched({});
         setIsFormValid(false);
-        setShowAlert(false);
     };
 
     // Funciones de validación
@@ -155,7 +154,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
                 const newErrors = { ...prev, [name]: error };
                 const hasErrors = Object.values(newErrors).some((e) => e !== '');
                 setIsFormValid(!hasErrors);
-                if (!hasErrors) setShowAlert(false);
                 return newErrors;
             });
         }
@@ -164,7 +162,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!isFormValid) {
-            setShowAlert(true);
+            showAlert('error', 'Por favor, complete los campos requeridos antes de enviar.');
             // Marcar todos los campos como touched para mostrar errores
             const allFields = [...effectiveLeftFields, ...effectiveRightFields];
             const newTouched: Record<string, boolean> = {};
@@ -186,10 +184,17 @@ const ModalForm: React.FC<ModalFormProps> = ({
             setErrors({});
             setTouched({});
             setIsFormValid(false);
-            setShowAlert(false);
             prevInitialValuesRef.current = initialValue;
         }
     }, [isOpen, initialValue]);
+
+    // Mostrar alerta del banner cuando cambia
+    useEffect(() => {
+        if (isOpen && bannerMessage) {
+            const severity = bannerSeverity === 'warn' ? 'error' : (bannerSeverity as 'success' | 'error') || 'error';
+            showAlert(severity, bannerMessage);
+        }
+    }, [isOpen, bannerMessage, bannerSeverity, showAlert]);
 
     // Ref para el diálogo
     const dialogRef = useRef<HTMLDivElement>(null);
@@ -430,20 +435,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
                     borderBottom: '2px solid var(--secondary)'
                 }}
             >
-                {bannerMessage && (
-                    <Message
-                        severity={bannerSeverity || 'info'}
-                        text={bannerMessage}
-                        style={{ marginBottom: '1rem' }}
-                    />
-                )}
-                {showAlert && (
-                    <Message
-                        severity="error"
-                        text="Por favor, complete los campos requeridos antes de enviar."
-                        style={{ marginBottom: '1rem' }}
-                    />
-                )}
 
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>

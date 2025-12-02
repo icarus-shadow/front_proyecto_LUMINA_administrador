@@ -2,9 +2,51 @@
 //  CONFIGURACIÓN DE COLORES
 // =============================
 export const AlertColors = {
-    success: "#4caf50",
-    error: "#f44336",
-    confirm: "#2196f3",
+    success: {
+        border: "#44ff44",
+        background: "linear-gradient(135deg, #001a00 0%, #002d00 100%)",
+        icon: "#44ff44",
+        iconBg: "#44ff44",
+        iconColor: "#003300",
+        text: "#ccffcc",
+        glow: "rgba(68, 255, 68, 0.5)"
+    },
+    error: {
+        border: "#ff4444",
+        background: "linear-gradient(135deg, #1a0000 0%, #2d0000 100%)",
+        icon: "#ff4444",
+        iconBg: "#ff4444",
+        iconColor: "#ffffff",
+        text: "#ffcccc",
+        glow: "rgba(255, 68, 68, 0.5)"
+    },
+    confirm: {
+        border: "#00ccff",
+        background: "linear-gradient(135deg, #00141a 0%, #00242d 100%)",
+        icon: "#00ccff",
+        iconBg: "#00ccff",
+        iconColor: "#001a24",
+        text: "#ccf4ff",
+        glow: "rgba(0, 204, 255, 0.5)"
+    },
+    warning: {
+        border: "#ffcc00",
+        background: "linear-gradient(135deg, #1a1400 0%, #2d2400 100%)",
+        icon: "#ffcc00",
+        iconBg: "#ffcc00",
+        iconColor: "#1a1400",
+        text: "#fff4cc",
+        glow: "rgba(255, 204, 0, 0.5)"
+    },
+    info: {
+        border: "#00ccff",
+        background: "linear-gradient(135deg, #00141a 0%, #00242d 100%)",
+        icon: "#00ccff",
+        iconBg: "#00ccff",
+        iconColor: "#001a24",
+        text: "#ccf4ff",
+        glow: "rgba(0, 204, 255, 0.5)"
+    },
 
     btn: {
         success: "#388e3c",
@@ -175,7 +217,20 @@ const AlertItem = ({
 }) => {
     const { type, message, options, onConfirm } = alert;
     const alertRef = useRef<HTMLDivElement>(null);
-    const bgColor = AlertColors[type];
+
+    // Mapear tipo a colores (confirm se muestra como info)
+    const colorType = type === 'confirm' ? 'info' : type;
+    const colorKey = colorType as 'success' | 'error' | 'info';
+    const colors = AlertColors[colorKey];
+
+    // Iconos según el tipo
+    const icons = {
+        error: '✕',
+        success: '✓',
+        warning: '⚠',
+        info: 'ℹ',
+        confirm: 'ℹ'
+    };
 
     // Animación de entrada
     useEffect(() => {
@@ -184,42 +239,28 @@ const AlertItem = ({
             if (type === "confirm" || options.duration === 0) {
                 // Modal: Escala desde el centro con rebote
                 anime(alertRef.current, {
-                    scale: [0, 1],
+                    scale: [0.8, 1],
                     opacity: [0, 1],
                     duration: 600,
-                    easing: 'easeOutElastic(1, .6)',
+                    easing: 'easeOutElastic(1, .8)',
                 });
             } else if (type === "success") {
                 // Success: Desliza desde arriba con rebote
                 anime(alertRef.current, {
                     translateY: [-100, 0],
                     opacity: [0, 1],
-                    duration: 800,
-                    easing: 'easeOutBounce',
+                    scale: [0.8, 1],
+                    duration: 600,
+                    easing: 'easeOutElastic(1, .8)',
                 });
             } else if (type === "error") {
-                // Error: Shake horizontal
+                // Error: Entrada con escala
                 anime(alertRef.current, {
-                    translateX: [
-                        { value: -10, duration: 100 },
-                        { value: 10, duration: 100 },
-                        { value: -10, duration: 100 },
-                        { value: 10, duration: 100 },
-                        { value: 0, duration: 100 }
-                    ],
+                    translateY: [-100, 0],
                     opacity: [0, 1],
-                    duration: 500,
-                    easing: 'easeInOutQuad',
-                });
-            }
-
-            // Animación de pulsación continua para alertas importantes
-            if (type === "error" || type === "confirm") {
-                anime(alertRef.current, {
-                    scale: [1, 1.02, 1],
-                    duration: 2000,
-                    loop: true,
-                    easing: 'easeInOutQuad',
+                    scale: [0.8, 1],
+                    duration: 600,
+                    easing: 'easeOutElastic(1, .8)',
                 });
             }
         }
@@ -229,10 +270,10 @@ const AlertItem = ({
     const handleClose = (callback?: () => void) => {
         if (alertRef.current) {
             anime(alertRef.current, {
+                translateX: [0, 100],
                 opacity: [1, 0],
-                translateY: type === "confirm" ? 0 : -50,
-                scale: type === "confirm" ? [1, 0.8] : 1,
-                duration: 300,
+                scale: [1, 0.8],
+                duration: 400,
                 easing: 'easeInQuad',
                 complete: () => {
                     callback?.();
@@ -249,26 +290,69 @@ const AlertItem = ({
         <div
             ref={alertRef}
             style={{
-                padding: "15px 20px",
-                borderRadius: "8px",
-                color: "white",
-                minWidth: "250px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                backgroundColor: bgColor,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                position: 'relative',
+                minWidth: '320px',
+                maxWidth: '500px',
+                padding: '1.25rem 1.5rem',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                background: colors.background,
+                border: `2px solid ${colors.border}`,
+                boxShadow: `0 10px 40px rgba(0, 0, 0, 0.6)`,
                 opacity: 0,
-                position: "relative",
-                overflow: "hidden",
+                transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.7)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.6)';
             }}
         >
             {/* Barra de progreso animada para alertas con duración */}
             {options.duration !== 0 && type !== "confirm" && (
-                <ProgressBar duration={(options.duration ?? 3) * 1000} color={bgColor} />
+                <ProgressBar duration={(options.duration ?? 3) * 1000} color={colors.border} />
             )}
 
-            <span style={{ position: "relative", zIndex: 1 }}>{message}</span>
+            {/* Icono circular con animación de pulso */}
+            <div
+                style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    flexShrink: 0,
+                    background: colors.iconBg,
+                    color: colors.iconColor,
+                    boxShadow: `0 0 20px ${colors.glow}`,
+                    animation: 'pulse 2s ease-in-out infinite',
+                }}
+            >
+                {icons[type]}
+            </div>
+
+            {/* Contenido del mensaje */}
+            <div style={{ flex: 1 }}>
+                <div
+                    style={{
+                        fontSize: '1rem',
+                        lineHeight: '1.5',
+                        fontWeight: '500',
+                        color: colors.text,
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                    }}
+                >
+                    {message}
+                </div>
+            </div>
 
             {/* Confirmación (Sí / No) */}
             {type === "confirm" && (
@@ -298,6 +382,68 @@ const AlertItem = ({
                     {options.okText ?? "Aceptar"}
                 </AnimatedButton>
             )}
+
+            {/* Botón de cierre circular */}
+            {type !== "confirm" && options.duration !== 0 && (
+                <button
+                    onClick={() => handleClose()}
+                    style={{
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        color: 'white',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: '1.2rem',
+                        transition: 'all 0.2s ease',
+                        flexShrink: 0,
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
+                        e.currentTarget.style.transform = 'rotate(90deg)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                        e.currentTarget.style.transform = 'rotate(0deg)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    }}
+                    onMouseDown={(e) => {
+                        e.currentTarget.style.transform = 'rotate(90deg) scale(0.9)';
+                    }}
+                    onMouseUp={(e) => {
+                        e.currentTarget.style.transform = 'rotate(90deg)';
+                    }}
+                    type="button"
+                    aria-label="Cerrar alerta"
+                >
+                    ✕
+                </button>
+            )}
+
+            {/* Estilos CSS para la animación de pulso */}
+            <style>{`
+                @keyframes pulse {
+                    0%, 100% {
+                        transform: scale(1);
+                    }
+                    50% {
+                        transform: scale(1.08);
+                    }
+                }
+                @keyframes glow {
+                    0%, 100% {
+                        filter: brightness(1);
+                    }
+                    50% {
+                        filter: brightness(1.2);
+                    }
+                }
+            `}</style>
         </div>
     );
 };
