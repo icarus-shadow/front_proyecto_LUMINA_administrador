@@ -193,7 +193,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const renderField = (field: FieldConfig) => {
         if (field.type === "file") {
             return (
-                <FormControl fullWidth error={touched[field.name] && !!errors[field.name]} sx={{ margin: 1 }}>
+                <FormControl key={field.name} fullWidth error={touched[field.name] && !!errors[field.name]} sx={{ margin: 1 }}>
                     <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
                     <input
                         type="file"
@@ -215,7 +215,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
         }
         if (field.type === "select") {
             return (
-                <FormControl fullWidth error={touched[field.name] && !!errors[field.name]} sx={{ margin: 1 }}>
+                <FormControl key={field.name} fullWidth error={touched[field.name] && !!errors[field.name]} sx={{ margin: 1 }}>
                     <InputLabel sx={{ color: 'var(--text)' }}>{field.label}</InputLabel>
                     <Select
                         name={field.name}
@@ -243,7 +243,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             );
         } else if (field.type === "multiSelect") {
             return (
-                <FormControl fullWidth sx={{ margin: 1 }}>
+                <FormControl key={field.name} fullWidth sx={{ margin: 1 }}>
                     <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
                     {field.options?.map((option) => (
                         <div key={option.value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -276,7 +276,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             );
         } else if (field.type === "button") {
             return (
-                <FormControl fullWidth sx={{ margin: 1 }}>
+                <FormControl key={field.name} fullWidth sx={{ margin: 1 }}>
                     <button
                         type="button"
                         onClick={field.onClick}
@@ -375,11 +375,11 @@ const ModalForm: React.FC<ModalFormProps> = ({
             <DialogContent sx={{ backgroundColor: 'var(--background)', justifyContent: "center", maxWidth: 1400, color: 'var(--text)' }}>
                 <form onSubmit={handleSubmit}>
                     <Grid sx={{ minWidth: 950, justifyContent: 'space-around', p: 4 }} container spacing={4}>
-                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2,  backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5,}}>
+                        <Grid item md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
                             <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveLeftTitle}</Typography>
                             {effectiveLeftFields.map(renderField)}
                         </Grid>
-                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2,  backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5,}}>
+                        <Grid item md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
                             <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveRightTitle}</Typography>
                             {effectiveRightFields.map(renderField)}
                         </Grid>

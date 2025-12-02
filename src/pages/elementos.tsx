@@ -6,7 +6,7 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions, Avatar
 } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
-import type {GridColDef, GridValueGetter} from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import { useAppSelector } from "../services/redux/hooks.tsx";
 import QRCode from 'react-qr-code';
 import type { RootState } from "../services/redux/store.tsx";
@@ -25,21 +25,22 @@ const Elementos = () => {
     // Columnas para la tabla de elementos
     const columnasElementos: GridColDef[] = [
         { field: 'qr_hash', headerName: 'Código QR', width: 150, renderCell: (params) => <QRCode value={params.value} size={50} /> },
-        { field: 'marca', headerName: 'Marca',flex: 1 },
+        { field: 'marca', headerName: 'Marca', flex: 1 },
         { field: 'tipo_elemento', headerName: 'Tipo de elemento', width: 250 },
         {
             field: 'propietario',
             headerName: 'Propietario',
             flex: 1.5,
-            valueGetter: ((_value, row) => {
-                if (!row.usuarios || row.usuarios.length === 0) {
+            valueGetter: (params) => {
+                const row = params.row;
+                if (!row || !row.usuarios || row.usuarios.length === 0) {
                     return 'Sin propietario';
                 } else if (row.usuarios.length === 1) {
-                    return row.usuarios[0].nombre + ' ' + row.usuarios[0].apellido ;
+                    return row.usuarios[0].nombre + ' ' + row.usuarios[0].apellido;
                 } else {
                     return row.usuarios.length + ' propietarios';
                 }
-            }) as GridValueGetter<any>,
+            },
         }
     ];
 
@@ -57,7 +58,7 @@ const Elementos = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ mb: 2,  color: "var(--text)"}}>
+            <Typography variant="h4" sx={{ mb: 2, color: "var(--text)" }}>
                 Lista de Elementos
             </Typography>
             <Box>
@@ -79,9 +80,24 @@ const Elementos = () => {
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--primary-rgb), 0.1)', borderRadius: 2, border: '1px solid rgba(var(--primary-rgb), 0.3)' }}>
                                     <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2, alignSelf: 'flex-start', fontWeight: 'bold' }}>Elemento</Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2, mb: 2, justifyContent: 'center' }}>
-                                        {selectedRecord.path_foto_equipo_implemento && (
-                                            <img src={selectedRecord.path_foto_equipo_implemento} alt="Imagen del Elemento" style={{ width: '100px', height: '100px', borderRadius: '8px' }} />
-                                        )}
+                                        {selectedRecord.path_foto_equipo_implemento && (() => {
+                                            // Extraer solo el nombre del archivo de la ruta
+                                            const filename = selectedRecord.path_foto_equipo_implemento.split('/').pop() || selectedRecord.path_foto_equipo_implemento;
+                                            const imageUrl = `https://lumina-testing.onrender.com/api/images/${filename}`;
+
+                                            return (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt="Imagen del Elemento"
+                                                    style={{ width: '100px', height: '100px', borderRadius: '8px', objectFit: 'cover' }}
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display = 'none';
+                                                        console.error('Error cargando imagen. URL intentada:', imageUrl);
+                                                        console.error('Path original:', selectedRecord.path_foto_equipo_implemento);
+                                                    }}
+                                                />
+                                            );
+                                        })()}
                                         <QRCode value={selectedRecord.qr_hash} size={100} />
                                     </Box>
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Marca:</strong> {selectedRecord.marca}</Typography>

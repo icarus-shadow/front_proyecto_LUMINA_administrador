@@ -1,0 +1,243 @@
+/* Estilos personalizados para el modal de registro de equipos */
+
+/* InputText */
+.register-equipment-modal .p-inputtext {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.register-equipment-modal .p-inputtext:enabled:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+.register-equipment-modal .p-inputtext::placeholder {
+    color: rgba(var(--text-rgb), 0.5) !important;
+}
+
+/* InputTextarea */
+.register-equipment-modal .p-inputtextarea {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.register-equipment-modal .p-inputtextarea:enabled:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+/* Dropdown */
+.register-equipment-modal .p-dropdown {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.register-equipment-modal .p-dropdown:not(.p-disabled):hover {
+    border-color: var(--primary) !important;
+}
+
+.register-equipment-modal .p-dropdown:not(.p-disabled).p-focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+.register-equipment-modal .p-dropdown-label {
+    color: var(--text) !important;
+}
+
+.register-equipment-modal .p-dropdown-label.p-placeholder {
+    color: rgba(var(--text-rgb), 0.5) !important;
+}
+
+.register-equipment-modal .p-dropdown-trigger {
+    color: var(--text) !important;
+}
+
+/* Dropdown Panel */
+.p-dropdown-panel {
+    background-color: var(--background) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    color: var(--text) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
+    background-color: rgba(var(--primary-rgb), 0.2) !important;
+    color: var(--text) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+/* MultiSelect */
+.register-equipment-modal .p-multiselect {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.register-equipment-modal .p-multiselect:not(.p-disabled):hover {
+    border-color: var(--accent) !important;
+}
+
+.register-equipment-modal .p-multiselect:not(.p-disabled).p-focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--accent-rgb), 0.25) !important;
+}
+
+.register-equipment-modal .p-multiselect-label {
+    color: var(--text) !important;
+}
+
+.register-equipment-modal .p-multiselect-label.p-placeholder {
+    color: rgba(var(--text-rgb), 0.5) !important;
+}
+
+.register-equipment-modal .p-multiselect-trigger {
+    color: var(--text) !important;
+}
+
+/* MultiSelect Panel */
+.p-multiselect-panel {
+    background-color: var(--background) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.p-multiselect-panel .p-multiselect-header {
+    background-color: rgba(var(--background-rgb), 0.9) !important;
+    border-bottom: 1px solid rgba(var(--text-rgb), 0.2) !important;
+}
+
+.p-multiselect-panel .p-multiselect-filter {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+    color: var(--text) !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled):hover {
+    background-color: rgba(var(--accent-rgb), 0.2) !important;
+    color: var(--text) !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+    background-color: var(--accent) !important;
+    color: white !important;
+}
+
+/* Chips en MultiSelect */
+.register-equipment-modal .p-multiselect-token {
+    background-color: var(--accent) !important;
+    color: white !important;
+}
+
+.register-equipment-modal .p-multiselect-token-icon {
+    color: white !important;
+}
+
+/* Checkbox */
+.register-equipment-modal .p-checkbox .p-checkbox-box {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    border: 2px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.register-equipment-modal .p-checkbox .p-checkbox-box:not(.p-disabled):hover {
+    border-color: var(--secondary) !important;
+}
+
+.register-equipment-modal .p-checkbox .p-checkbox-box.p-highlight {
+    background-color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+}
+
+.register-equipment-modal .p-checkbox .p-checkbox-box .p-checkbox-icon {
+    color: white !important;
+}
+
+/* FileUpload */
+.register-equipment-modal .p-fileupload-choose {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border: 1px solid var(--primary) !important;
+}
+
+.register-equipment-modal .p-fileupload-choose:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+/* Botones */
+.register-equipment-modal .p-button {
+    color: white !important;
+}
+
+.register-equipment-modal .p-button.p-button-text {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.register-equipment-modal .p-button.p-button-text:hover {
+    background-color: rgba(var(--accent-rgb), 0.2) !important;
+    border-color: var(--accent) !important;
+}
+
+.register-equipment-modal .p-button:not(.p-button-text) {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.register-equipment-modal .p-button:not(.p-button-text):hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+/* Toast */
+.p-toast .p-toast-message.p-toast-message-success {
+    background-color: var(--success-color) !important;
+    border: solid var(--success-color) !important;
+    color: white !important;
+}
+
+.p-toast .p-toast-message.p-toast-message-error {
+    background-color: var(--error-color) !important;
+    border: solid var(--error-color) !important;
+    color: white !important;
+}
+
+/* Small text */
+.register-equipment-modal small {
+    color: rgba(var(--text-rgb), 0.7) !important;
+}
+
+/* Input icon (search) */
+.register-equipment-modal .p-input-icon-left > i {
+    color: rgba(var(--text-rgb), 0.6) !important;
+}
+
+/* Dialog */
+.register-equipment-modal.p-dialog .p-dialog-header {
+    background-color: var(--background) !important;
+    color: var(--secondary) !important;
+    border-bottom: 2px solid var(--secondary) !important;
+}
+
+.register-equipment-modal.p-dialog .p-dialog-content {
+    background-color: var(--background) !important;
+    color: var(--text) !important;
+}
+
+.register-equipment-modal.p-dialog .p-dialog-footer {
+    background-color: var(--background) !important;
+    border-top: 1px solid rgba(var(--text-rgb), 0.2) !important;
+}
