@@ -152,28 +152,61 @@ const ModalForm: React.FC<ModalFormProps> = ({
             const error = validateField(name, value, field);
             setErrors((prev) => {
                 const newErrors = { ...prev, [name]: error };
-                const hasErrors = Object.values(newErrors).some((e) => e !== '');
-                setIsFormValid(!hasErrors);
+                // Validar todos los campos para actualizar isFormValid
+                validateAllFields(newErrors);
                 return newErrors;
             });
         }
     };
 
+    // Validar todos los campos y actualizar isFormValid
+    const validateAllFields = (currentErrors?: Record<string, string>) => {
+        const allFields = [...effectiveLeftFields, ...effectiveRightFields];
+        const errorsToCheck = currentErrors || errors;
+
+        // Verificar si hay errores en los campos ya validados
+        const hasErrors = Object.values(errorsToCheck).some((e) => e !== '');
+
+        // Verificar si todos los campos requeridos tienen valor
+        const allRequiredFieldsFilled = allFields.every((field) => {
+            if (field.type === 'button') return true;
+            if (!field.required) return true;
+            const value = formData[field.name!];
+            return value !== undefined && value !== null && value !== '';
+        });
+
+        setIsFormValid(!hasErrors && allRequiredFieldsFilled);
+        return !hasErrors && allRequiredFieldsFilled;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!isFormValid) {
+
+        // Validar todos los campos antes de enviar
+        const allFields = [...effectiveLeftFields, ...effectiveRightFields];
+        const newErrors: Record<string, string> = {};
+        const newTouched: Record<string, boolean> = {};
+
+        allFields.forEach((field) => {
+            if (field.type !== 'button' && field.name) {
+                const value = formData[field.name];
+                const error = validateField(field.name, value, field);
+                newErrors[field.name] = error;
+                newTouched[field.name] = true;
+            }
+        });
+
+        setErrors(newErrors);
+        setTouched(newTouched);
+
+        // Verificar si hay errores
+        const hasErrors = Object.values(newErrors).some((e) => e !== '');
+
+        if (hasErrors) {
             showAlert('error', 'Por favor, complete los campos requeridos antes de enviar.');
-            // Marcar todos los campos como touched para mostrar errores
-            const allFields = [...effectiveLeftFields, ...effectiveRightFields];
-            const newTouched: Record<string, boolean> = {};
-            allFields.forEach((f) => {
-                if (f.name) {
-                    newTouched[f.name] = true;
-                }
-            });
-            setTouched(newTouched);
             return;
         }
+
         onSubmit(formData);
         resetForm();
     };
