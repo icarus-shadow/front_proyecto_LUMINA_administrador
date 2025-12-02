@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
-import './RegisterEquipmentModal.css';
+import './styles/RegisterEquipmentModal.css';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';

@@ -4,6 +4,7 @@ import {historySlice} from "./slices/data/historySlice.tsx";
 import {elementsSlice} from "./slices/data/elementsSlice.tsx";
 import {formationSlice} from "./slices/data/formationSlice";
 import {subElementsSlice} from "./slices/data/subElementsSlice.tsx";
+import { levelFormationSlice } from './slices/data/LevelFormationSlice.tsx';
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
         elementsReducer: elementsSlice.reducer,
         formationsReducer: formationSlice.reducer,
         subElementsReducer: subElementsSlice.reducer,
+        levelFormationReducer: levelFormationSlice.reducer,
     },
 })
 

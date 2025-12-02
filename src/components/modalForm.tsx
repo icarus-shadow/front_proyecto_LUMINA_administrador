@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { animate as anime, stagger } from 'animejs';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem,
     Grid, Typography, FormControl, InputLabel, FormHelperText, Alert, IconButton, InputAdornment
@@ -190,10 +191,48 @@ const ModalForm: React.FC<ModalFormProps> = ({
         }
     }, [isOpen, initialValue]);
 
-    const renderField = (field: FieldConfig) => {
+    // Ref para el diálogo
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    // Animación de entrada
+    useEffect(() => {
+        if (isOpen && dialogRef.current) {
+            // Esperar a que el diálogo se monte
+            setTimeout(() => {
+                if (dialogRef.current) {
+                    const dialogPaper = dialogRef.current.querySelector('.MuiDialog-paper');
+
+                    if (dialogPaper) {
+                        // Animar el contenedor del diálogo
+                        anime(dialogPaper, {
+                            scale: [0.8, 1],
+                            opacity: [0, 1],
+                            duration: 400,
+                            easing: 'easeOutCubic',
+                        });
+
+                        // Animar los campos
+                        const fields = dialogPaper.querySelectorAll('.MuiFormControl-root, .MuiTextField-root');
+                        if (fields.length > 0) {
+                            anime(fields, {
+                                translateY: [20, 0],
+                                opacity: [0, 1],
+                                duration: 400,
+                                delay: stagger(50, { start: 200 }),
+                                easing: 'easeOutQuad',
+                            });
+                        }
+                    }
+                }
+            }, 50);
+        }
+    }, [isOpen]);
+
+    const renderField = (field: FieldConfig, index: number) => {
+        const key = field.name || `field-${index}`;
         if (field.type === "file") {
             return (
-                <FormControl key={field.name} fullWidth error={touched[field.name] && !!errors[field.name]} sx={{ margin: 1 }}>
+                <FormControl key={key} fullWidth error={touched[field.name!] && !!errors[field.name!]} sx={{ margin: 1 }}>
                     <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
                     <input
                         type="file"
@@ -209,27 +248,32 @@ const ModalForm: React.FC<ModalFormProps> = ({
                             width: '93%'
                         }}
                     />
-                    {touched[field.name] && errors[field.name] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name]}</FormHelperText>}
+                    {touched[field.name!] && errors[field.name!] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name!]}</FormHelperText>}
                 </FormControl>
             );
         }
         if (field.type === "select") {
             return (
-                <FormControl key={field.name} fullWidth error={touched[field.name] && !!errors[field.name]} sx={{ margin: 1 }}>
+                <FormControl key={key} fullWidth error={touched[field.name!] && !!errors[field.name!]} sx={{ margin: 1 }}>
                     <InputLabel sx={{ color: 'var(--text)' }}>{field.label}</InputLabel>
                     <Select
                         name={field.name}
-                        value={formData[field.name] || ""}
+                        value={formData[field.name!] || ""}
                         onChange={handleChange}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': { borderColor: 'var(--text)' },
-                                '&:hover fieldset': { borderColor: 'var(--accent)' },
+                                '&:hover fieldset': { borderColor: 'var(--secondary)' },
                                 '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
-                                backgroundColor: 'var(--background)',
+                                backgroundColor: 'var(--text)',
                                 color: 'var(--text)',
                             },
-                            '& .MuiInputBase-input': { color: 'var(--text)' },
+                            '& .MuiInputBase-input': {
+                                color: 'var(--text)',
+                                backgroundColor: 'var(--background)',
+                            },
+                            borderColor: 'var(--text)',
+                            width: '96%',
                         }}
                     >
                         {field.options?.map((option) => (
@@ -238,12 +282,12 @@ const ModalForm: React.FC<ModalFormProps> = ({
                             </MenuItem>
                         ))}
                     </Select>
-                    {touched[field.name] && errors[field.name] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name]}</FormHelperText>}
+                    {touched[field.name!] && errors[field.name!] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name!]}</FormHelperText>}
                 </FormControl>
             );
         } else if (field.type === "multiSelect") {
             return (
-                <FormControl key={field.name} fullWidth sx={{ margin: 1 }}>
+                <FormControl key={key} fullWidth sx={{ margin: 1 }}>
                     <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
                     {field.options?.map((option) => (
                         <div key={option.value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -252,18 +296,18 @@ const ModalForm: React.FC<ModalFormProps> = ({
                                 id={`${field.name}-${option.value}`}
                                 name={field.name}
                                 value={option.value}
-                                checked={(formData[field.name] || []).includes(option.value)}
+                                checked={(formData[field.name!] || []).includes(option.value)}
                                 onChange={(e) => {
                                     const { checked, value } = e.target;
                                     setFormData((prev) => {
-                                        const current = prev[field.name] || [];
+                                        const current = prev[field.name!] || [];
                                         if (checked) {
-                                            return { ...prev, [field.name]: [...current, value] };
+                                            return { ...prev, [field.name!]: [...current, value] };
                                         } else {
-                                            return { ...prev, [field.name]: current.filter((v: any) => v !== value) };
+                                            return { ...prev, [field.name!]: current.filter((v: any) => v !== value) };
                                         }
                                     });
-                                    setTouched((prev) => ({ ...prev, [field.name]: true }));
+                                    setTouched((prev) => ({ ...prev, [field.name!]: true }));
                                 }}
                                 style={{ marginRight: '8px' }}
                             />
@@ -276,7 +320,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             );
         } else if (field.type === "button") {
             return (
-                <FormControl key={field.name} fullWidth sx={{ margin: 1 }}>
+                <FormControl key={key} fullWidth sx={{ margin: 1 }}>
                     <button
                         type="button"
                         onClick={field.onClick}
@@ -297,25 +341,25 @@ const ModalForm: React.FC<ModalFormProps> = ({
         } else if (field.type === "password") {
             return (
                 <TextField
-                    key={field.name}
+                    key={key}
                     label={field.label}
                     name={field.name}
-                    type={showPassword[field.name] ? "text" : "password"}
+                    type={showPassword[field.name!] ? "text" : "password"}
                     placeholder={field.placeholder}
                     required={field.required}
-                    value={formData[field.name] || ""}
+                    value={formData[field.name!] || ""}
                     onChange={handleChange}
-                    error={touched[field.name] && !!errors[field.name]}
-                    helperText={touched[field.name] ? errors[field.name] : ''}
+                    error={touched[field.name!] && !!errors[field.name!]}
+                    helperText={touched[field.name!] ? errors[field.name!] : ''}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
                                 <IconButton
-                                    onClick={() => setShowPassword(prev => ({ ...prev, [field.name]: !prev[field.name] }))}
+                                    onClick={() => setShowPassword(prev => ({ ...prev, [field.name!]: !prev[field.name!] }))}
                                     edge="end"
                                     sx={{ color: 'var(--text)' }}
                                 >
-                                    {showPassword[field.name] ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword[field.name!] ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
                         ),
@@ -337,18 +381,18 @@ const ModalForm: React.FC<ModalFormProps> = ({
         } else {
             return (
                 <TextField
-                    key={field.name}
+                    key={key}
                     label={field.label}
                     name={field.name}
                     type={field.type === "textarea" ? undefined : field.type}
                     placeholder={field.placeholder}
                     required={field.required}
-                    value={formData[field.name] || ""}
+                    value={formData[field.name!] || ""}
                     onChange={handleChange}
                     multiline={field.type === "textarea"}
                     rows={field.type === "textarea" ? 4 : undefined}
-                    error={touched[field.name] && !!errors[field.name]}
-                    helperText={touched[field.name] ? errors[field.name] : ''}
+                    error={touched[field.name!] && !!errors[field.name!]}
+                    helperText={touched[field.name!] ? errors[field.name!] : ''}
                     sx={{
                         '& .MuiInputLabel-root': { color: 'var(--text)' },
                         '& .MuiOutlinedInput-root': {
@@ -368,18 +412,18 @@ const ModalForm: React.FC<ModalFormProps> = ({
     };
 
     return (
-        <Dialog open={isOpen} onClose={onClose} maxWidth="lg" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+        <Dialog ref={dialogRef} open={isOpen} onClose={onClose} maxWidth="lg" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
             <DialogTitle sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>{title}</DialogTitle>
             {bannerMessage && <Alert severity={bannerSeverity || 'info'} sx={{ margin: 2 }}>{bannerMessage}</Alert>}
             {showAlert && <Alert severity="error" sx={{ margin: 2 }}>Por favor, complete los campos requeridos antes de enviar.</Alert>}
             <DialogContent sx={{ backgroundColor: 'var(--background)', justifyContent: "center", maxWidth: 1400, color: 'var(--text)' }}>
                 <form onSubmit={handleSubmit}>
                     <Grid sx={{ minWidth: 950, justifyContent: 'space-around', p: 4 }} container spacing={4}>
-                        <Grid item md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
+                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
                             <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveLeftTitle}</Typography>
                             {effectiveLeftFields.map(renderField)}
                         </Grid>
-                        <Grid item md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
+                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
                             <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveRightTitle}</Typography>
                             {effectiveRightFields.map(renderField)}
                         </Grid>
@@ -416,4 +460,4 @@ const ModalForm: React.FC<ModalFormProps> = ({
     );
 };
 
-export default ModalForm;
+export default React.memo(ModalForm);
