@@ -2,6 +2,7 @@ import logo from '../assets/icon.svg';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ModalForm, { type FieldConfig } from './modalForm';
+import RegisterEquipmentModal from './RegisterEquipmentModal';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
 import { logoutAsync } from '../services/redux/slices/AuthSlice';
 import { fetchFormations } from '../services/redux/slices/data/formationSlice';
@@ -14,6 +15,7 @@ const Banner = () => {
   const { user, token } = useAppSelector((state) => state.authReducer);
   const isAuthenticated = !!token && !!user;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [modalType, setModalType] = useState<'usuario' | 'elemento' | null>(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -65,20 +67,20 @@ const Banner = () => {
   ]
 
   const leftFields: FieldConfig[] = [
-    { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
+    { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{ value: 1, label: 'usuario' }, { value: 2, label: 'admin' }, { value: 3, label: 'portero' }] },
     { name: 'nombre', label: 'Nombre', type: 'text', required: true },
     { name: 'apellido', label: 'Apellido', type: 'text', required: true },
-    { name: 'tipo_documento', label: 'Tipo Documento', type: 'select', required: true, options: tiposDocumentos.map(tc => ({value: tc.value, label: tc.label}))},
+    { name: 'tipo_documento', label: 'Tipo Documento', type: 'select', required: true, options: tiposDocumentos.map(tc => ({ value: tc.value, label: tc.label })) },
     { name: 'documento', label: 'Documento', type: 'text', required: true },
     { name: 'edad', label: 'Edad', type: 'number', required: true },
     { name: 'numero_telefono', label: 'Número Teléfono', type: 'text', required: true },
     { name: 'email', label: 'Email', type: 'email', required: true },
     { name: 'password', label: 'Contraseña', type: 'password', required: true },
-    { name: 'path_foto', label: 'Foto', type: 'file', required:true,  },
+    { name: 'path_foto', label: 'Foto', type: 'file', required: true, },
   ];
 
   const rightFields: FieldConfig[] = [
-    { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({value: f.id, label: f.nombre_programa})) || [] },
+    { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: f.nombre_programa })) || [] },
   ];
 
   const leftTitle = 'Información del Usuario';
@@ -94,13 +96,17 @@ const Banner = () => {
   ];
 
   const elementRightFields: FieldConfig[] = [
-    { name: 'subElements', label: 'Elementos Adicionales', type: 'multiSelect', options: subElements?.map(s => ({value: s.id, label: s.nombre_elemento})) || [] },
+    { name: 'subElements', label: 'Elementos Adicionales', type: 'multiSelect', options: subElements?.map(s => ({ value: s.id, label: s.nombre_elemento })) || [] },
   ];
 
   const handleButtonClick = (type: 'usuario' | 'elemento', path: string) => {
-    setModalType(type);
-    setIsModalOpen(true);
     navigate(path);
+    if (type === 'elemento') {
+      setShowEquipmentModal(true);
+    } else {
+      setModalType(type);
+      setIsModalOpen(true);
+    }
   };
 
   const handleModalSubmit = (data: Record<string, any>) => {
@@ -167,6 +173,10 @@ const Banner = () => {
           initialValue={{}}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleModalSubmit}
+        />
+        <RegisterEquipmentModal
+          visible={showEquipmentModal}
+          onHide={() => setShowEquipmentModal(false)}
         />
 
       </div>
