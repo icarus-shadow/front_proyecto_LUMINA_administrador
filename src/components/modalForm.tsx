@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { animate as anime, stagger } from 'animejs';
-import {
-    Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem,
-    Grid, Typography, FormControl, InputLabel, FormHelperText, Alert, IconButton, InputAdornment
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { Password } from 'primereact/password';
+import { FileUpload } from 'primereact/fileupload';
+import { Message } from 'primereact/message';
+import { Checkbox } from 'primereact/checkbox';
+import './styles/ModalForm.css';
 
 // =============================
 // Types
@@ -40,7 +45,7 @@ interface ModalFormProps {
     onSubmit: (data: Record<string, any>) => void;
     customButton?: { label: string; action: () => void; variant?: 'primary' | 'secondary' };
     bannerMessage?: string;
-    bannerSeverity?: 'success' | 'info' | 'warning' | 'error';
+    bannerSeverity?: 'success' | 'info' | 'warn' | 'error';
 }
 
 // =============================
@@ -74,7 +79,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
     const prevInitialValuesRef = useRef<Record<string, any> | null>(null);
     const [showAlert, setShowAlert] = useState<boolean>(false);
-    const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
 
     const resetForm = () => {
         setFormData(initialValue);
@@ -82,7 +86,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
         setTouched({});
         setIsFormValid(false);
         setShowAlert(false);
-        setShowPassword({});
     };
 
     // Funciones de validación
@@ -141,15 +144,13 @@ const ModalForm: React.FC<ModalFormProps> = ({
         return error;
     };
 
-    const handleChange = (e: any) => {
-        const { name, value, files } = e.target;
-        const actualValue = files ? files[0] : value;
-        setFormData((prev) => ({ ...prev, [name]: actualValue }));
+    const handleChange = (name: string, value: any) => {
+        setFormData((prev) => ({ ...prev, [name]: value }));
         setTouched((prev) => ({ ...prev, [name]: true }));
         const allFields = [...effectiveLeftFields, ...effectiveRightFields];
         const field = allFields.find((f) => f.name === name);
         if (field) {
-            const error = validateField(name, actualValue, field);
+            const error = validateField(name, value, field);
             setErrors((prev) => {
                 const newErrors = { ...prev, [name]: error };
                 const hasErrors = Object.values(newErrors).some((e) => e !== '');
@@ -186,7 +187,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
             setTouched({});
             setIsFormValid(false);
             setShowAlert(false);
-            setShowPassword({});
             prevInitialValuesRef.current = initialValue;
         }
     }, [isOpen, initialValue]);
@@ -200,7 +200,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             // Esperar a que el diálogo se monte
             setTimeout(() => {
                 if (dialogRef.current) {
-                    const dialogPaper = dialogRef.current.querySelector('.MuiDialog-paper');
+                    const dialogPaper = dialogRef.current.querySelector('.p-dialog');
 
                     if (dialogPaper) {
                         // Animar el contenedor del diálogo
@@ -212,7 +212,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         });
 
                         // Animar los campos
-                        const fields = dialogPaper.querySelectorAll('.MuiFormControl-root, .MuiTextField-root');
+                        const fields = dialogPaper.querySelectorAll('.field');
                         if (fields.length > 0) {
                             anime(fields, {
                                 translateY: [20, 0],
@@ -230,233 +230,261 @@ const ModalForm: React.FC<ModalFormProps> = ({
 
     const renderField = (field: FieldConfig, index: number) => {
         const key = field.name || `field-${index}`;
+
         if (field.type === "file") {
             return (
-                <FormControl key={key} fullWidth error={touched[field.name!] && !!errors[field.name!]} sx={{ margin: 1 }}>
-                    <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
-                    <input
-                        type="file"
+                <div key={key} className="field mb-3">
+                    <label style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                        {field.label} {field.required && '*'}
+                    </label>
+                    <FileUpload
+                        mode="basic"
                         name={field.name}
                         accept={field.accept || "image/jpeg,image/png,image/jpg"}
-                        onChange={handleChange}
-                        style={{
-                            color: 'var(--text)',
-                            backgroundColor: 'var(--background)',
-                            border: '1px solid var(--text)',
-                            padding: '10px',
-                            borderRadius: '4px',
-                            width: '93%'
-                        }}
+                        maxFileSize={(field.maxSize || 2048) * 1024}
+                        onSelect={(e) => handleChange(field.name!, e.files[0])}
+                        chooseLabel="Seleccionar archivo"
+                        className="w-full"
                     />
-                    {touched[field.name!] && errors[field.name!] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name!]}</FormHelperText>}
-                </FormControl>
+                    {formData[field.name!] && <small className="block mt-1">Archivo seleccionado: {formData[field.name!].name}</small>}
+                    {touched[field.name!] && errors[field.name!] && (
+                        <small className="field-error">{errors[field.name!]}</small>
+                    )}
+                </div>
             );
         }
+
         if (field.type === "select") {
             return (
-                <FormControl key={key} fullWidth error={touched[field.name!] && !!errors[field.name!]} sx={{ margin: 1 }}>
-                    <InputLabel sx={{ color: 'var(--text)' }}>{field.label}</InputLabel>
-                    <Select
-                        name={field.name}
+                <div key={key} className="field mb-3">
+                    <label htmlFor={field.name} style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                        {field.label} {field.required && '*'}
+                    </label>
+                    <Dropdown
+                        id={field.name}
                         value={formData[field.name!] || ""}
-                        onChange={handleChange}
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': { borderColor: 'var(--text)' },
-                                '&:hover fieldset': { borderColor: 'var(--secondary)' },
-                                '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
-                                backgroundColor: 'var(--text)',
-                                color: 'var(--text)',
-                            },
-                            '& .MuiInputBase-input': {
-                                color: 'var(--text)',
-                                backgroundColor: 'var(--background)',
-                            },
-                            borderColor: 'var(--text)',
-                            width: '96%',
-                        }}
-                    >
-                        {field.options?.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    {touched[field.name!] && errors[field.name!] && <FormHelperText sx={{ color: 'red' }}>{errors[field.name!]}</FormHelperText>}
-                </FormControl>
+                        options={field.options || []}
+                        onChange={(e) => handleChange(field.name!, e.value)}
+                        placeholder={field.placeholder || `Seleccione ${field.label}`}
+                        className="w-full"
+                    />
+                    {touched[field.name!] && errors[field.name!] && (
+                        <small className="field-error">{errors[field.name!]}</small>
+                    )}
+                </div>
             );
-        } else if (field.type === "multiSelect") {
+        }
+
+        if (field.type === "multiSelect") {
             return (
-                <FormControl key={key} fullWidth sx={{ margin: 1 }}>
-                    <Typography sx={{ color: 'var(--text)', mb: 1 }}>{field.label}</Typography>
+                <div key={key} className="field mb-3">
+                    <label style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                        {field.label}
+                    </label>
                     {field.options?.map((option) => (
                         <div key={option.value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                            <input
-                                type="checkbox"
-                                id={`${field.name}-${option.value}`}
-                                name={field.name}
+                            <Checkbox
+                                inputId={`${field.name}-${option.value}`}
                                 value={option.value}
-                                checked={(formData[field.name!] || []).includes(option.value)}
                                 onChange={(e) => {
-                                    const { checked, value } = e.target;
-                                    setFormData((prev) => {
-                                        const current = prev[field.name!] || [];
-                                        if (checked) {
-                                            return { ...prev, [field.name!]: [...current, value] };
-                                        } else {
-                                            return { ...prev, [field.name!]: current.filter((v: any) => v !== value) };
-                                        }
-                                    });
-                                    setTouched((prev) => ({ ...prev, [field.name!]: true }));
+                                    const checked = e.checked;
+                                    const value = option.value;
+                                    const current = formData[field.name!] || [];
+                                    if (checked) {
+                                        handleChange(field.name!, [...current, value]);
+                                    } else {
+                                        handleChange(field.name!, current.filter((v: any) => v !== value));
+                                    }
                                 }}
-                                style={{ marginRight: '8px' }}
+                                checked={(formData[field.name!] || []).includes(option.value)}
                             />
-                            <label htmlFor={`${field.name}-${option.value}`} style={{ color: 'var(--text)' }}>
+                            <label htmlFor={`${field.name}-${option.value}`} style={{ marginLeft: '8px', color: 'var(--text)', cursor: 'pointer' }}>
                                 {option.label}
                             </label>
                         </div>
                     ))}
-                </FormControl>
-            );
-        } else if (field.type === "button") {
-            return (
-                <FormControl key={key} fullWidth sx={{ margin: 1 }}>
-                    <button
-                        type="button"
-                        onClick={field.onClick}
-                        style={{
-                            color: 'var(--text)',
-                            backgroundColor: 'var(--primary)',
-                            border: 'none',
-                            padding: '10px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            width: '100%'
-                        }}
-                    >
-                        {field.label}
-                    </button>
-                </FormControl>
-            );
-        } else if (field.type === "password") {
-            return (
-                <TextField
-                    key={key}
-                    label={field.label}
-                    name={field.name}
-                    type={showPassword[field.name!] ? "text" : "password"}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    value={formData[field.name!] || ""}
-                    onChange={handleChange}
-                    error={touched[field.name!] && !!errors[field.name!]}
-                    helperText={touched[field.name!] ? errors[field.name!] : ''}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setShowPassword(prev => ({ ...prev, [field.name!]: !prev[field.name!] }))}
-                                    edge="end"
-                                    sx={{ color: 'var(--text)' }}
-                                >
-                                    {showPassword[field.name!] ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{
-                        '& .MuiInputLabel-root': { color: 'var(--text)' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: 'var(--text)' },
-                            '&:hover fieldset': { borderColor: 'var(--accent)' },
-                            '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
-                            backgroundColor: 'var(--background)',
-                            color: 'var(--text)',
-                        },
-                        '& .MuiInputBase-input': { color: 'var(--text)' },
-                        margin: 1,
-                    }}
-                />
-            );
-        } else {
-            return (
-                <TextField
-                    key={key}
-                    label={field.label}
-                    name={field.name}
-                    type={field.type === "textarea" ? undefined : field.type}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    value={formData[field.name!] || ""}
-                    onChange={handleChange}
-                    multiline={field.type === "textarea"}
-                    rows={field.type === "textarea" ? 4 : undefined}
-                    error={touched[field.name!] && !!errors[field.name!]}
-                    helperText={touched[field.name!] ? errors[field.name!] : ''}
-                    sx={{
-                        '& .MuiInputLabel-root': { color: 'var(--text)' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: 'var(--text)' },
-                            '&:hover fieldset': { borderColor: 'var(--accent)' },
-                            '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
-                            backgroundColor: 'var(--background)',
-                            color: 'var(--text)',
-                        },
-                        '& .MuiInputBase-input': { color: 'var(--text)' },
-                        margin: 1,
-                    }}
-                />
+                </div>
             );
         }
 
+        if (field.type === "button") {
+            return (
+                <div key={key} className="field mb-3">
+                    <Button
+                        label={field.label}
+                        onClick={field.onClick}
+                        className="w-full"
+                        type="button"
+                    />
+                </div>
+            );
+        }
+
+        if (field.type === "password") {
+            return (
+                <div key={key} className="field mb-3">
+                    <label htmlFor={field.name} style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                        {field.label} {field.required && '*'}
+                    </label>
+                    <Password
+                        id={field.name}
+                        value={formData[field.name!] || ""}
+                        onChange={(e) => handleChange(field.name!, e.target.value)}
+                        placeholder={field.placeholder}
+                        toggleMask
+                        className="w-full"
+                        feedback={false}
+                    />
+                    {touched[field.name!] && errors[field.name!] && (
+                        <small className="field-error">{errors[field.name!]}</small>
+                    )}
+                </div>
+            );
+        }
+
+        if (field.type === "textarea") {
+            return (
+                <div key={key} className="field mb-3">
+                    <label htmlFor={field.name} style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                        {field.label} {field.required && '*'}
+                    </label>
+                    <InputTextarea
+                        id={field.name}
+                        value={formData[field.name!] || ""}
+                        onChange={(e) => handleChange(field.name!, e.target.value)}
+                        placeholder={field.placeholder}
+                        rows={4}
+                        className="w-full"
+                    />
+                    {touched[field.name!] && errors[field.name!] && (
+                        <small className="field-error">{errors[field.name!]}</small>
+                    )}
+                </div>
+            );
+        }
+
+        // Default: text, number, email
+        return (
+            <div key={key} className="field mb-3">
+                <label htmlFor={field.name} style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                    {field.label} {field.required && '*'}
+                </label>
+                <InputText
+                    id={field.name}
+                    value={formData[field.name!] || ""}
+                    onChange={(e) => handleChange(field.name!, e.target.value)}
+                    placeholder={field.placeholder}
+                    type={field.type}
+                    className="w-full"
+                />
+                {touched[field.name!] && errors[field.name!] && (
+                    <small className="field-error">{errors[field.name!]}</small>
+                )}
+            </div>
+        );
     };
 
-    return (
-        <Dialog ref={dialogRef} open={isOpen} onClose={onClose} maxWidth="lg" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
-            <DialogTitle sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>{title}</DialogTitle>
-            {bannerMessage && <Alert severity={bannerSeverity || 'info'} sx={{ margin: 2 }}>{bannerMessage}</Alert>}
-            {showAlert && <Alert severity="error" sx={{ margin: 2 }}>Por favor, complete los campos requeridos antes de enviar.</Alert>}
-            <DialogContent sx={{ backgroundColor: 'var(--background)', justifyContent: "center", maxWidth: 1400, color: 'var(--text)' }}>
-                <form onSubmit={handleSubmit}>
-                    <Grid sx={{ minWidth: 950, justifyContent: 'space-around', p: 4 }} container spacing={4}>
-                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
-                            <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveLeftTitle}</Typography>
-                            {effectiveLeftFields.map(renderField)}
-                        </Grid>
-                        <Grid md={5} sx={{ maxHeight: 500, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' }, display: 'flex', flexDirection: 'column', p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, }}>
-                            <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>{effectiveRightTitle}</Typography>
-                            {effectiveRightFields.map(renderField)}
-                        </Grid>
-                    </Grid>
-                </form>
-            </DialogContent>
-            <DialogActions sx={{ backgroundColor: 'var(--background)' }}>
-                {customButton && (
-                    <button
-                        type="button"
-                        onClick={customButton.action}
-                        className={`btn-${customButton.variant || 'primary'}`}
-                    >
-                        {customButton.label}
-                    </button>
-                )}
-                <button
+    const footer = (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
+            {customButton && (
+                <Button
+                    label={customButton.label}
+                    onClick={customButton.action}
+                    className={customButton.variant === 'secondary' ? 'p-button-secondary' : ''}
                     type="button"
-                    onClick={() => { resetForm(); onClose(); }}
-                    className="btn-cancel"
-                >
-                    Cancelar
-                </button>
+                />
+            )}
+            <Button
+                label="Cancelar"
+                icon="pi pi-times"
+                onClick={() => { resetForm(); onClose(); }}
+                className="p-button-text"
+            />
+            <Button
+                label="Guardar"
+                icon="pi pi-check"
+                onClick={(e) => handleSubmit(e as any)}
+                autoFocus
+            />
+        </div>
+    );
 
-                <button
-                    type="button"
-                    onClick={() => handleSubmit(new Event('submit') as any)}
-                    className="btn-save"
-                >
-                    Guardar
-                </button>
-            </DialogActions>
-        </Dialog>
+    return (
+        <div ref={dialogRef}>
+            <Dialog
+                header={title}
+                visible={isOpen}
+                style={{ width: '90vw', maxWidth: '1400px' }}
+                onHide={onClose}
+                modal
+                className="p-fluid modal-form"
+                footer={footer}
+                contentStyle={{
+                    backgroundColor: 'var(--background)',
+                    color: 'var(--text)',
+                    border: '1px solid rgba(var(--secondary-rgb), 0.3)'
+                }}
+                headerStyle={{
+                    backgroundColor: 'var(--background)',
+                    color: 'var(--secondary)',
+                    borderBottom: '2px solid var(--secondary)'
+                }}
+            >
+                {bannerMessage && (
+                    <Message
+                        severity={bannerSeverity || 'info'}
+                        text={bannerMessage}
+                        style={{ marginBottom: '1rem' }}
+                    />
+                )}
+                {showAlert && (
+                    <Message
+                        severity="error"
+                        text="Por favor, complete los campos requeridos antes de enviar."
+                        style={{ marginBottom: '1rem' }}
+                    />
+                )}
+
+                <form onSubmit={handleSubmit}>
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+                        {/* Left Column */}
+                        <div className="modal-form-column" style={{
+                            flex: 1,
+                            padding: '1rem',
+                            backgroundColor: 'rgba(var(--primary-rgb), 0.1)',
+                            borderRadius: '8px',
+                            border: '1px solid rgba(var(--primary-rgb), 0.3)',
+                            maxHeight: '500px',
+                            overflowY: 'auto',
+                            marginTop: "1%"
+                        }}>
+                            <h3 style={{ color: 'var(--primary)', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+                                {effectiveLeftTitle}
+                            </h3>
+                            {effectiveLeftFields.map(renderField)}
+                        </div>
+
+                        {/* Right Column */}
+                        <div className="modal-form-column modal-form-column-right" style={{
+                            flex: 1,
+                            padding: '1rem',
+                            backgroundColor: 'rgba(var(--secondary-rgb), 0.1)',
+                            borderRadius: '8px',
+                            border: '1px solid rgba(var(--secondary-rgb), 0.3)',
+                            maxHeight: '500px',
+                            overflowY: 'auto',
+                            marginTop: "1%"
+
+                        }}>
+                            <h3 style={{ color: 'var(--secondary)', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+                                {effectiveRightTitle}
+                            </h3>
+                            {effectiveRightFields.map(renderField)}
+                        </div>
+                    </div>
+                </form>
+            </Dialog>
+        </div>
     );
 };
 

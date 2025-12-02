@@ -174,7 +174,8 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                     padding: '1.5rem',
                     backgroundColor: 'rgba(var(--primary-rgb), 0.1)',
                     borderRadius: '8px',
-                    border: '1px solid rgba(var(--primary-rgb), 0.3)'
+                    border: '1px solid rgba(var(--primary-rgb), 0.3)',
+                    marginTop: "2%"
                 }}>
                     <h3 style={{ color: 'var(--primary)', marginBottom: '1.5rem', fontWeight: 'bold' }}>Información del Equipo</h3>
 
@@ -233,7 +234,9 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                     padding: '1.5rem',
                     backgroundColor: 'rgba(var(--secondary-rgb), 0.1)',
                     borderRadius: '8px',
-                    border: '1px solid rgba(var(--secondary-rgb), 0.3)'
+                    border: '1px solid rgba(var(--secondary-rgb), 0.3)',
+                    marginTop: "2%"
+
                 }}>
                     <h3 style={{ color: 'var(--secondary)', marginBottom: '1.5rem', fontWeight: 'bold' }}>Asignar Usuarios</h3>
 

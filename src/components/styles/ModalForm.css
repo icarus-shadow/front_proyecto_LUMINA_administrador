@@ -1,0 +1,388 @@
+/* Estilos personalizados para ModalForm */
+
+/* InputText */
+.modal-form .p-inputtext {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-inputtext:enabled:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+.modal-form .p-inputtext::placeholder {
+    color: rgba(var(--text-rgb), 0.5) !important;
+}
+
+/* InputTextarea */
+.modal-form .p-inputtextarea {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-inputtextarea:enabled:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+/* Password */
+.modal-form .p-password .p-inputtext {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-password .p-inputtext:enabled:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+.modal-form .p-password-toggle-icon {
+    color: var(--text) !important;
+}
+
+/* Dropdown */
+.modal-form .p-dropdown {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-dropdown:not(.p-disabled):hover {
+    border-color: var(--primary) !important;
+}
+
+.modal-form .p-dropdown:not(.p-disabled).p-focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25) !important;
+}
+
+.modal-form .p-dropdown-label {
+    color: var(--text) !important;
+}
+
+.modal-form .p-dropdown-label.p-placeholder {
+    color: rgba(var(--text-rgb), 0.5) !important;
+}
+
+.modal-form .p-dropdown-trigger {
+    color: var(--text) !important;
+}
+
+/* Dropdown Panel */
+.p-dropdown-panel {
+    background-color: var(--background) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    color: var(--text) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
+    background-color: rgba(var(--primary-rgb), 0.2) !important;
+    color: var(--text) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+/* MultiSelect */
+.modal-form .p-multiselect {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-multiselect:not(.p-disabled):hover {
+    border-color: var(--accent) !important;
+}
+
+.modal-form .p-multiselect:not(.p-disabled).p-focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--accent-rgb), 0.25) !important;
+}
+
+.modal-form .p-multiselect-label {
+    color: var(--text) !important;
+}
+
+.modal-form .p-multiselect-label.p-placeholder {
+    color: rgba(var(--text-rgb), 0.5) !important;
+}
+
+.modal-form .p-multiselect-trigger {
+    color: var(--text) !important;
+}
+
+/* MultiSelect Panel */
+.p-multiselect-panel {
+    background-color: var(--background) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.p-multiselect-panel .p-multiselect-header {
+    background-color: rgba(var(--background-rgb), 0.9) !important;
+    border-bottom: 1px solid rgba(var(--text-rgb), 0.2) !important;
+}
+
+.p-multiselect-panel .p-multiselect-filter {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+    color: var(--text) !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled):hover {
+    background-color: rgba(var(--accent-rgb), 0.2) !important;
+    color: var(--text) !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+    background-color: var(--accent) !important;
+    color: white !important;
+}
+
+/* Chips en MultiSelect */
+.modal-form .p-multiselect-token {
+    background-color: var(--accent) !important;
+    color: white !important;
+}
+
+.modal-form .p-multiselect-token-icon {
+    color: white !important;
+}
+
+/* Checkbox */
+.modal-form .p-checkbox .p-checkbox-box {
+    background-color: rgba(var(--background-rgb), 0.8) !important;
+    border: 2px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-checkbox .p-checkbox-box:not(.p-disabled):hover {
+    border-color: var(--secondary) !important;
+}
+
+.modal-form .p-checkbox .p-checkbox-box.p-highlight {
+    background-color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+}
+
+.modal-form .p-checkbox .p-checkbox-box .p-checkbox-icon {
+    color: white !important;
+}
+
+/* FileUpload */
+.modal-form .p-fileupload-choose {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border: 1px solid var(--primary) !important;
+}
+
+.modal-form .p-fileupload-choose:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+/* Botones */
+.modal-form .p-button {
+    color: white !important;
+}
+
+.modal-form .p-button.p-button-text {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+}
+
+.modal-form .p-button.p-button-text:hover {
+    background-color: rgba(var(--accent-rgb), 0.2) !important;
+    border-color: var(--accent) !important;
+}
+
+.modal-form .p-button:not(.p-button-text) {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.modal-form .p-button:not(.p-button-text):hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+/* Small text */
+.modal-form small {
+    color: rgba(var(--text-rgb), 0.7) !important;
+}
+
+/* Dialog */
+.modal-form.p-dialog .p-dialog-header {
+    background-color: var(--background) !important;
+    color: var(--secondary) !important;
+    border-bottom: 2px solid var(--secondary) !important;
+}
+
+.modal-form.p-dialog .p-dialog-content {
+    background-color: var(--background) !important;
+    color: var(--text) !important;
+}
+
+.modal-form.p-dialog .p-dialog-footer {
+    background-color: var(--background) !important;
+    border-top: 1px solid rgba(var(--text-rgb), 0.2) !important;
+}
+
+/* Message */
+.modal-form .p-message {
+    margin: 1rem 0;
+}
+
+.modal-form .p-message.p-message-error {
+    background-color: rgba(var(--error-color-rgb), 0.1) !important;
+    border: solid var(--error-color) !important;
+    color: var(--error-color) !important;
+}
+
+.modal-form .p-message.p-message-success {
+    background-color: rgba(var(--success-color-rgb), 0.1) !important;
+    border: solid var(--success-color) !important;
+    color: var(--success-color) !important;
+}
+
+.modal-form .p-message.p-message-info {
+    background-color: rgba(var(--primary-rgb), 0.1) !important;
+    border: solid var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+.modal-form .p-message.p-message-warn {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+    border: solid #ffc107 !important;
+    color: #ffc107 !important;
+}
+
+/* Custom button styles */
+.modal-form .btn-cancel {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--text-rgb), 0.3) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .btn-cancel:hover {
+    background-color: rgba(var(--accent-rgb), 0.2) !important;
+    border-color: var(--accent) !important;
+}
+
+.modal-form .btn-save {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border: 1px solid var(--primary) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .btn-save:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+.modal-form .btn-primary {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border: 1px solid var(--primary) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .btn-primary:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+.modal-form .btn-secondary {
+    background-color: var(--secondary) !important;
+    color: white !important;
+    border: 1px solid var(--secondary) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .btn-secondary:hover {
+    opacity: 0.9;
+}
+
+/* Helper text */
+.modal-form .field-error {
+    color: var(--error-color) !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Scrollbar personalizado para los contenedores */
+.modal-form-column {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--primary-rgb), 0.3) transparent;
+}
+
+/* Webkit scrollbar (Chrome, Safari, Edge) */
+.modal-form-column::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-form-column::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.modal-form-column::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.modal-form-column::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--primary-rgb), 0.5);
+}
+
+/* Scrollbar para la columna derecha */
+.modal-form-column-right {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--secondary-rgb), 0.3) transparent;
+}
+
+.modal-form-column-right::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-form-column-right::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.modal-form-column-right::-webkit-scrollbar-thumb {
+    background: rgba(var(--secondary-rgb), 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.modal-form-column-right::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--secondary-rgb), 0.5);
+}

@@ -1,4 +1,4 @@
-:root{
+:root {
     --text: #d7e0f9;
     --background: #040b1f;
     --primary: #839cee;
@@ -6,10 +6,10 @@
     --accent: #e122b1;
 
     --text-rgb: 215, 224, 249;
-    --background-rgb:4, 11, 31;
-    --primary-rgb:131, 156, 238;
+    --background-rgb: 4, 11, 31;
+    --primary-rgb: 131, 156, 238;
     --secondary-rgb: 89, 122, 255;
-    --accent-rgb:225, 34, 177;
+    --accent-rgb: 225, 34, 177;
 
     --primary-hover: #6b8ce6;
 
@@ -29,7 +29,42 @@
     --error-color: #c97a7a;
 }
 
-body{
+body {
     background-color: var(--background);
 }
 
+/* ===================================== */
+/* Scrollbar personalizado global */
+/* ===================================== */
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--primary-rgb), 0.3) transparent;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--primary-rgb), 0.5);
+}
+
+/* Scrollbar para elementos con scroll horizontal */
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
