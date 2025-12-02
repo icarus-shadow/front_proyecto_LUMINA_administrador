@@ -106,7 +106,7 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
         formData.append('path_foto_equipo_implemento', selectedFile);
 
         // Append arrays
-        selectedUsers.forEach(id => formData.append('usuarios_asignados[]', id.toString()));
+        selectedUsers.forEach(id => formData.append('id_usuario[]', id.toString()));
         selectedSubElements.forEach(id => formData.append('elementos_adicionales[]', id.toString()));
 
         try {
