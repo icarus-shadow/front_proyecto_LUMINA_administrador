@@ -171,8 +171,26 @@ const Banner = () => {
   };
 
   const handleLogout = async () => {
-    await dispatch(logoutAsync());
-    navigate('/login');
+    try {
+      const result = await dispatch(logoutAsync()).unwrap();
+
+      // Mostrar alerta según el resultado
+      if (result.message) {
+        if (result.message.includes('inválido') || result.message.includes('expirado')) {
+          alert('⚠️ ' + result.message);
+        } else if (result.error) {
+          alert('⚠️ ' + result.message);
+        }
+      }
+
+      // Navegar al login
+      navigate('/login');
+    } catch (error) {
+      // Incluso si hay error, cerramos sesión localmente
+      console.error('Error en logout:', error);
+      alert('⚠️ Error al cerrar sesión. Sesión cerrada localmente.');
+      navigate('/login');
+    }
   };
 
   return (

@@ -13,6 +13,7 @@ export const elements = {
         }
     },
     agregar: async function(formData: FormData) {
+        console.log(formData.getAll("usuarios_asignados[]"));
         try {
             const response = await instance.post(endpoint, formData, {
                 headers: {
