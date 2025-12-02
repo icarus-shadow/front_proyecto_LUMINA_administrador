@@ -49,7 +49,7 @@ const StyledWrapper = styled.div`
         height: 50px;
         margin-left: 10px;
         border-radius: 10px;
-        background: linear-gradient(var(--primary)60%, var(--accent));
+        background: linear-gradient(var(--primary)60%, var(--background));
     }
 
     .textBox {
@@ -86,4 +86,4 @@ const StyledWrapper = styled.div`
         text-decoration: none;
     }`;
 
-export default CountCard;
+export default React.memo(CountCard);

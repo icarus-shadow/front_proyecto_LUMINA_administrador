@@ -1,6 +1,7 @@
 import logo from '../assets/icon.svg';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { animate as anime, stagger } from 'animejs';
 import ModalForm, { type FieldConfig } from './modalForm';
 import RegisterEquipmentModal from './RegisterEquipmentModal';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
@@ -21,6 +22,44 @@ const Banner = () => {
   const dispatch = useAppDispatch();
   const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
   const subElements = useAppSelector((state: RootState) => state.subElementsReducer.data);
+
+  // Refs para animaciones
+  const logoRef = useRef<HTMLImageElement>(null);
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+
+  // Animaciones de entrada
+  useEffect(() => {
+    if (logoRef.current) {
+      anime(logoRef.current, {
+        rotate: [0, 360],
+        opacity: [0, 1],
+        duration: 1000,
+        easing: 'easeOutElastic(1, .6)',
+      });
+    }
+    if (titleRef.current) {
+      anime(titleRef.current, {
+        translateX: [-100, 0],
+        opacity: [0, 1],
+        duration: 800,
+        delay: 200,
+        easing: 'easeOutCubic',
+      });
+    }
+    if (buttonsRef.current) {
+      const buttons = buttonsRef.current.querySelectorAll('button');
+      if (buttons.length > 0) {
+        anime(buttons, {
+          translateY: [20, 0],
+          opacity: [0, 1],
+          duration: 600,
+          delay: stagger(100, { start: 400 }),
+          easing: 'easeOutQuad',
+        });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (formations && formations.length === 0) {
@@ -153,13 +192,14 @@ const Banner = () => {
         borderRadius: '10px',
         boxSizing: 'border-box',
       }}>
-        <a href="/" style={{
-          display: 'flex',
-          alignItems: 'center',
-          textDecoration: 'none',
-        }}>
-          <img src={logo} alt="Lumina Logo" style={{ height: '80px', marginRight: '20px' }} />
-          <span style={{ color: 'var(--text)', fontSize: '50px', fontWeight: 'bold' }}>LUMINA</span>
+        <a href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+          }}>
+          <img ref={logoRef} src={logo} alt="Lumina Logo" style={{ height: '80px', marginRight: '20px', opacity: 0 }} />
+          <span ref={titleRef} style={{ color: 'var(--text)', fontSize: '50px', fontWeight: 'bold', opacity: 0 }}>LUMINA</span>
         </a>
 
         <ModalForm
@@ -181,7 +221,7 @@ const Banner = () => {
 
       </div>
       {isAuthenticated && (
-        <div style={{ display: 'flex', gap: '20px', marginLeft: '50px' }}>
+        <div ref={buttonsRef} style={{ display: 'flex', gap: '20px', marginLeft: '50px' }}>
           <button onClick={() => handleButtonClick('usuario', '/usuarios')} style={{
             marginLeft: '60px',
             padding: '10px 15px',
@@ -192,6 +232,7 @@ const Banner = () => {
             fontWeight: 'bold',
             cursor: 'pointer',
             height: '70px',
+            opacity: 0,
           }}>
             Agregar Nuevo Usuario
           </button>
@@ -204,6 +245,7 @@ const Banner = () => {
             fontWeight: 'bold',
             cursor: 'pointer',
             height: '70px',
+            opacity: 0,
           }}>
             Agregar Nuevo Elemento
           </button>
@@ -216,6 +258,7 @@ const Banner = () => {
             fontWeight: 'bold',
             cursor: 'pointer',
             height: '70px',
+            opacity: 0,
           }}>
             Cerrar sesión
           </button>

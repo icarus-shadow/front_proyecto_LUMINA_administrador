@@ -1,13 +1,15 @@
 import * as React from 'react';
-import {IconButton, Paper} from "@mui/material";
-import {Edit, Delete, Visibility } from '@mui/icons-material';
-import {DataGrid} from "@mui/x-data-grid";
+import { useEffect, useRef } from 'react';
+import { animate as anime, stagger } from 'animejs';
+import { IconButton, Paper } from "@mui/material";
+import { Edit, Delete, Visibility } from '@mui/icons-material';
+import { DataGrid } from "@mui/x-data-grid";
 import { esES } from "@mui/x-data-grid/locales";
-import type {GridColDef} from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import './styles/DinamicTable.css';
 
 
-interface DinamicTableProps{
+interface DinamicTableProps {
     rows: any[];
     columns: GridColDef[];
     onDelete?: (id: number, codigo: string) => void;
@@ -16,13 +18,36 @@ interface DinamicTableProps{
 }
 
 
-const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEdit, onView}) => {
+const DinamicTable: React.FC<DinamicTableProps> = ({ rows, columns, onDelete, onEdit, onView }) => {
 
     const [tableRows, setTableRows] = React.useState<any[]>([]);
+    const tableRef = useRef<HTMLDivElement>(null);
 
-    React.useEffect(()=>{
+    // Animación de filas al cargar
+    useEffect(() => {
+        if (tableRef.current && rows.length > 0) {
+            // Pequeño delay para asegurar que las filas estén renderizadas
+            setTimeout(() => {
+                if (tableRef.current) {
+                    const rowElements = tableRef.current.querySelectorAll('.MuiDataGrid-row');
+
+                    if (rowElements.length > 0) {
+                        anime(rowElements, {
+                            translateX: [-20, 0],
+                            opacity: [0, 1],
+                            duration: 400,
+                            delay: stagger(50),
+                            easing: 'easeOutQuad',
+                        });
+                    }
+                }
+            }, 100);
+        }
+    }, [rows]);
+
+    React.useEffect(() => {
         setTableRows(rows)
-    },[rows])
+    }, [rows])
 
     const columnasBotones = [
         ...columns.map(col =>
@@ -33,7 +58,7 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
                         <img
                             src={`https://lumina-testing.onrender.com/api/${params.value}`}
                             alt="image"
-                            style={{width: '100%', height: 'auto', maxHeight: '50px', objectFit: 'contain'}}
+                            style={{ width: '100%', height: 'auto', maxHeight: '50px', objectFit: 'contain' }}
                         />
                     )
                 }
@@ -43,20 +68,20 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
             field: "actions",
             headerName: "Acciones",
             flex: 1.1,
-            renderCell:(params: any)=>(
+            renderCell: (params: any) => (
                 <>
                     {onView && (
-                        <IconButton color="primary" onClick={()=> onView(params.row)}>
+                        <IconButton color="primary" onClick={() => onView(params.row)}>
                             <Visibility />
                         </IconButton>
                     )}
                     {onEdit && (
-                        <IconButton color="primary" onClick={()=> onEdit(params.row)}>
+                        <IconButton color="primary" onClick={() => onEdit(params.row)}>
                             <Edit />
                         </IconButton>
                     )}
                     {onDelete && (
-                        <IconButton color="primary" onClick={()=> onDelete(params.row.id, params.row.codigo)}>
+                        <IconButton color="primary" onClick={() => onDelete(params.row.id, params.row.codigo)}>
                             <Delete />
                         </IconButton>
                     )}
@@ -65,20 +90,20 @@ const DinamicTable:React.FC<DinamicTableProps> = ({rows, columns, onDelete, onEd
         }] : [])
     ]
 
-    const paginationModel = {page: 0, pageSize: 8}
+    const paginationModel = { page: 0, pageSize: 8 }
 
-    return(
-        <Paper className="dinamic-table-container" sx={{height: 700, width: "75vw"}} role="region" aria-label="tabla dinamica">
+    return (
+        <Paper ref={tableRef} className="dinamic-table-container" sx={{ height: 700, width: "75vw" }} role="region" aria-label="tabla dinamica">
             <DataGrid
                 rows={tableRows}
                 columns={columnasBotones}
                 localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                initialState={{pagination:{paginationModel}}}
-                pageSizeOptions={[5,8,10,50,100]}
-                sx={{border: 0}}
+                initialState={{ pagination: { paginationModel } }}
+                pageSizeOptions={[5, 8, 10, 50, 100]}
+                sx={{ border: 0 }}
             />
         </Paper>
     )
 }
 
-export default DinamicTable;
+export default React.memo(DinamicTable);

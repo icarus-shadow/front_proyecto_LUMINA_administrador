@@ -1,7 +1,7 @@
 import { instance } from "../baseApi.tsx";
 import type { nivelFormacion } from "../../../types/interfacesData.tsx";
 
-const endpoint = "admin/nivel-formacion"
+const endpoint = "admin/tipos-programa"
 
 export const levelFormationApi = {
     getAll: async function () {
