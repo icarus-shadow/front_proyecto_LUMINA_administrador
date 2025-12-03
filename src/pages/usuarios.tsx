@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button, Avatar } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import ModalForm, { type FieldConfig } from '../components/modalForm';
-import type { GridColDef, GridValueGetter } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
 import { deleteUser, editUSer, addUser } from "../services/redux/slices/data/UsersSlice.tsx";
 import { fetchFormations } from '../services/redux/slices/data/formationSlice';
@@ -45,25 +45,25 @@ const Usuarios = () => {
             field: 'ficha',
             headerName: 'ficha',
             flex: 0.7,
-            valueGetter: ((_value, row) => row && row.formacion && row.formacion.ficha ? row.formacion.ficha : '') as GridValueGetter<any>,
+            valueGetter: (params: any) => params.row && params.row.formacion && params.row.formacion.ficha ? params.row.formacion.ficha : '',
         },
         {
             field: 'formacion',
             headerName: 'nombre formación',
             flex: 1.3,
-            valueGetter: ((_value, row) => row && row.formacion && row.formacion.nombre_programa ? row.formacion.nombre_programa : '') as GridValueGetter<any>,
+            valueGetter: (params: any) => params.row && params.row.formacion && params.row.formacion.nombre_programa ? params.row.formacion.nombre_programa : '',
         },
         {
             field: 'role',
             headerName: 'Rol',
             flex: 0.5,
-            valueGetter: ((_value, row) => row && row.role && row.role.nombre_rol ? row.role.nombre_rol : '') as GridValueGetter<any>,
+            valueGetter: (params: any) => params.row && params.row.role && params.row.role.nombre_rol ? params.row.role.nombre_rol : '',
         },
     ];
 
     // Campos para edición
     const editLeftFields: FieldConfig[] = [
-        { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
+        { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{ value: 1, label: 'usuario' }, { value: 2, label: 'admin' }, { value: 3, label: 'portero' }] },
         { name: 'nombre', label: 'Nombre', type: 'text', required: true },
         { name: 'apellido', label: 'Apellido', type: 'text', required: true },
         { name: 'tipo_documento', label: 'Tipo Documento', type: 'text', required: true },
@@ -75,7 +75,7 @@ const Usuarios = () => {
     ];
 
     const editRightFields: FieldConfig[] = [
-        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({value: f.id, label: f.nombre_programa})) || [] },
+        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: f.nombre_programa })) || [] },
     ];
 
     const editLeftTitle = 'Información del Usuario';
@@ -84,7 +84,7 @@ const Usuarios = () => {
 
     // Campos para agregar usuario
     const addLeftFields: FieldConfig[] = [
-        { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{value:1, label:'usuario'}, {value:2, label:'admin'}, {value:3, label:'portero'}] },
+        { name: 'role_id', label: 'Rol', type: 'select', required: true, options: [{ value: 1, label: 'usuario' }, { value: 2, label: 'admin' }, { value: 3, label: 'portero' }] },
         { name: 'nombre', label: 'Nombre', type: 'text', required: true },
         { name: 'apellido', label: 'Apellido', type: 'text', required: true },
         { name: 'tipo_documento', label: 'Tipo Documento', type: 'text', required: true },
@@ -97,7 +97,7 @@ const Usuarios = () => {
     ];
 
     const addRightFields: FieldConfig[] = [
-        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({value: f.id, label: f.nombre_programa})) || [] },
+        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: f.nombre_programa })) || [] },
     ];
 
     const addLeftTitle = 'Información del Usuario';
@@ -163,7 +163,7 @@ const Usuarios = () => {
             <Button
                 variant="contained"
                 onClick={() => setIsAddModalOpen(true)}
-                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)', display: "none"}}
+                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)', display: "none" }}
             >
                 Agregar Usuario
             </Button>
