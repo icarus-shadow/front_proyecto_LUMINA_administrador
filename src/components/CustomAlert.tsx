@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import './CustomAlert.css';
+import './styles/CustomAlert.css';
 
 interface CustomAlertProps {
     visible: boolean;

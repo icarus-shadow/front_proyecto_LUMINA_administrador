@@ -6,9 +6,7 @@ import ModalForm, { type FieldConfig } from './modalForm';
 import RegisterEquipmentModal from './RegisterEquipmentModal';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
 import { logoutAsync } from '../services/redux/slices/AuthSlice';
-import { fetchFormations } from '../services/redux/slices/data/formationSlice';
 import { addUser } from '../services/redux/slices/data/UsersSlice';
-import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
 import type { AddUserPayload } from '../types/interfacesData';
 import type { RootState } from '../services/redux/store';
 
@@ -61,14 +59,6 @@ const Banner = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (formations && formations.length === 0) {
-      dispatch(fetchFormations());
-    }
-    if (subElements && subElements.length === 0) {
-      dispatch(fetchSubElements());
-    }
-  }, [dispatch, formations?.length, subElements?.length]);
 
   const tiposDocumentos = [
     {

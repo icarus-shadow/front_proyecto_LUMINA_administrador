@@ -76,7 +76,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const [formData, setFormData] = useState<Record<string, any>>(initialValue);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [touched, setTouched] = useState<Record<string, boolean>>({});
-    const [isFormValid, setIsFormValid] = useState<boolean>(false);
     const prevInitialValuesRef = useRef<Record<string, any> | null>(null);
     const { showAlert } = useAlert();
 
@@ -84,7 +83,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
         setFormData(initialValue);
         setErrors({});
         setTouched({});
-        setIsFormValid(false);
     };
 
     // Funciones de validación
@@ -152,14 +150,12 @@ const ModalForm: React.FC<ModalFormProps> = ({
             const error = validateField(name, value, field);
             setErrors((prev) => {
                 const newErrors = { ...prev, [name]: error };
-                // Validar todos los campos para actualizar isFormValid
                 validateAllFields(newErrors);
                 return newErrors;
             });
         }
     };
 
-    // Validar todos los campos y actualizar isFormValid
     const validateAllFields = (currentErrors?: Record<string, string>) => {
         const allFields = [...effectiveLeftFields, ...effectiveRightFields];
         const errorsToCheck = currentErrors || errors;
@@ -175,7 +171,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
             return value !== undefined && value !== null && value !== '';
         });
 
-        setIsFormValid(!hasErrors && allRequiredFieldsFilled);
         return !hasErrors && allRequiredFieldsFilled;
     };
 
@@ -216,7 +211,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
             setFormData(initialValue);
             setErrors({});
             setTouched({});
-            setIsFormValid(false);
             prevInitialValuesRef.current = initialValue;
         }
     }, [isOpen, initialValue]);
@@ -371,7 +365,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         placeholder={field.placeholder}
                         toggleMask
                         className="w-full"
-                        feedback={false}
                     />
                     {touched[field.name!] && errors[field.name!] && (
                         <small className="field-error">{errors[field.name!]}</small>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch } from '../redux/hooks';
 import { fetchUsers } from '../redux/slices/data/UsersSlice';
 import { fetchElements } from '../redux/slices/data/elementsSlice';
