@@ -17,6 +17,14 @@ import { fetchFormations, addFormation, updateFormation, deleteFormation } from 
 import { fetchLevelFormations } from '../services/redux/slices/data/LevelFormationSlice';
 import CustomAlert from './CustomAlert';
 
+// Formatea una fecha Date a YYYY-MM-DD sin alterar por zona horaria
+const formatDateToYMD = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 interface FormationModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -39,6 +47,10 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     const [alertVisible, setAlertVisible] = useState(false);
     const [alertSeverity, setAlertSeverity] = useState<'error' | 'success' | 'warning' | 'info'>('info');
     const [alertMessage, setAlertMessage] = useState('');
+
+    useEffect(() => {
+        console.log('FormData fechas -> inicio:', formData.fecha_inicio_programa, 'fin:', formData.fecha_fin_programa);
+    }, [formData.fecha_inicio_programa, formData.fecha_fin_programa]);
 
     useEffect(() => {
         if (isOpen) {
@@ -80,6 +92,25 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
         setAlertVisible(true);
     };
 
+    const normalizeDateString = (value?: string) => {
+        if (!value) return '';
+        // Busca el primer patrón válido YYYY-MM-DD y lo devuelve
+        const match = value.match(/\d{4}-\d{2}-\d{2}/);
+        if (match && match[0]) return match[0];
+        // Si llegara algo como 20252025-12-14, intenta recortar los últimos 10 caracteres
+        const tail = value.slice(-10);
+        if (/\d{4}-\d{2}-\d{2}/.test(tail)) return tail;
+        return value;
+    };
+
+    const parseDateInput = (value: string | undefined) => {
+        if (!value) return null;
+        const dateOnly = normalizeDateString(value).split('T')[0];
+        console.log('parseDateInput value:', value, 'normalized:', dateOnly);
+        const [y, m, d] = dateOnly.split('-').map(Number);
+        return new Date(y, (m || 1) - 1, d || 1);
+    };
+
     const resetForm = () => {
         setFormData({
             tipos_programas_id: undefined,
@@ -92,12 +123,17 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     };
 
     const handleEdit = (formation: formacion) => {
+        console.log('handleEdit raw formation:', formation);
+        const safeInicio = normalizeDateString(formation.fecha_inicio_programa);
+        const safeFin = normalizeDateString(formation.fecha_fin_programa);
+        console.log('handleEdit normalized strings:', { safeInicio, safeFin });
+
         setFormData({
-            tipos_programas_id: formation.tipos_programas_id,
+            tipos_programas_id: formation.tipos_programas_id || formation.nivel_formacion?.id,
             ficha: formation.ficha,
             nombre_programa: formation.nombre_programa,
-            fecha_inicio_programa: formation.fecha_inicio_programa,
-            fecha_fin_programa: formation.fecha_fin_programa
+            fecha_inicio_programa: safeInicio,
+            fecha_fin_programa: safeFin
         });
         setEditingId(formation.id);
     };
@@ -151,11 +187,11 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     };
 
     const fechaInicioTemplate = (rowData: formacion) => {
-        return rowData.fecha_inicio_programa ? new Date(rowData.fecha_inicio_programa).toLocaleDateString('es-ES') : '';
+        return rowData.fecha_inicio_programa ? (rowData.fecha_inicio_programa.split('T')[0]) : '';
     };
 
     const fechaFinTemplate = (rowData: formacion) => {
-        return rowData.fecha_fin_programa ? new Date(rowData.fecha_fin_programa).toLocaleDateString('es-ES') : '';
+        return rowData.fecha_fin_programa ? (rowData.fecha_fin_programa.split('T')[0]) : '';
     };
 
     const levelFormationOptions = levelFormations?.map((lf: nivelFormacion) => ({
@@ -239,18 +275,24 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
                                 <label htmlFor="fecha_inicio_programa">Fecha Inicio Programa</label>
                                 <Calendar
                                     id="fecha_inicio_programa"
-                                    value={formData.fecha_inicio_programa ? new Date(formData.fecha_inicio_programa) : null}
-                                    onChange={(e) => setFormData({ ...formData, fecha_inicio_programa: e.value ? e.value.toISOString().split('T')[0] : '' })}
-                                    dateFormat="yyyy-mm-dd"
+                                    value={parseDateInput(formData.fecha_inicio_programa)}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        fecha_inicio_programa: e.value ? formatDateToYMD(e.value as Date) : ''
+                                    })}
+                                    dateFormat="yy-mm-dd"
                                 />
                             </div>
                             <div className="p-field p-mb-5">
                                 <label htmlFor="fecha_fin_programa">Fecha Fin Programa</label>
                                 <Calendar
                                     id="fecha_fin_programa"
-                                    value={formData.fecha_fin_programa ? new Date(formData.fecha_fin_programa) : null}
-                                    onChange={(e) => setFormData({ ...formData, fecha_fin_programa: e.value ? e.value.toISOString().split('T')[0] : '' })}
-                                    dateFormat="yyyy-mm-dd"
+                                    value={parseDateInput(formData.fecha_fin_programa)}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        fecha_fin_programa: e.value ? formatDateToYMD(e.value as Date) : ''
+                                    })}
+                                    dateFormat="yy-mm-dd"
                                 />
                             </div>
                             <div className="p-mt-5 p-pt-3" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
