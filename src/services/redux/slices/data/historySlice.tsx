@@ -36,10 +36,13 @@ export const fetchHistory = createAsyncThunk(
 // Selectores personalizados para filtrar historial
 import { createSelector } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 // 1. Historiales sin fecha de salida definida
 export const selectHistorialSinSalida = createSelector(
-    (state: any) => state.history.data as historial[] | null,
+    (state: any) => state.historyReducer.data as historial[] | null,
     () => dayjs().format("YYYY-MM-DD"),
     (data, today) => {
         if (!data) return { hoy: [], otros: [] };
@@ -53,11 +56,11 @@ export const selectHistorialSinSalida = createSelector(
 
 // 2. Historiales con salida definida y de la fecha actual
 export const selectHistorialConSalidaHoy = createSelector(
-    (state: any) => state.history.data as historial[] | null,
+    (state: any) => state.historyReducer.data as historial[] | null,
     () => dayjs().format("YYYY-MM-DD"),
     (data, today) => {
         if (!data) return [];
-        return data.filter(h => h.salida && h.salida.slice(0, 10) === today);
+        return data.filter(h => h.salida && dayjs.utc(h.salida).local().format("YYYY-MM-DD") === today);
     }
 );
 
@@ -74,6 +77,7 @@ export const historySlice = createSlice({
             .addCase(fetchHistory.pending, (state) => {
                 state.success = null;
             })
+
             .addCase(fetchHistory.fulfilled, (state, action) => {
                 state.data = action.payload.data;
                 state.success = action.payload.success;

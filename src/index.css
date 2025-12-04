@@ -68,3 +68,26 @@ body {
 *::-webkit-scrollbar-corner {
     background: transparent;
 }
+
+/* Estilos globales para componentes Dropdown de Prime React */
+.p-dropdown {
+    background-color: var(--background) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(var(--secondary-rgb), 0.3) !important;
+}
+
+.p-dropdown-panel {
+    background-color: var(--background) !important;
+    border: 1px solid rgba(var(--secondary-rgb), 0.3) !important;
+}
+
+.p-dropdown-item {
+    color: var(--text) !important;
+    background-color: var(--background) !important;
+}
+
+.p-dropdown-item:hover,
+.p-dropdown-item:focus {
+    background-color: var(--primary) !important;
+    color: var(--background) !important;
+}

@@ -1,50 +1,68 @@
-// @ts-ignore
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import {
-    Box, Typography, TextField, Button,
-    Dialog, DialogTitle, DialogContent, DialogActions, Autocomplete, FormControl, InputLabel, Select, MenuItem, Avatar
+    Box, Typography, Button,
+    Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, Avatar, TextField
 } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import type { GridColDef } from "@mui/x-data-grid";
 import { useAppSelector } from "../services/redux/hooks.tsx";
-import { useEffect } from "react";
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import type { RootState } from "../services/redux/store.tsx";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
+import Reportes from '../components/Reportes';
+import { Dialog } from 'primereact/dialog';
+import { Calendar } from 'primereact/calendar';
+import { Dropdown } from 'primereact/dropdown';
+
+// * Defino los rangos de horas para los turnos
+const TURNOS = [
+    { label: 'Mañana', value: 'mañana' },
+    { label: 'Tarde', value: 'tarde' },
+    { label: 'Noche', value: 'noche' }
+];
+
+// ! Defino los rangos de horas para cada turno
+const RANGOS_TURNOS = {
+    mañana: { inicio: '06:00', fin: '12:00' },
+    tarde: { inicio: '12:00', fin: '18:00' },
+    noche: { inicio: '18:00', fin: '24:00' }
+};
 
 
 const Historial = () => {
 
-    const users = useAppSelector((state: RootState) => state.usersReducer.data);
-    const historyData = useAppSelector((state: RootState) => state.historyReduce.data);
+    const usersList = useAppSelector((state: RootState) => state.usersReducer.data);
+    const historyData = useAppSelector((state: RootState) => state.historyReducer.data);
 
     useEffect(() => {
     }, []);
 
-    const [modalOpen, setModalOpen] = React.useState(false);
-    const [detailModalOpen, setDetailModalOpen] = React.useState(false);
-    const [selectedRecord, setSelectedRecord] = React.useState<any>(null);
-    const [filters, setFilters] = React.useState({
-        specificDate: null as Dayjs | null,
-        period: '' as 'dia' | 'semana' | 'mes' | 'año' | '',
-        dateRange: [null, null] as [Dayjs | null, Dayjs | null],
-        userId: null as number | null,
+    // * Estado para el modal de detalles
+    const [detailModalOpen, setDetailModalOpen] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState<any>(null);
+
+    // * Estado para los filtros
+    const [filtros, setFiltros] = useState({
+        fechaEspecifica: null as Date | null,
+        rangoFechasInicio: null as Date | null,
+        rangoFechasFin: null as Date | null,
+        usuario: null as number | null,
+        turno: null as string | null
     });
-    const [filename, setFilename] = React.useState('reporte_horarios');
+
+    // * Estado para el modal de filtros
+    const [modalFiltrosVisible, setModalFiltrosVisible] = useState(false);
+
+    // * Estado para el modal de reportes
+    const [reportesModalOpen, setReportesModalOpen] = useState(false);
 
     const handleView = (row: any) => {
         setSelectedRecord(row);
         setDetailModalOpen(true);
     }
-    // Función para obtener el historial completo con filtros
+    // * Función que obtiene el historial completo aplicando los filtros seleccionados
     const getHistorialCompleto = () => {
         let filteredHistorial = (historyData || []).map(entry => {
             return {
@@ -54,57 +72,87 @@ const Historial = () => {
                 elementoCategoria: entry.equipo ? entry.equipo.tipo_elemento : 'Desconocido',
                 tipoElemento: entry.equipo ? entry.equipo.tipo_elemento : 'Desconocido',
                 observaciones: entry.equipo ? entry.equipo.descripcion : 'Desconocido',
+                horaIngreso: dayjs(entry.ingreso)
             };
         });
 
-        // Aplicar filtros
-        if (filters.specificDate) {
-            const dateStr = filters.specificDate.format('YYYY-MM-DD');
+        // * Aplicar filtros
+        // * Filtro por fecha específica
+        if (filtros.fechaEspecifica) {
+            const fechaFiltro = dayjs(filtros.fechaEspecifica);
             filteredHistorial = filteredHistorial.filter(entry => {
-                const entryDate = new Date(entry.ingreso).toISOString().split('T')[0];
-                return entryDate === dateStr;
+                return entry.horaIngreso.isSame(fechaFiltro, 'day');
             });
         }
 
-        if (filters.period) {
-            const now = dayjs();
-            let startDate: Dayjs;
-            switch (filters.period) {
-                case 'dia':
-                    startDate = now.startOf('day');
-                    break;
-                case 'semana':
-                    startDate = now.startOf('week');
-                    break;
-                case 'mes':
-                    startDate = now.startOf('month');
-                    break;
-                case 'año':
-                    startDate = now.startOf('year');
-                    break;
-                default:
-                    startDate = dayjs(0);
-            }
+        // * Filtro por rango de fechas
+        if (filtros.rangoFechasInicio && filtros.rangoFechasFin) {
+            const fechaInicio = dayjs(filtros.rangoFechasInicio);
+            const fechaFin = dayjs(filtros.rangoFechasFin);
             filteredHistorial = filteredHistorial.filter(entry => {
-                const entryDate = dayjs(entry.ingreso);
-                return entryDate.isAfter(startDate) || entryDate.isSame(startDate, 'day');
+                return entry.horaIngreso.isBetween(fechaInicio, fechaFin, 'day', '[]');
             });
         }
 
-        if (filters.dateRange[0] && filters.dateRange[1]) {
-            const start = filters.dateRange[0].startOf('day');
-            const end = filters.dateRange[1].endOf('day');
-            filteredHistorial = filteredHistorial.filter(entry => {
-                const entryDate = dayjs(entry.ingreso);
-                return entryDate.isBetween(start, end, null, '[]');
-            });
+        // * Filtro por usuario
+        if (filtros.usuario) {
+            filteredHistorial = filteredHistorial.filter(entry => entry.usuario?.id === filtros.usuario);
         }
 
-        if (filters.userId) {
-            filteredHistorial = filteredHistorial.filter(entry => entry.usuario_id === filters.userId);
+        // * Filtro por turno
+        if (filtros.turno) {
+            filteredHistorial = filteredHistorial.filter(entry => {
+                const rango = RANGOS_TURNOS[filtros.turno as keyof typeof RANGOS_TURNOS];
+                const [horaInicioStr, minInicioStr] = rango.inicio.split(':');
+                const [horaFinStr, minFinStr] = rango.fin.split(':');
+                const horaInicio = parseInt(horaInicioStr);
+                const minInicio = parseInt(minInicioStr);
+                const horaFin = parseInt(horaFinStr);
+                const minFin = parseInt(minFinStr);
+                const inicio = entry.horaIngreso.clone().hour(horaInicio).minute(minInicio).second(0);
+                const fin = entry.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
+                if (filtros.turno === 'noche') {
+                    // ! Para turno noche, verifico si está entre 22:00 y 06:00
+                    return !entry.horaIngreso.isBefore(entry.horaIngreso.clone().hour(22).minute(0), 'minute') || !entry.horaIngreso.isAfter(entry.horaIngreso.clone().hour(6).minute(0), 'minute');
+                } else {
+                    return entry.horaIngreso.isBetween(inicio, fin, 'minute', '[)');
+                }
+            });
         }
 
         return filteredHistorial;
+    };
+
+    // * Manejo cambios en filtros
+    const handleFiltroChange = (campo: string, valor: any) => {
+        setFiltros(prev => ({ ...prev, [campo]: valor }));
+    };
+
+    // * Funciones para limpiar filtros individuales
+    const limpiarFechaEspecifica = () => {
+        setFiltros(prev => ({ ...prev, fechaEspecifica: null }));
+    };
+
+    const limpiarRangoFechas = () => {
+        setFiltros(prev => ({ ...prev, rangoFechasInicio: null, rangoFechasFin: null }));
+    };
+
+    const limpiarUsuario = () => {
+        setFiltros(prev => ({ ...prev, usuario: null }));
+    };
+
+    const limpiarTurno = () => {
+        setFiltros(prev => ({ ...prev, turno: null }));
+    };
+
+    // * Abro modal de filtros
+    const abrirModalFiltros = () => {
+        setModalFiltrosVisible(true);
+    };
+
+    // * Cierro modal de filtros
+    const cerrarModalFiltros = () => {
+        setModalFiltrosVisible(false);
     };
 
     // Columnas para la tabla de historial
@@ -130,109 +178,52 @@ const Historial = () => {
         { field: 'marcaEquipo', headerName: 'Marca del Equipo', flex: 0.7 },
     ];
 
-    // Función para generar el reporte en PDF
-    const generarReporte = () => {
-        const doc = new jsPDF();
-        const data = getHistorialCompleto();
-
-        // Título centrado
-        doc.setFontSize(18);
-        doc.text('Reporte de Horarios', doc.internal.pageSize.width / 2, 20, { align: 'center' });
-
-        // Fecha de generación
-        const fechaGeneracion = new Date().toLocaleDateString('es-ES');
-        doc.setFontSize(12);
-        doc.text(`Fecha de generación: ${fechaGeneracion}`, 20, 35);
-
-        // Columnas de la tabla
-        const tableColumns = ['Fecha Ingreso', 'Fecha Salida', 'Usuario', 'Elemento'];
-
-        // Filas de la tabla
-        const tableRows = data.map(row => [
-            dayjs(row.ingreso).format('DD/MM/YYYY HH:mm'),
-            row.salida ? dayjs(row.salida).format('DD/MM/YYYY HH:mm') : 'activo',
-            row.usuarioNombreCompleto || '',
-            row.marcaEquipo || '',
-        ]);
-
-        // Generar la tabla con autoTable
-        autoTable(doc, {
-            head: [tableColumns],
-            body: tableRows,
-            startY: 45,
-            styles: {
-                fontSize: 8,
-                cellPadding: 3,
-                lineColor: [0, 0, 0],
-                lineWidth: 0.1,
-            },
-            headStyles: {
-                fillColor: [41, 128, 185],
-                textColor: 255,
-                fontStyle: 'bold',
-            },
-            alternateRowStyles: {
-                fillColor: [245, 245, 245],
-            },
-            margin: { top: 45 },
-        });
-
-        // Guardar el PDF
-        doc.save(`${filename}.pdf`);
-    };
 
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ mb: 2, color: "var(--text)"}}>
+            <Typography variant="h4" sx={{ mb: 2, color: "var(--text)" }}>
                 Historial General
             </Typography>
             <Box>
-                <Typography variant="h6" sx={{ mb: 2, color: "var(--text)"}}>
+                <Typography variant="h6" sx={{ mb: 2, color: "var(--text)" }}>
                     Filtros de Historial
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
                     <Button
-                        variant="contained"
-                        onClick={() => setModalOpen(true)}
+                        variant="outlined"
+                        onClick={abrirModalFiltros}
+                        sx={{
+                            color: 'var(--primary)',
+                            borderColor: 'var(--primary)',
+                            '&:hover': { backgroundColor: 'var(--primary)', color: 'white' }
+                        }}
                     >
-                        Filtrar
+                        Filtros
                     </Button>
                     <Button
-                        variant="text"
+                        variant="contained"
                         onClick={() => {
-                            setFilters({
-                                specificDate: null,
-                                period: '',
-                                dateRange: [null, null],
-                                userId: null,
+                            setFiltros({
+                                fechaEspecifica: null,
+                                rangoFechasInicio: null,
+                                rangoFechasFin: null,
+                                usuario: null,
+                                turno: null
                             });
                         }}
-                    >
-                        Limpiar filtros
-                    </Button>
-                    <TextField
-                        label="Nombre del archivo"
-                        value={filename}
-                        onChange={(e) => setFilename(e.target.value)}
-                        size="small"
                         sx={{
-                            '& .MuiInputLabel-root': {color: 'var(--text)'},
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {borderColor: 'var(--text)'},
-                                '& input': {color: 'var(--text)'}
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {color: 'var(--text)'},
-                            '& .MuiOutlinedInput-root:hover fieldset': {borderColor: 'var(--text)'},
-                            '& .MuiOutlinedInput-root.Mui-focused fieldset': {borderColor: 'var(--text)'}
+                            backgroundColor: 'var(--secondary)',
+                            '&:hover': { backgroundColor: 'var(--primary-hover)' }
                         }}
-                    />
+                    >
+                        Limpiar Filtros
+                    </Button>
                     <Button
                         variant="contained"
-                        color="primary"
-                        onClick={generarReporte}
+                        onClick={() => setReportesModalOpen(true)}
                     >
-                        Generar Reporte
+                        Generar Reportes
                     </Button>
                 </Box>
                 <DinamicTable
@@ -241,51 +232,92 @@ const Historial = () => {
                     onView={handleView}
                 />
             </Box>
-            <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="md" fullWidth>
-                <DialogTitle>Filtros de Historial</DialogTitle>
-                <DialogContent>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-                            <DatePicker
-                                label="Fecha específica"
-                                value={filters.specificDate}
-                                onChange={(newValue) => setFilters(prev => ({ ...prev, specificDate: newValue }))}
+            <Dialog
+                header="Filtros de Historial"
+                visible={modalFiltrosVisible}
+                onHide={cerrarModalFiltros}
+                style={{ backgroundColor: 'var(--background)', width: '50vw' }}
+                modal
+                className="p-fluid modal-form"
+                contentStyle={{
+                    backgroundColor: 'var(--background)',
+                    color: 'var(--text)',
+                    border: '1px solid rgba(var(--secondary-rgb), 0.3)'
+                }}
+                headerStyle={{
+                    backgroundColor: 'var(--background)',
+                    color: 'var(--secondary)',
+                    borderBottom: '2px solid var(--secondary)'
+                }}
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <style dangerouslySetInnerHTML={{ __html: `.custom-dropdown .p-dropdown { background-color: var(--background); color: var(--text); border: 1px solid rgba(var(--secondary-rgb), 0.3); } .custom-dropdown .p-dropdown:hover, .custom-dropdown .p-dropdown:focus-within { border-color: var(--primary); } .custom-dropdown .p-dropdown-panel { background-color: var(--background); color: var(--text); border: 1px solid rgba(var(--secondary-rgb), 0.3); }` }} />
+                    <Box>
+                        <Typography variant="subtitle1" sx={{ marginBottom: 1, color: 'var(--text)' }}>Fecha Específica</Typography>
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            <Calendar
+                                value={filtros.fechaEspecifica}
+                                onChange={(e) => handleFiltroChange('fechaEspecifica', e.value)}
+                                placeholder="Selecciona fecha"
                             />
-                            <FormControl fullWidth>
-                                <InputLabel>Período</InputLabel>
-                                <Select
-                                    value={filters.period}
-                                    label="Período"
-                                    onChange={(e) => setFilters(prev => ({ ...prev, period: e.target.value as any }))}
-                                >
-                                    <MenuItem value=""><em>Ninguno</em></MenuItem>
-                                    <MenuItem value="dia">Día</MenuItem>
-                                    <MenuItem value="semana">Semana</MenuItem>
-                                    <MenuItem value="mes">Mes</MenuItem>
-                                    <MenuItem value="año">Año</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <DateRangePicker
-                                label="Rango de fechas"
-                                value={filters.dateRange}
-                                onChange={(newValue) => setFilters(prev => ({ ...prev, dateRange: newValue }))}
-                            />
-                            <Autocomplete
-                                options={(users || []).filter(u => u != null).map(u => ({ label: u.nombre, id: u.id }))}
-                                getOptionLabel={(option) => option.label}
-                                value={filters.userId ? { label: (users || []).filter(u => u != null).find(u => u.id === filters.userId)?.nombre || '', id: filters.userId } : null}
-                                onChange={(_event, newValue) => setFilters(prev => ({ ...prev, userId: newValue ? newValue.id : null }))}
-                                renderInput={(params) => <TextField {...params} label="Usuario" />}
-                            />
+                            <Button variant="outlined" onClick={limpiarFechaEspecifica} size="small">Limpiar</Button>
                         </Box>
-                    </LocalizationProvider>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setModalOpen(false)}>Cancelar</Button>
-                    <Button onClick={() => setModalOpen(false)} variant="contained">Aplicar</Button>
-                </DialogActions>
+                    </Box>
+
+                    <Box>
+                        <Typography variant="subtitle1" sx={{ marginBottom: 1, color: 'var(--text)' }}>Rango de Fechas</Typography>
+                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                            <Calendar
+                                value={filtros.rangoFechasInicio}
+                                onChange={(e) => handleFiltroChange('rangoFechasInicio', e.value)}
+                                placeholder="Fecha inicio"
+                            />
+                            <Calendar
+                                value={filtros.rangoFechasFin}
+                                onChange={(e) => handleFiltroChange('rangoFechasFin', e.value)}
+                                placeholder="Fecha fin"
+                            />
+                            <Button variant="outlined" onClick={limpiarRangoFechas} size="small">Limpiar</Button>
+                        </Box>
+                    </Box>
+
+                    <Box>
+                        <Typography variant="subtitle1" sx={{ marginBottom: 1, color: 'var(--text)' }}>Turno</Typography>
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            <Dropdown
+                                value={filtros.turno}
+                                options={TURNOS}
+                                onChange={(e) => handleFiltroChange('turno', e.value)}
+                                placeholder="Selecciona turno"
+                                showClear
+                                className="custom-dropdown"
+                                style={{ backgroundColor: 'var(--background)', color: 'var(--text)', border: '1px solid rgba(var(--secondary-rgb), 0.3)' }}
+                                panelStyle={{ backgroundColor: 'var(--background)', color: 'var(--text)', border: '1px solid rgba(var(--secondary-rgb), 0.3)' }}
+                            />
+                            <Button variant="outlined" onClick={limpiarTurno} size="small">Limpiar</Button>
+                        </Box>
+                    </Box>
+
+                    <Box>
+                        <Typography variant="subtitle1" sx={{ marginBottom: 1, color: 'var(--text)' }}>Usuario</Typography>
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            <Dropdown
+                                filter={true}
+                                options={(usersList || []).filter(user => user != null).map(user => ({ label: `${user.nombre} ${user.apellido}`, value: user.id }))}
+                                value={filtros.usuario}
+                                onChange={(e) => handleFiltroChange('usuario', e.value)}
+                                placeholder="Selecciona usuario"
+                                showClear
+                                className="custom-dropdown"
+                                style={{ backgroundColor: 'var(--background)', color: 'var(--text)', border: '1px solid rgba(var(--secondary-rgb), 0.3)' }}
+                                panelStyle={{ backgroundColor: 'var(--background)', color: 'var(--text)', border: '1px solid rgba(var(--secondary-rgb), 0.3)' }}
+                            />
+                            <Button variant="outlined" onClick={limpiarUsuario} size="small">Limpiar</Button>
+                        </Box>
+                    </Box>
+                </Box>
             </Dialog>
-            <Dialog open={detailModalOpen} onClose={() => setDetailModalOpen(false)} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+            <MuiDialog open={detailModalOpen} onClose={() => setDetailModalOpen(false)} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
                 <DialogTitle sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>Detalles del Registro</DialogTitle>
                 <DialogContent sx={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
                     {selectedRecord && (
@@ -329,6 +361,9 @@ const Historial = () => {
                 <DialogActions sx={{ backgroundColor: 'var(--background)' }}>
                     <Button onClick={() => setDetailModalOpen(false)} sx={{ color: 'white', backgroundColor: '#f44336', '&:hover': { backgroundColor: '#d32f2f' }, fontSize: '1.1rem', padding: '8px 16px' }}>Cerrar</Button>
                 </DialogActions>
+            </MuiDialog>
+            <Dialog visible={reportesModalOpen} onHide={() => setReportesModalOpen(false)} header="Reportes" modal style={{ width: '90vw', backgroundColor: 'var(--background)', color: 'var(--text)' }} contentStyle={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
+                <Reportes titleSeccion1="Historial" dataSeccion1={getHistorialCompleto()} />
             </Dialog>
         </Box>
     );

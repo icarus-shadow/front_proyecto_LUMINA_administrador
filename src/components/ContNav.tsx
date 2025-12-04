@@ -5,13 +5,13 @@ import { useAppSelector } from '../services/redux/hooks';
 const ContNav = () => {
     const usersCount = useAppSelector(state => state.usersReducer.count);
     const elementsCount = useAppSelector(state => state.elementsReducer.count);
-    const historyCount = useAppSelector(state => state.historyReduce.count);
-    const historyData = useAppSelector(state => state.historyReduce.data);
+    const historyCount = useAppSelector(state => state.historyReducer.count);
+    const historyData = useAppSelector(state => state.historyReducer.data);
 
-    const activeElements = historyData ? new Set(historyData.filter(item => !item.salida || item.salida === '').map(item => item.equipos_o_elementos_id)).size : 0;
+    const activeElements = (historyData && Array.isArray(historyData)) ? new Set(historyData.filter((item: any) => !item.salida || item.salida === '').map((item: any) => item.equipos_o_elementos_id)).size : 0;
 
     const today = new Date().toISOString().split('T')[0];
-    const exitedToday = historyData ? new Set(historyData.filter(item => item.salida && item.salida.startsWith(today)).map(item => item.equipos_o_elementos_id)).size : 0;
+    const exitedToday = (historyData && Array.isArray(historyData)) ? new Set(historyData.filter((item: any) => item.salida && item.salida.startsWith(today)).map((item: any) => item.equipos_o_elementos_id)).size : 0;
 
     return (
         <div className="contMain">
