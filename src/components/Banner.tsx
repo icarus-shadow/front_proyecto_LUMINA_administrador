@@ -223,23 +223,21 @@ const Banner = () => {
           initialValue={{}}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleModalSubmit}
-          aboveFormContent={modalType === 'usuario' ? (
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-              <button
-                onClick={() => setIsFormationModalOpen(true)}
-                style={{
-                  padding: '10px 15px',
-                  backgroundColor: 'var(--primary)',
-                  color: 'var(--text)',
-                  borderRadius: '5px',
-                  border: 'none',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                }}
-              >
-                Gestionar Formaciones
-              </button>
-            </div>
+          headerActions={modalType === 'usuario' ? (
+            <button
+              onClick={() => setIsFormationModalOpen(true)}
+              style={{
+                padding: '10px 15px',
+                backgroundColor: 'var(--primary)',
+                color: 'var(--text)',
+                borderRadius: '5px',
+                border: 'none',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              Gestionar Formaciones
+            </button>
           ) : undefined}
           rightAdditionalContent={modalType === 'usuario' ? (formData) => {
             const selectedId = formData.formacion_id;

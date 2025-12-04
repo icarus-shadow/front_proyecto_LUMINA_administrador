@@ -49,6 +49,7 @@ interface ModalFormProps {
     onFieldChange?: (name: string, value: any) => void;
     rightAdditionalContent?: (formData: Record<string, any>) => React.ReactNode;
     aboveFormContent?: React.ReactNode;
+    headerActions?: React.ReactNode;
 }
 
 // =============================
@@ -72,6 +73,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     onFieldChange,
     rightAdditionalContent,
     aboveFormContent,
+    headerActions,
 }) => {
     // Retrocompatibilidad: si no se pasan leftFields/rightFields, usar fields
     const effectiveLeftFields = leftFields || (fields ? fields.slice(0, Math.ceil(fields.length / 2)) : []);
@@ -452,7 +454,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     return (
         <div ref={dialogRef}>
             <Dialog
-                header={title}
+                header={headerActions ? <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>{title}{headerActions}</div> : title}
                 visible={isOpen}
                 style={{ width: '90vw', maxWidth: '1400px' }}
                 onHide={onClose}
