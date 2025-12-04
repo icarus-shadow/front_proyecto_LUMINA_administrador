@@ -1,5 +1,3 @@
-// @ts-ignore
-import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { Box, Button, Typography, Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
 import dayjs from 'dayjs';

@@ -52,6 +52,7 @@ export interface formacion {
     nombre_programa: string;
     fecha_inicio_programa: string;
     fecha_fin_programa: string;
+    nivel_formacion?: nivelFormacion;
 }
 
 export interface nivelFormacion {

@@ -31,6 +31,9 @@ const Usuarios = () => {
         }
     }, [dispatch, formations?.length]);
 
+    // * registro de logs para depuración
+    console.log('Formations data:', formations);
+
 
 
     const columnasUsuarios: GridColDef[] = [
@@ -163,7 +166,7 @@ const Usuarios = () => {
             <Button
                 variant="contained"
                 onClick={() => setIsAddModalOpen(true)}
-                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)', display: "none" }}
+                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)' }}
             >
                 Agregar Usuario
             </Button>
@@ -252,6 +255,20 @@ const Usuarios = () => {
                 initialValue={{}}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={handleAddSubmit}
+                rightAdditionalContent={(formData) => {
+                    const selectedId = formData.formacion_id;
+                    const selectedFormation = formations ? formations.find(f => f.id === selectedId) : null;
+                    return selectedFormation ? (
+                        <Box sx={{ mt: 2, p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
+                            <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2 }}>Información de la Formación</Typography>
+                            <Typography>ficha: {selectedFormation.ficha}</Typography>
+                            <Typography>nombre: {selectedFormation.nombre_programa}</Typography>
+                            <Typography>Nivel: {selectedFormation.nivel_formacion?.nivel_formacion || 'No disponible'}</Typography>
+                            <Typography>inicio: {new Date(selectedFormation.fecha_inicio_programa).toLocaleDateString('es-ES')}</Typography>
+                            <Typography>fin: {new Date(selectedFormation.fecha_fin_programa).toLocaleDateString('es-ES')}</Typography>
+                        </Box>
+                    ) : null;
+                }}
             />
         </Box>
     );

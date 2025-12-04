@@ -221,6 +221,20 @@ const Banner = () => {
           initialValue={{}}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleModalSubmit}
+          rightAdditionalContent={modalType === 'usuario' ? (formData) => {
+            const selectedId = formData.formacion_id;
+            const selectedFormation = formations ? formations.find(f => f.id === selectedId) : null;
+            return selectedFormation ? (
+              <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: '5px' }}>
+                <h4 style={{ color: 'var(--secondary)', marginBottom: '1rem' }}>Información de la Formación</h4>
+                <p>ficha: {selectedFormation.ficha}</p>
+                <p>nombre: {selectedFormation.nombre_programa}</p>
+                <p>Nivel: {selectedFormation.nivel_formacion?.nivel_formacion || 'No disponible'}</p>
+                <p>inicio: {new Date(selectedFormation.fecha_inicio_programa).toLocaleDateString('es-ES')}</p>
+                <p>fin: {new Date(selectedFormation.fecha_fin_programa).toLocaleDateString('es-ES')}</p>
+              </div>
+            ) : null;
+          } : undefined}
         />
         <RegisterEquipmentModal
           visible={showEquipmentModal}

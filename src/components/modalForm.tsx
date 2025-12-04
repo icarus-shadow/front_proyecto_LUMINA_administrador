@@ -46,6 +46,8 @@ interface ModalFormProps {
     customButton?: { label: string; action: () => void; variant?: 'primary' | 'secondary' };
     bannerMessage?: string;
     bannerSeverity?: 'success' | 'info' | 'warn' | 'error';
+    onFieldChange?: (name: string, value: any) => void;
+    rightAdditionalContent?: (formData: Record<string, any>) => React.ReactNode;
 }
 
 // =============================
@@ -66,6 +68,8 @@ const ModalForm: React.FC<ModalFormProps> = ({
     customButton,
     bannerMessage,
     bannerSeverity,
+    onFieldChange,
+    rightAdditionalContent,
 }) => {
     // Retrocompatibilidad: si no se pasan leftFields/rightFields, usar fields
     const effectiveLeftFields = leftFields || (fields ? fields.slice(0, Math.ceil(fields.length / 2)) : []);
@@ -144,6 +148,9 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const handleChange = (name: string, value: any) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
         setTouched((prev) => ({ ...prev, [name]: true }));
+        if (onFieldChange) {
+            onFieldChange(name, value);
+        }
         const allFields = [...effectiveLeftFields, ...effectiveRightFields];
         const field = allFields.find((f) => f.name === name);
         if (field) {
@@ -497,6 +504,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
                                 {effectiveRightTitle}
                             </h3>
                             {effectiveRightFields.map(renderField)}
+                            {rightAdditionalContent ? rightAdditionalContent(formData) : null}
                         </div>
                     </div>
                 </form>
