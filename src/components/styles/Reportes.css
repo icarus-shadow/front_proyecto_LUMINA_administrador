@@ -1,0 +1,105 @@
+/* Estilos para el componente Reportes */
+
+/* * Estilo general para el contenedor principal */
+.reportes-container {
+    padding: 20px;
+    background-color: var(--background);
+    color: var(--text);
+}
+
+/* * Estilo para el título principal */
+.reportes-title {
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+/* * Estilo para la sección de filtros */
+.filtros-section {
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+/* * Estilo para los controles de filtros */
+.filtros-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* * Estilo para los inputs de filtro */
+.filtro-input {
+    color: var(--text);
+}
+
+.filtro-input .MuiOutlinedInput-root {
+    border-color: var(--text);
+}
+
+.filtro-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--text);
+}
+
+.filtro-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: var(--text);
+}
+
+.filtro-input .MuiInputLabel-root {
+    color: var(--text);
+}
+
+.filtro-input .MuiInputBase-input {
+    color: var(--text);
+}
+
+/* * Estilo para las secciones de datos */
+.seccion-container {
+    margin-bottom: 32px;
+}
+
+/* * Estilo para el título de sección */
+.seccion-title {
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+/* * Estilo para el mensaje de sin datos */
+.sin-datos-message {
+    text-align: center;
+    margin-top: 32px;
+    padding: 24px;
+    background-color: var(--primary);
+    color: var(--text);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--accent);
+    width: 70vw;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* * Estilo para el botón de generar reporte */
+.generar-reporte-btn {
+    background-color: var(--primary);
+    color: var(--text);
+}
+
+.generar-reporte-btn:hover {
+    background-color: var(--secondary);
+}
+
+/* * Estilo para el botón de limpiar filtros */
+.limpiar-filtros-btn {
+    color: var(--text);
+}
+
+/* * Estilo para el botón de filtrar */
+.filtrar-btn {
+    background-color: var(--accent);
+    color: var(--text);
+}
+
+.filtrar-btn:hover {
+    background-color: var(--primary);
+}
