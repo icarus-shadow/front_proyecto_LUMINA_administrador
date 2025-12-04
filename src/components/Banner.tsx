@@ -111,7 +111,7 @@ const Banner = () => {
   ];
 
   const rightFields: FieldConfig[] = [
-    { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: f.nombre_programa })) || [] },
+    { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: `${f.nombre_programa} (${f.nivel_formacion?.nivel_formacion || 'Sin nivel'})` })) || [] },
   ];
 
   const leftTitle = 'Información del Usuario';

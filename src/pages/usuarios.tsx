@@ -102,7 +102,7 @@ const Usuarios = () => {
     ];
 
     const editRightFields: FieldConfig[] = [
-        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: f.nombre_programa })) || [] },
+        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: `${f.nombre_programa} (${f.nivel_formacion?.nivel_formacion || 'Sin nivel'})` })) || [] },
     ];
 
     const editLeftTitle = 'Información del Usuario';
@@ -124,7 +124,7 @@ const Usuarios = () => {
     ];
 
     const addRightFields: FieldConfig[] = [
-        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: f.nombre_programa })) || [] },
+        { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: `${f.nombre_programa} (${f.nivel_formacion?.nivel_formacion || 'Sin nivel'})` })) || [] },
     ];
 
     const addLeftTitle = 'Información del Usuario';
