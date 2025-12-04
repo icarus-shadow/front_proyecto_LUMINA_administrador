@@ -32,7 +32,13 @@ export const formation = {
 
     addFormation: async function (data: formacion) {
         try {
-            const response = await instance.post(endpoint, data);
+            const { tipos_programas_id, ...rest } = data;
+            const payload = {
+                ...rest,
+                nivel_formacion_id: tipos_programas_id,
+            };
+            console.log('data enviado a API addFormation:', payload);
+            const response = await instance.post(endpoint, payload);
             console.log(response);
             if (response.data) {
                 return response.data;
@@ -40,6 +46,20 @@ export const formation = {
             throw new Error('Invalid response format');
         } catch (e) {
             console.error("Error al agregar la formación:", e);
+            throw e;
+        }
+    },
+
+    updateFormation: async function (id: number, data: formacion) {
+        try {
+            const response = await instance.put(`${endpoint}/${id}`, data);
+            console.log(response);
+            if (response.data) {
+                return response.data;
+            }
+            throw new Error('Invalid response format');
+        } catch (e) {
+            console.error("Error al actualizar la formación:", e);
             throw e;
         }
     }

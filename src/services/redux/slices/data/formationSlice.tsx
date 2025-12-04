@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { formation } from "../../../api/data/Formation.tsx";
-import type { responseDelete, responseFormation } from "../../../../types/interfacesData.tsx";
+import type { formacion, responseDelete, responseFormation } from "../../../../types/interfacesData.tsx";
 
 // Define the initial state using that type
 const initialState: responseFormation & {
@@ -52,6 +52,45 @@ export const deleteFormation = createAsyncThunk(
     }
 )
 
+export const addFormation = createAsyncThunk(
+    'formaciones/add',
+    async (data: formacion, { dispatch }) => {
+        try {
+            console.log('data en thunk addFormation:', data);
+            const response = await formation.addFormation(data);
+            console.log(response);
+            if (!response) {
+                throw new Error('Respuesta inválida del servidor');
+            }
+            dispatch(fetchFormations());
+
+            return response as responseDelete; // assuming similar response
+        } catch (error) {
+            console.error("[formationSlice] error al agregar la formación", error)
+            throw error;
+        }
+    }
+)
+
+export const updateFormation = createAsyncThunk(
+    'formaciones/update',
+    async ({ id, data }: { id: number; data: formacion }, { dispatch }) => {
+        try {
+            const response = await formation.updateFormation(id, data);
+            console.log(response);
+            if (!response) {
+                throw new Error('Respuesta inválida del servidor');
+            }
+            dispatch(fetchFormations());
+
+            return response as responseDelete; // assuming similar response
+        } catch (error) {
+            console.error("[formationSlice] error al actualizar la formación", error)
+            throw error;
+        }
+    }
+)
+
 export const formationSlice = createSlice({
     name: 'formaciones',
     initialState,
@@ -68,12 +107,30 @@ export const formationSlice = createSlice({
                 state.count = state.data?.length || 0;
             })
 
+            //add
+            .addCase(addFormation.pending, (state) => {
+                state.addSuccess = null;
+            })
+            .addCase(addFormation.fulfilled, (state, action) => {
+                state.addSuccess = action.payload.success
+                state.count = state.data?.length || 0;
+            })
+
             //delete
             .addCase(deleteFormation.pending, (state) => {
                 state.deleteSuccess = null;
             })
             .addCase(deleteFormation.fulfilled, (state, action) => {
                 state.deleteSuccess = action.payload.success
+                state.count = state.data?.length || 0;
+            })
+
+            //update
+            .addCase(updateFormation.pending, (state) => {
+                state.updateSuccess = null;
+            })
+            .addCase(updateFormation.fulfilled, (state, action) => {
+                state.updateSuccess = action.payload.success
                 state.count = state.data?.length || 0;
             })
     }

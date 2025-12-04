@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button, Avatar } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import ModalForm, { type FieldConfig } from '../components/modalForm';
+import FormationModal from '../components/FormationModal';
 import type { GridColDef } from "@mui/x-data-grid";
 import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
 import { deleteUser, editUSer, addUser } from "../services/redux/slices/data/UsersSlice.tsx";
@@ -18,11 +19,16 @@ const Usuarios = () => {
     const elements = useAppSelector((state) => state.elementsReducer.data);
     const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
 
+    // * registro de logs para depuración
+    console.log('Data users:', data);
+    console.log('Elements data:', elements);
+
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [selectedUserForEdit, setSelectedUserForEdit] = React.useState<any>(null);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+    const [isFormationModalOpen, setIsFormationModalOpen] = React.useState(false);
 
 
     React.useEffect(() => {
@@ -48,19 +54,37 @@ const Usuarios = () => {
             field: 'ficha',
             headerName: 'ficha',
             flex: 0.7,
-            valueGetter: (params: any) => params.row && params.row.formacion && params.row.formacion.ficha ? params.row.formacion.ficha : '',
+            valueGetter: (params: any) => {
+                if (!params || !params.row) {
+                    console.error('params.row is undefined in ficha valueGetter');
+                    return '';
+                }
+                return params.row && params.row.formacion && params.row.formacion.ficha ? params.row.formacion.ficha : '';
+            },
         },
         {
             field: 'formacion',
             headerName: 'nombre formación',
             flex: 1.3,
-            valueGetter: (params: any) => params.row && params.row.formacion && params.row.formacion.nombre_programa ? params.row.formacion.nombre_programa : '',
+            valueGetter: (params: any) => {
+                if (!params || !params.row) {
+                    console.error('params.row is undefined in formacion valueGetter');
+                    return '';
+                }
+                return params.row && params.row.formacion && params.row.formacion.nombre_programa ? params.row.formacion.nombre_programa : '';
+            },
         },
         {
             field: 'role',
             headerName: 'Rol',
             flex: 0.5,
-            valueGetter: (params: any) => params.row && params.row.role && params.row.role.nombre_rol ? params.row.role.nombre_rol : '',
+            valueGetter: (params: any) => {
+                if (!params || !params.row) {
+                    console.error('params.row is undefined in role valueGetter');
+                    return '';
+                }
+                return params.row && params.row.role && params.row.role.nombre_rol ? params.row.role.nombre_rol : '';
+            },
         },
     ];
 
@@ -166,7 +190,7 @@ const Usuarios = () => {
             <Button
                 variant="contained"
                 onClick={() => setIsAddModalOpen(true)}
-                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)' }}
+                sx={{ mb: 2, backgroundColor: 'var(--primary)', color: 'var(--text)', display: 'none' }}
             >
                 Agregar Usuario
             </Button>
@@ -197,7 +221,14 @@ const Usuarios = () => {
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Email:</strong> {selectedUser.email}</Typography>
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Teléfono:</strong> {selectedUser.numero_telefono}</Typography>
                                     <Box sx={{ mt: 2, p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5, alignSelf: 'stretch' }}>
-                                        <Typography variant="body1"><strong>Equipos asignados:</strong> {elements ? elements.filter((el: any) => el.usuarios && el.usuarios.some((u: any) => u.id === selectedUser.id)).length : 0}</Typography>
+                                        <Typography variant="body1"><strong>Equipos asignados:</strong> {(() => {
+                                            try {
+                                                return elements ? elements.filter((el: any) => el.usuarios && el.usuarios.some((u: any) => u.id === selectedUser.id)).length : 0;
+                                            } catch (error) {
+                                                console.error('Error calculating assigned elements:', error);
+                                                return 0;
+                                            }
+                                        })()}</Typography>
                                     </Box>
                                 </Box>
                                 {/* Sección Derecha: Información de la Formación */}
@@ -255,6 +286,17 @@ const Usuarios = () => {
                 initialValue={{}}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={handleAddSubmit}
+                aboveFormContent={
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => setIsFormationModalOpen(true)}
+                            sx={{ backgroundColor: 'var(--primary)', color: 'var(--text)', borderColor: 'var(--secondary)' }}
+                        >
+                            Gestionar Formación
+                        </Button>
+                    </div>
+                }
                 rightAdditionalContent={(formData) => {
                     const selectedId = formData.formacion_id;
                     const selectedFormation = formations ? formations.find(f => f.id === selectedId) : null;
@@ -269,6 +311,10 @@ const Usuarios = () => {
                         </Box>
                     ) : null;
                 }}
+            />
+            <FormationModal
+                isOpen={isFormationModalOpen}
+                onClose={() => setIsFormationModalOpen(false)}
             />
         </Box>
     );

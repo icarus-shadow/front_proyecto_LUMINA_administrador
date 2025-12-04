@@ -48,6 +48,7 @@ interface ModalFormProps {
     bannerSeverity?: 'success' | 'info' | 'warn' | 'error';
     onFieldChange?: (name: string, value: any) => void;
     rightAdditionalContent?: (formData: Record<string, any>) => React.ReactNode;
+    aboveFormContent?: React.ReactNode;
 }
 
 // =============================
@@ -70,6 +71,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     bannerSeverity,
     onFieldChange,
     rightAdditionalContent,
+    aboveFormContent,
 }) => {
     // Retrocompatibilidad: si no se pasan leftFields/rightFields, usar fields
     const effectiveLeftFields = leftFields || (fields ? fields.slice(0, Math.ceil(fields.length / 2)) : []);
@@ -469,6 +471,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
                 }}
             >
 
+                {aboveFormContent}
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
                         {/* Left Column */}

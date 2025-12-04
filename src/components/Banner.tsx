@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { animate as anime, stagger } from 'animejs';
 import ModalForm, { type FieldConfig } from './modalForm';
 import RegisterEquipmentModal from './RegisterEquipmentModal';
+import FormationModal from './FormationModal';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
 import { logoutAsync } from '../services/redux/slices/AuthSlice';
 import { addUser } from '../services/redux/slices/data/UsersSlice';
@@ -15,6 +16,7 @@ const Banner = () => {
   const isAuthenticated = !!token && !!user;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
+  const [isFormationModalOpen, setIsFormationModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'usuario' | 'elemento' | null>(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -221,6 +223,24 @@ const Banner = () => {
           initialValue={{}}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleModalSubmit}
+          aboveFormContent={modalType === 'usuario' ? (
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+              <button
+                onClick={() => setIsFormationModalOpen(true)}
+                style={{
+                  padding: '10px 15px',
+                  backgroundColor: 'var(--primary)',
+                  color: 'var(--text)',
+                  borderRadius: '5px',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                Gestionar Formaciones
+              </button>
+            </div>
+          ) : undefined}
           rightAdditionalContent={modalType === 'usuario' ? (formData) => {
             const selectedId = formData.formacion_id;
             const selectedFormation = formations ? formations.find(f => f.id === selectedId) : null;
@@ -239,6 +259,10 @@ const Banner = () => {
         <RegisterEquipmentModal
           visible={showEquipmentModal}
           onHide={() => setShowEquipmentModal(false)}
+        />
+        <FormationModal
+          isOpen={isFormationModalOpen}
+          onClose={() => setIsFormationModalOpen(false)}
         />
 
       </div>
