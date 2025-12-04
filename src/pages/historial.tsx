@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
     Box, Typography, Button,
-    Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, Avatar, TextField
+    Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, Avatar
 } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import type { GridColDef } from "@mui/x-data-grid";
@@ -178,7 +178,8 @@ const Historial = () => {
         { field: 'marcaEquipo', headerName: 'Marca del Equipo', flex: 0.7 },
     ];
 
-
+    // * Variable que contiene los datos filtrados
+    const filteredData = getHistorialCompleto();
 
     return (
         <Box>
@@ -222,12 +223,13 @@ const Historial = () => {
                     <Button
                         variant="contained"
                         onClick={() => setReportesModalOpen(true)}
+                        disabled={filteredData.length === 0}
                     >
                         Generar Reportes
                     </Button>
                 </Box>
                 <DinamicTable
-                    rows={getHistorialCompleto()}
+                    rows={filteredData}
                     columns={columnasHistorial}
                     onView={handleView}
                 />
@@ -362,8 +364,15 @@ const Historial = () => {
                     <Button onClick={() => setDetailModalOpen(false)} sx={{ color: 'white', backgroundColor: '#f44336', '&:hover': { backgroundColor: '#d32f2f' }, fontSize: '1.1rem', padding: '8px 16px' }}>Cerrar</Button>
                 </DialogActions>
             </MuiDialog>
-            <Dialog visible={reportesModalOpen} onHide={() => setReportesModalOpen(false)} header="Reportes" modal style={{ width: '90vw', backgroundColor: 'var(--background)', color: 'var(--text)' }} contentStyle={{ backgroundColor: 'var(--background)', color: 'var(--text)' }}>
-                <Reportes titleSeccion1="Historial" dataSeccion1={getHistorialCompleto()} />
+            <Dialog
+                header="Reportes de Historial"
+                visible={reportesModalOpen}
+                onHide={() => setReportesModalOpen(false)}
+                style={{ width: '90vw', height: '90vh' }}
+                modal
+                maximizable
+            >
+                <Reportes titleSeccion1="Historial" dataSeccion1={filteredData} />
             </Dialog>
         </Box>
     );

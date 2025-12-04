@@ -224,22 +224,25 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
     // * Renderizo los gráficos y el botón para generar el PDF
     return (
         <div>
-            {/* * Gráfico de barras para frecuencia de equipos */}
-            <div ref={barChartRef} style={{ width: '400px', height: '300px', marginBottom: '20px' }}>
-                <h3>Frecuencia de Equipos por Marca</h3>
-                <Bar data={barData} />
-            </div>
+            {/* * Contenedor de gráficos con layout flexbox para responsividad */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+                {/* * Gráfico de barras para frecuencia de equipos */}
+                <div ref={barChartRef} style={{ flex: '1 1 400px', maxWidth: '400px', height: '300px' }}>
+                    <h3>Frecuencia de Equipos por Marca</h3>
+                    <Bar data={barData} />
+                </div>
 
-            {/* * Gráfico de pie para distribución de propietarios */}
-            <div ref={pieChartRef} style={{ width: '400px', height: '300px', marginBottom: '20px' }}>
-                <h3>Distribución de Propietarios</h3>
-                <Pie data={pieData} />
-            </div>
+                {/* * Gráfico de pie para distribución de propietarios */}
+                <div ref={pieChartRef} style={{ flex: '1 1 400px', maxWidth: '400px', height: '300px' }}>
+                    <h3>Distribución de Propietarios</h3>
+                    <Pie data={pieData} />
+                </div>
 
-            {/* * Gráfico de línea para entradas/salidas por fecha */}
-            <div ref={lineChartRef} style={{ width: '400px', height: '300px', marginBottom: '20px' }}>
-                <h3>Entradas y Salidas por Fecha</h3>
-                <Line data={lineData} />
+                {/* * Gráfico de línea para entradas/salidas por fecha */}
+                <div ref={lineChartRef} style={{ flex: '1 1 400px', maxWidth: '400px', height: '300px' }}>
+                    <h3>Entradas y Salidas por Fecha</h3>
+                    <Line data={lineData} />
+                </div>
             </div>
 
             <Button variant="contained" onClick={generarPDF}>

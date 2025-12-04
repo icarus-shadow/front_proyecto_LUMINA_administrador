@@ -152,6 +152,17 @@ const Salidas = () => {
         setFiltros(prev => ({ ...prev, turno: null }));
     };
 
+    // * Función para limpiar todos los filtros
+    const limpiarTodosLosFiltros = () => {
+        setFiltros({
+            horaEspecifica: null,
+            rangoHorasInicio: null,
+            rangoHorasFin: null,
+            usuario: null,
+            turno: null
+        });
+    };
+
     // * Abro modal de filtros
     const abrirModalFiltros = () => {
         setModalFiltrosVisible(true);
@@ -198,7 +209,18 @@ const Salidas = () => {
                 </Button>
                 <Button
                     variant="contained"
+                    onClick={limpiarTodosLosFiltros}
+                    sx={{
+                        backgroundColor: 'var(--secondary)',
+                        '&:hover': { backgroundColor: 'var(--primary-hover)' }
+                    }}
+                >
+                    Limpiar Filtros
+                </Button>
+                <Button
+                    variant="contained"
                     onClick={abrirModalReportes}
+                    disabled={datosFiltrados.length === 0}
                     sx={{
                         backgroundColor: 'var(--secondary)',
                         '&:hover': { backgroundColor: 'var(--primary-hover)' }
@@ -317,7 +339,7 @@ const Salidas = () => {
                 header="Reportes de Salidas"
                 visible={modalReportesVisible}
                 onHide={cerrarModalReportes}
-                style={{ width: '80vw', height: '80vh' }}
+                style={{ width: '90vw', height: '90vh' }}
                 modal
                 maximizable
             >

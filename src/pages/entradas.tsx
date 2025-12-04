@@ -1,7 +1,7 @@
 // @ts-ignore
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import { Box, Button, Typography, Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, Avatar, TextField } from "@mui/material";
+import { Box, Button, Typography, Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
@@ -252,6 +252,24 @@ const Entradas = () => {
         setFiltrosOtros(prev => ({ ...prev, turno: null }));
     };
 
+    // * Función para limpiar todos los filtros
+    const limpiarTodosLosFiltros = () => {
+        setFiltrosHoy({
+            horaEspecifica: null,
+            rangoHorasInicio: null,
+            rangoHorasFin: null,
+            usuario: null,
+            turno: null
+        });
+        setFiltrosOtros({
+            horaEspecifica: null,
+            rangoHorasInicio: null,
+            rangoHorasFin: null,
+            usuario: null,
+            turno: null
+        });
+    };
+
     // * Abro modal de filtros de hoy
     const abrirModalFiltrosHoy = () => {
         setModalFiltrosHoyVisible(true);
@@ -297,7 +315,18 @@ const Entradas = () => {
             <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
                 <Button
                     variant="contained"
+                    onClick={limpiarTodosLosFiltros}
+                    sx={{
+                        backgroundColor: 'var(--secondary)',
+                        '&:hover': { backgroundColor: 'var(--primary-hover)' }
+                    }}
+                >
+                    Limpiar Filtros
+                </Button>
+                <Button
+                    variant="contained"
                     onClick={abrirModalReportes}
+                    disabled={dataSeccion1.length === 0 && dataSeccion2.length === 0}
                     sx={{
                         backgroundColor: 'var(--secondary)',
                         '&:hover': { backgroundColor: 'var(--primary-hover)' }
@@ -559,7 +588,7 @@ const Entradas = () => {
                 header="Reportes de Entradas"
                 visible={modalReportesVisible}
                 onHide={cerrarModalReportes}
-                style={{ width: '80vw', height: '80vh' }}
+                style={{ width: '90vw', height: '90vh' }}
                 modal
                 maximizable
             >
