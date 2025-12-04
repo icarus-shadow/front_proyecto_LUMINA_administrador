@@ -15,7 +15,7 @@ import { subElementsApi } from '../services/api/data/SubElements';
 import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
 import { fetchUsers } from '../services/redux/slices/data/UsersSlice';
 import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
-import { addElement, fetchElements } from '../services/redux/slices/data/elementsSlice';
+import { addElement, fetchElements, assignElements, removeElements, fetchElementAssignments } from '../services/redux/slices/data/elementsSlice';
 import type { RootState } from '../services/redux/store';
 
 interface RegisterEquipmentModalProps {
@@ -100,33 +100,29 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                     : [];
                 setSelectedUsers(userIds as number[]);
 
-                // Fetch assigned additional elements from API
+                // Fetch assigned additional elements from API using Redux
                 const equipoId = initialElement.id;
                 if (equipoId) {
                     setLoadingAssignedElements(true);
                     console.log('Fetching assigned elements for equipoId:', equipoId);
-                    fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignaciones/${equipoId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    })
-                        .then(res => res.json())
-                        .then(json => {
-                            console.log('Response from asignaciones API:', json);
-                            console.log('Full data object:', json?.data);
-                            console.log('JSON keys:', Object.keys(json?.data || {}));
+                    dispatch(fetchElementAssignments(equipoId))
+                        .unwrap()
+                        .then((response) => {
+                            console.log('Response from asignaciones API:', response);
+                            console.log('Full data object:', response?.data);
+                            console.log('JSON keys:', Object.keys(response?.data || {}));
                             
                             // Try different possible paths
-                            let elementosAdicionales = json?.data?.elementosAdicionales || [];
+                            let elementosAdicionales = response?.data?.elementosAdicionales || [];
                             console.log('Path 1 (elementosAdicionales):', elementosAdicionales);
                             
                             if (elementosAdicionales.length === 0) {
-                                elementosAdicionales = json?.data?.elementos_adicionales || [];
+                                elementosAdicionales = response?.data?.elementos_adicionales || [];
                                 console.log('Path 2 (elementos_adicionales):', elementosAdicionales);
                             }
                             
                             if (elementosAdicionales.length === 0) {
-                                elementosAdicionales = json?.data?.elementosAsignados || [];
+                                elementosAdicionales = response?.data?.elementosAsignados || [];
                                 console.log('Path 3 (elementosAsignados):', elementosAdicionales);
                             }
                             
@@ -178,17 +174,10 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
             // Uncheck: if already assigned to an equipment, call unassign endpoint
             if (subElement?.equipos_o_elementos_id) {
                 try {
-                    await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/quitar-elementos`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        },
-                        body: JSON.stringify({
-                            equipos_o_elementos_id: subElement.equipos_o_elementos_id,
-                            elementos_adicionales_ids: [subElementId]
-                        })
-                    });
+                    await dispatch(removeElements({
+                        equipoId: subElement.equipos_o_elementos_id,
+                        elementosIds: [subElementId]
+                    })).unwrap();
                     showAlert('success', 'Elemento desasignado');
                     dispatch(fetchSubElements());
                 } catch (e) {
@@ -328,35 +317,20 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                     // First, remove ALL currently assigned elements
                     if (originalSubElements.length > 0) {
                         console.log('Removing all original elements:', originalSubElements);
-                        await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/quitar-elementos`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`
-                            },
-                            body: JSON.stringify({
-                                equipos_o_elementos_id: equipoId,
-                                elementos_adicionales_ids: originalSubElements
-                            })
-                        });
+                        await dispatch(removeElements({
+                            equipoId: equipoId,
+                            elementosIds: originalSubElements
+                        })).unwrap();
                         console.log('Removed all original elements');
                     }
 
                     // Then, assign ONLY the selected elements
                     if (selectedSubElements.length > 0) {
                         console.log('Assigning new elements:', selectedSubElements);
-                        const assignResponse = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`
-                            },
-                            body: JSON.stringify({
-                                equipos_o_elementos_id: equipoId,
-                                elementos_adicionales_ids: selectedSubElements
-                            })
-                        });
-                        const assignResult = await assignResponse.json();
+                        const assignResult = await dispatch(assignElements({
+                            equipoId: equipoId,
+                            elementosIds: selectedSubElements
+                        })).unwrap();
                         console.log('Assign elements response:', assignResult);
                     }
                 }
@@ -385,17 +359,10 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                 // Assign selected additional elements to the equipment
                 if (result.data?.id && selectedSubElements.length > 0) {
                     const equipoId = result.data.id;
-                    await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        },
-                        body: JSON.stringify({
-                            equipos_o_elementos_id: equipoId,
-                            elementos_adicionales_ids: selectedSubElements
-                        })
-                    });
+                    await dispatch(assignElements({
+                        equipoId: equipoId,
+                        elementosIds: selectedSubElements
+                    })).unwrap();
                     dispatch(fetchSubElements());
                 }
                 
