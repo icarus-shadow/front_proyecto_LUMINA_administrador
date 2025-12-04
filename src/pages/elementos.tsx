@@ -11,7 +11,7 @@ import type { GridColDef } from "@mui/x-data-grid";
 import { useAppDispatch, useAppSelector } from "../services/redux/hooks.tsx";
 import { fetchUsers } from '../services/redux/slices/data/UsersSlice';
 import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
-import { deleteElement } from '../services/redux/slices/data/elementsSlice';
+import { deleteElement, fetchElementAssignments } from '../services/redux/slices/data/elementsSlice';
 import QRCode from 'react-qr-code';
 import type { RootState } from "../services/redux/store.tsx";
 const Elementos = () => {
@@ -93,30 +93,17 @@ const Elementos = () => {
     const handleView = async (row: any) => {
         console.log('handleView - row completo:', row);
         
-        // Obtener los elementos adicionales del equipo
+        // Obtener los elementos adicionales del equipo usando Redux
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignaciones/${row.id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            const result = await dispatch(fetchElementAssignments(row.id)).unwrap();
+            console.log('Datos completos con elementos adicionales:', result);
+            console.log('result.data:', result.data);
+            console.log('result.data.elementos_adicionales:', result.data?.elementos_adicionales);
+            // Combinar los datos del row con los elementos adicionales
+            setSelectedRecord({
+                ...row,
+                elementos_adicionales: result.data?.elementos_adicionales || []
             });
-            
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Datos completos con elementos adicionales:', result);
-                console.log('result.data:', result.data);
-                console.log('result.data.elementos_adicionales:', result.data?.elementos_adicionales);
-                // Combinar los datos del row con los elementos adicionales
-                setSelectedRecord({
-                    ...row,
-                    elementos_adicionales: result.data?.elementos_adicionales || []
-                });
-            } else {
-                // Si falla, usar solo los datos del row
-                setSelectedRecord(row);
-            }
         } catch (error) {
             console.error('Error al obtener elementos adicionales:', error);
             setSelectedRecord(row);

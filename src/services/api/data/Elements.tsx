@@ -44,5 +44,38 @@ export const elements = {
             console.error("Error al editar elemento:", error);
             throw error;
         }
+    },
+    asignarElementos: async function(equipoId: number, elementosIds: number[]) {
+        try {
+            const response = await instance.post(`${endpoint}/asignar-elementos`, {
+                equipo_elemento_id: equipoId,
+                elementos_adicionales_ids: elementosIds
+            });
+            return response;
+        } catch (error) {
+            console.error("Error al asignar elementos:", error);
+            throw error;
+        }
+    },
+    quitarElementos: async function(equipoId: number, elementosIds: number[]) {
+        try {
+            const response = await instance.post(`${endpoint}/quitar-elementos`, {
+                equipo_elemento_id: equipoId,
+                elementos_adicionales_ids: elementosIds
+            });
+            return response;
+        } catch (error) {
+            console.error("Error al quitar elementos:", error);
+            throw error;
+        }
+    },
+    obtenerAsignaciones: async function(equipoId: number) {
+        try {
+            const response = await instance.get(`${endpoint}/asignaciones/${equipoId}`);
+            return response;
+        } catch (error) {
+            console.error("Error al obtener asignaciones:", error);
+            throw error;
+        }
     }
 }
