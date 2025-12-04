@@ -42,5 +42,18 @@ export const subElementsApi = {
             console.error("Error al agregar el elemento adicional:", e);
             throw e;
         }
+    },
+
+    updateSubElement: async function (id: number, data: Partial<subElements>) {
+        try {
+            const response = await instance.put(`${endpoint}/${id}`, data);
+            if (response.data) {
+                return response.data;
+            }
+            throw new Error('Invalid response format');
+        } catch (e) {
+            console.error("Error al actualizar el elemento adicional:", e);
+            throw e;
+        }
     }
 }
