@@ -47,11 +47,20 @@ export const elements = {
     },
     asignarElementos: async function(equipoId: number, elementosIds: number[]) {
         try {
-            const response = await instance.post(`${endpoint}/asignar-elementos`, {
-                equipo_elemento_id: equipoId,
-                elementos_adicionales_ids: elementosIds
+            const token = localStorage.getItem('token');
+            const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    equipos_o_elementos_id: equipoId,
+                    elementos_adicionales_ids: elementosIds
+                })
             });
-            return response;
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return { data: await response.json() };
         } catch (error) {
             console.error("Error al asignar elementos:", error);
             throw error;
@@ -59,11 +68,20 @@ export const elements = {
     },
     quitarElementos: async function(equipoId: number, elementosIds: number[]) {
         try {
-            const response = await instance.post(`${endpoint}/quitar-elementos`, {
-                equipo_elemento_id: equipoId,
-                elementos_adicionales_ids: elementosIds
+            const token = localStorage.getItem('token');
+            const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/quitar-elementos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    equipos_o_elementos_id: equipoId,
+                    elementos_adicionales_ids: elementosIds
+                })
             });
-            return response;
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return { data: await response.json() };
         } catch (error) {
             console.error("Error al quitar elementos:", error);
             throw error;
@@ -71,8 +89,15 @@ export const elements = {
     },
     obtenerAsignaciones: async function(equipoId: number) {
         try {
-            const response = await instance.get(`${endpoint}/asignaciones/${equipoId}`);
-            return response;
+            const token = localStorage.getItem('token');
+            const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignaciones/${equipoId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return { data: await response.json() };
         } catch (error) {
             console.error("Error al obtener asignaciones:", error);
             throw error;
