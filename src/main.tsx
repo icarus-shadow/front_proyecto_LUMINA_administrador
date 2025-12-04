@@ -7,6 +7,8 @@ import { Provider } from 'react-redux'
 import { store } from './services/redux/store'
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 import { AlertProvider } from "./components/AlertSystem.tsx";
 
 createRoot(document.getElementById('root')!).render(

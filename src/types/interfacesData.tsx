@@ -29,10 +29,10 @@ interface elements {
 }
 
 export interface subElements {
-    id: number;
+    id?: number;
     nombre_elemento: string;
-    path_foto_elemento: string;
-    equipos_o_elementos_id: number;
+    path_foto_elemento?: string;
+    equipos_o_elementos_id?: number;
 }
 
 export interface historial {
