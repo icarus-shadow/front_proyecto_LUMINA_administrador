@@ -15,15 +15,24 @@ import { subElementsApi } from '../services/api/data/SubElements';
 import { useAppDispatch, useAppSelector } from '../services/redux/hooks';
 import { fetchUsers } from '../services/redux/slices/data/UsersSlice';
 import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
-import { addElement } from '../services/redux/slices/data/elementsSlice';
+import { addElement, fetchElements } from '../services/redux/slices/data/elementsSlice';
 import type { RootState } from '../services/redux/store';
 
 interface RegisterEquipmentModalProps {
     visible: boolean;
     onHide: () => void;
+    isEdit?: boolean;
+    initialElement?: {
+        id: number;
+        sn_equipo?: string;
+        marca?: string;
+        color?: string;
+        tipo_elemento?: string;
+        descripcion?: string;
+    } | null;
 }
 
-const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible, onHide }) => {
+const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible, onHide, isEdit = false, initialElement = null }) => {
     const dispatch = useAppDispatch();
 
     // Redux Data
@@ -44,11 +53,13 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
 
     // Additional Elements State
     const [selectedSubElements, setSelectedSubElements] = useState<number[]>([]);
+    const [originalSubElements, setOriginalSubElements] = useState<number[]>([]); // Track original for comparison
     const [newSubElements, setNewSubElements] = useState<string[]>([]); // deprecated pending list; will create immediately
     const [subElementSearch, setSubElementSearch] = useState('');
     const [newSubElementName, setNewSubElementName] = useState('');
     const [editingSubId, setEditingSubId] = useState<number | null>(null);
     const [editingSubName, setEditingSubName] = useState('');
+    const [loadingAssignedElements, setLoadingAssignedElements] = useState(false);
     
 
     // Loading State
@@ -69,8 +80,70 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
         if (visible) {
             if (!users || users.length === 0) dispatch(fetchUsers());
             if (!subElements || subElements.length === 0) dispatch(fetchSubElements());
+
+            // Prefill when editing
+            if (isEdit && initialElement) {
+                setSnEquipo(initialElement.sn_equipo || '');
+                setMarca(initialElement.marca || '');
+                setColor(initialElement.color || '');
+                setTipoElemento(initialElement.tipo_elemento || null);
+                setDescripcion(initialElement.descripcion || '');
+
+                // Preselect assigned users
+                const assignedUsers = (initialElement as any).usuarios || [];
+                const userIds = Array.isArray(assignedUsers)
+                    ? assignedUsers.map((u: any) => {
+                        // Support possible shapes: {user: {...}} or plain user
+                        const candidate = u?.user ?? u;
+                        return candidate?.id;
+                    }).filter((id: number | undefined) => typeof id === 'number')
+                    : [];
+                setSelectedUsers(userIds as number[]);
+
+                // Fetch assigned additional elements from API
+                const equipoId = initialElement.id;
+                if (equipoId) {
+                    setLoadingAssignedElements(true);
+                    console.log('Fetching assigned elements for equipoId:', equipoId);
+                    fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignaciones/${equipoId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(json => {
+                            console.log('Response from asignaciones API:', json);
+                            console.log('Full data object:', json?.data);
+                            console.log('JSON keys:', Object.keys(json?.data || {}));
+                            
+                            // Try different possible paths
+                            let elementosAdicionales = json?.data?.elementosAdicionales || [];
+                            console.log('Path 1 (elementosAdicionales):', elementosAdicionales);
+                            
+                            if (elementosAdicionales.length === 0) {
+                                elementosAdicionales = json?.data?.elementos_adicionales || [];
+                                console.log('Path 2 (elementos_adicionales):', elementosAdicionales);
+                            }
+                            
+                            if (elementosAdicionales.length === 0) {
+                                elementosAdicionales = json?.data?.elementosAsignados || [];
+                                console.log('Path 3 (elementosAsignados):', elementosAdicionales);
+                            }
+                            
+                            const ids = elementosAdicionales.map((el: any) => el.id).filter((id: any) => typeof id === 'number');
+                            console.log('Extracted IDs:', ids);
+                            setSelectedSubElements(ids);
+                            setOriginalSubElements(ids); // Save original IDs for later comparison
+                        })
+                        .catch(e => console.error('Error fetching assigned elements:', e))
+                        .finally(() => setLoadingAssignedElements(false));
+                }
+            }
         }
-    }, [visible, dispatch, users?.length, subElements?.length]);
+    }, [visible, isEdit, initialElement, dispatch, users?.length, subElements?.length]);
+
+    // Este useEffect ya no es necesario porque consultamos la API en el primer useEffect
+    // que tiene prioridad y devuelve los IDs correctos desde elementosAdicionales
 
     const handleUserToggle = (userId: number) => {
         let _selectedUsers = [...selectedUsers];
@@ -88,7 +161,14 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
         user.documento &&
         (user.nombre.toLowerCase().includes(userSearch.toLowerCase()) ||
             user.documento.includes(userSearch))
-    ) || [];
+    )?.sort((a, b) => {
+        // Selected users first
+        const aSelected = a && selectedUsers.includes(a.id);
+        const bSelected = b && selectedUsers.includes(b.id);
+        if (aSelected && !bSelected) return -1;
+        if (!aSelected && bSelected) return 1;
+        return 0;
+    }) || [];
 
     const handleSubElementToggle = async (subElementId: number) => {
         const isCurrentlySelected = selectedSubElements.includes(subElementId);
@@ -128,7 +208,14 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
         subElement &&
         subElement.nombre_elemento &&
         subElement.nombre_elemento.toLowerCase().includes(subElementSearch.toLowerCase())
-    ) || [];
+    )?.sort((a, b) => {
+        // Selected elements first
+        const aSelected = a && selectedSubElements.includes(a.id!);
+        const bSelected = b && selectedSubElements.includes(b.id!);
+        if (aSelected && !bSelected) return -1;
+        if (!aSelected && bSelected) return 1;
+        return 0;
+    }) || [];
 
     const handleAddNewSubElement = async () => {
         const nombre = newSubElementName.trim();
@@ -148,10 +235,6 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
             console.error(e);
             showAlert('error', 'No se pudo crear el elemento');
         }
-    };
-
-    const handleRemoveNewSubElement = (name: string) => {
-        setNewSubElements(newSubElements.filter(n => n !== name));
     };
 
     const startEditSubElement = (id: number, currentName: string) => {
@@ -190,54 +273,140 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
     };
 
     const handleSubmit = async () => {
-        // Validations
-        if (!snEquipo || !tipoElemento || !selectedFile) {
-            showAlert('error', 'Por favor complete los campos obligatorios (SN, Tipo, Foto)');
+        // Validations: In edit mode, photo is optional
+        if (!snEquipo || !tipoElemento || (!isEdit && !selectedFile)) {
+            showAlert('error', `Por favor complete los campos obligatorios (SN, Tipo${isEdit ? '' : ', Foto'})`);
             return;
         }
 
         setLoading(true);
 
-        const formData = new FormData();
-        formData.append('sn_equipo', snEquipo);
-        if (marca) formData.append('marca', marca);
-        if (color) formData.append('color', color);
-        formData.append('tipo_elemento', tipoElemento);
-        if (descripcion) formData.append('descripcion', descripcion);
-        formData.append('path_foto_equipo_implemento', selectedFile as Blob);
-        const qrHash = `${snEquipo}-${Date.now()}`;
-        formData.append('qr_hash', qrHash);
-
-        // Append arrays
-        selectedUsers.forEach(id => formData.append('id_usuario[]', id.toString()));
-        selectedSubElements.forEach(id => formData.append('elementos_adicionales[]', id.toString()));
-
         try {
-            const result = await dispatch(addElement(formData)).unwrap();
-            
-            // Assign selected additional elements to the equipment
-            if (result.data?.id && selectedSubElements.length > 0) {
-                const equipoId = result.data.id;
-                await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
+            if (isEdit && initialElement) {
+                // UPDATE MODE: Use PUT to update existing equipment
+                const formData = new FormData();
+                formData.append('sn_equipo', snEquipo);
+                if (marca) formData.append('marca', marca);
+                if (color) formData.append('color', color);
+                formData.append('tipo_elemento', tipoElemento);
+                if (descripcion) formData.append('descripcion', descripcion);
+                if (selectedFile) formData.append('path_foto_equipo_implemento', selectedFile as Blob);
+                
+                // Add _method=PUT for FormData submission
+                formData.append('_method', 'PUT');
+
+                // Append users array (backend uses sync() to replace all)
+                selectedUsers.forEach(id => formData.append('id_usuario[]', id.toString()));
+                // NO incluir elementos_adicionales en FormData - se manejan por endpoint separado
+               
+
+                console.log('Updating equipment with users:', selectedUsers);
+
+                // POST request with _method=PUT to handle FormData with file
+                const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/${initialElement.id}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
-                    body: JSON.stringify({
-                        equipos_o_elementos_id: equipoId,
-                        elementos_adicionales_ids: selectedSubElements
-                    })
+                    body: formData
                 });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error al actualizar el equipo');
+                }
+
+                const result = await response.json();
+                const equipoId = result.data?.id || initialElement.id;
+
+                console.log('Equipment updated successfully, equipoId:', equipoId);
+
+                // Get currently assigned elements from originalSubElements state (not from initialElement)
+                if (equipoId) {
+                    console.log('Original elements:', originalSubElements, 'New selected elements:', selectedSubElements);
+
+                    // First, remove ALL currently assigned elements
+                    if (originalSubElements.length > 0) {
+                        console.log('Removing all original elements:', originalSubElements);
+                        await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/quitar-elementos`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify({
+                                equipos_o_elementos_id: equipoId,
+                                elementos_adicionales_ids: originalSubElements
+                            })
+                        });
+                        console.log('Removed all original elements');
+                    }
+
+                    // Then, assign ONLY the selected elements
+                    if (selectedSubElements.length > 0) {
+                        console.log('Assigning new elements:', selectedSubElements);
+                        const assignResponse = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify({
+                                equipos_o_elementos_id: equipoId,
+                                elementos_adicionales_ids: selectedSubElements
+                            })
+                        });
+                        const assignResult = await assignResponse.json();
+                        console.log('Assign elements response:', assignResult);
+                    }
+                }
+
                 dispatch(fetchSubElements());
+                dispatch(fetchElements()); // Recargar la tabla de equipos
+                showAlert('success', 'Equipo actualizado correctamente');
+            } else {
+                // CREATE MODE: Use POST with addElement thunk
+                const formData = new FormData();
+                formData.append('sn_equipo', snEquipo);
+                if (marca) formData.append('marca', marca);
+                if (color) formData.append('color', color);
+                formData.append('tipo_elemento', tipoElemento);
+                if (descripcion) formData.append('descripcion', descripcion);
+                if (selectedFile) formData.append('path_foto_equipo_implemento', selectedFile as Blob);
+                const qrHash = `${snEquipo}-${Date.now()}`;
+                formData.append('qr_hash', qrHash);
+
+                // Append arrays
+                selectedUsers.forEach(id => formData.append('id_usuario[]', id.toString()));
+                selectedSubElements.forEach(id => formData.append('elementos_adicionales[]', id.toString()));
+
+                const result = await dispatch(addElement(formData)).unwrap();
+                
+                // Assign selected additional elements to the equipment
+                if (result.data?.id && selectedSubElements.length > 0) {
+                    const equipoId = result.data.id;
+                    await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                            equipos_o_elementos_id: equipoId,
+                            elementos_adicionales_ids: selectedSubElements
+                        })
+                    });
+                    dispatch(fetchSubElements());
+                }
+                
+                showAlert('success', 'Equipo registrado correctamente');
             }
             
-            showAlert('success', 'Equipo registrado correctamente');
             resetForm();
             setTimeout(() => onHide(), 1500);
         } catch (error) {
             console.error(error);
-            showAlert('error', 'Error al registrar el equipo. Por favor intente nuevamente.');
+            showAlert('error', error instanceof Error ? error.message : 'Error al procesar el equipo. Por favor intente nuevamente.');
         } finally {
             setLoading(false);
         }
@@ -267,7 +436,7 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
 
     return (
         <Dialog
-            header="Registrar Nuevo Equipo"
+            header={isEdit ? "Editar Equipo" : "Registrar Nuevo Equipo"}
             visible={visible}
             style={{ width: '90vw', maxWidth: '1200px' }}
             onHide={onHide}
@@ -336,17 +505,37 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                     </div>
 
                     <div className="field mb-3">
-                        <label htmlFor="foto_equipo" style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>Foto del Equipo *</label>
-                        <input
-                            id="foto_equipo"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                                const file = e.target.files && e.target.files[0];
-                                setSelectedFile(file || null);
-                            }}
+                        <label style={{ color: 'var(--text)', fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+                            Foto del Equipo {!isEdit && '*'}
+                        </label>
+                        <FileUpload
+                            mode="basic"
+                            name="foto_equipo"
+                            accept="image/jpeg,image/png,image/jpg"
+                            maxFileSize={2048 * 1024}
+                            onSelect={(e) => setSelectedFile(e.files[0])}
+                            chooseLabel="Seleccionar archivo"
                             className="w-full"
                         />
+                        {selectedFile && (
+                            <small className="block mt-1" style={{ color: 'var(--text)' }}>
+                                Archivo seleccionado: {selectedFile.name}
+                            </small>
+                        )}
+                        {isEdit && !selectedFile && (initialElement as any)?.path_foto_equipo_implemento && (
+                            (() => {
+                                const filename = (initialElement as any).path_foto_equipo_implemento.split('/').pop() || (initialElement as any).path_foto_equipo_implemento;
+                                const imageUrl = `https://lumina-testing.onrender.com/api/images/${filename}`;
+                                return (
+                                    <div style={{ marginTop: '0.5rem' }}>
+                                        <img src={imageUrl} alt="Foto actual" style={{ width: '100px', height: '100px', borderRadius: '8px', objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                        <small style={{ display: 'block', marginTop: '0.25rem', color: 'rgba(var(--text-rgb), 0.7)' }}>
+                                            Imagen actual (opcional cambiarla)
+                                        </small>
+                                    </div>
+                                );
+                            })()
+                        )}
                     </div>
                 </div>
 
@@ -436,6 +625,11 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                             height: '250px',
                             backgroundColor: 'var(--background)'
                         }}>
+                            {(!subElements || subElements.length === 0 || loadingAssignedElements) && (
+                                <div style={{ textAlign: 'center', padding: '1rem', color: 'rgba(var(--text-rgb), 0.7)' }}>
+                                    {loadingAssignedElements ? 'Cargando elementos asignados...' : 'Cargando elementos adicionales...'}
+                                </div>
+                            )}
                             {filteredSubElements.length > 0 ? filteredSubElements.map(subElement => {
                                 if (!subElement) return null;
                                 return (
@@ -481,8 +675,18 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                                         </div>
                                         {editingSubId !== subElement.id && (
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                <Button icon="pi pi-pencil" className="p-button-text p-button-sm" onClick={() => startEditSubElement(subElement.id!, subElement.nombre_elemento!)} />
-                                                <Button icon="pi pi-trash" className="p-button-text p-button-sm p-button-danger" onClick={() => deleteSubElement(subElement.id!)} />
+                                                <Button
+                                                    type="button"
+                                                    icon="pi pi-pencil"
+                                                    className="p-button-text p-button-sm"
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEditSubElement(subElement.id!, subElement.nombre_elemento!); }}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    icon="pi pi-trash"
+                                                    className="p-button-text p-button-sm p-button-danger"
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteSubElement(subElement.id!); }}
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -544,7 +748,7 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                                         borderRadius: '6px',
                                         backgroundColor: 'rgba(var(--primary-rgb), 0.1)'
                                     }}>
-                                        {subElements.filter(s => selectedSubElements.includes(s.id!)).map(se => (
+                                        {subElements?.filter(s => selectedSubElements.includes(s.id!)).map(se => (
                                              <Tag
                                                  key={`selected-${se.id}`}
                                                  style={{ backgroundColor: 'var(--primary)', color: 'white', cursor: 'pointer' }}

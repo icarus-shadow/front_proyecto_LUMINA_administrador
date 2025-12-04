@@ -12,7 +12,7 @@ import './styles/DinamicTable.css';
 interface DinamicTableProps {
     rows: any[];
     columns: GridColDef[];
-    onDelete?: (id: number, codigo: string) => void;
+    onDelete?: (id: number, row: any) => void;
     onEdit?: (row: any) => void;
     onView?: (row: any) => void;
 }
@@ -81,7 +81,7 @@ const DinamicTable: React.FC<DinamicTableProps> = ({ rows, columns, onDelete, on
                         </IconButton>
                     )}
                     {onDelete && (
-                        <IconButton color="primary" onClick={() => onDelete(params.row.id, params.row.codigo)}>
+                        <IconButton color="primary" onClick={() => onDelete(params.row.id, params.row)}>
                             <Delete />
                         </IconButton>
                     )}
