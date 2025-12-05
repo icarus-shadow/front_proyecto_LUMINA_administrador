@@ -33,7 +33,6 @@ export const levelFormationApi = {
     addLevelFormation: async function (data: nivelFormacion) {
         try {
             const response = await instance.post(endpoint, data);
-            console.log(response);
             if (response.data) {
                 return response.data;
             }

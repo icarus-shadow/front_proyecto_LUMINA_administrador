@@ -11,7 +11,6 @@ export const logoutAsync = createAsyncThunk(
 
             // Si no hay token, simplemente limpiamos y retornamos
             if (!token) {
-                console.warn('⚠️ No se encontró token al intentar cerrar sesión');
                 return { success: true, message: 'Sesión cerrada (sin token)' };
             }
 

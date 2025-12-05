@@ -103,30 +103,21 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                 const equipoId = initialElement.id;
                 if (equipoId) {
                     setLoadingAssignedElements(true);
-                    console.log('Fetching assigned elements for equipoId:', equipoId);
                     dispatch(fetchElementAssignments(equipoId))
                         .unwrap()
                         .then((response) => {
-                            console.log('Response from asignaciones API:', response);
-                            console.log('Full data object:', response?.data);
-                            console.log('JSON keys:', Object.keys(response?.data || {}));
-
                             // Try different possible paths
                             let elementosAdicionales = response?.data?.elementosAdicionales || [];
-                            console.log('Path 1 (elementosAdicionales):', elementosAdicionales);
 
                             if (elementosAdicionales.length === 0) {
                                 elementosAdicionales = response?.data?.elementos_adicionales || [];
-                                console.log('Path 2 (elementos_adicionales):', elementosAdicionales);
                             }
 
                             if (elementosAdicionales.length === 0) {
                                 elementosAdicionales = response?.data?.elementosAsignados || [];
-                                console.log('Path 3 (elementosAsignados):', elementosAdicionales);
                             }
 
                             const ids = elementosAdicionales.map((el: any) => el.id).filter((id: any) => typeof id === 'number');
-                            console.log('Extracted IDs:', ids);
                             setSelectedSubElements(ids);
                             setOriginalSubElements(ids); // Save original IDs for later comparison
                         })
@@ -287,9 +278,6 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                 selectedUsers.forEach(id => formData.append('id_usuario[]', id.toString()));
                 // NO incluir elementos_adicionales en FormData - se manejan por endpoint separado
 
-
-                console.log('Updating equipment with users:', selectedUsers);
-
                 // POST request with _method=PUT to handle FormData with file
                 const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/${initialElement.id}`, {
                     method: 'POST',
@@ -307,30 +295,22 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
                 const result = await response.json();
                 const equipoId = result.data?.id || initialElement.id;
 
-                console.log('Equipment updated successfully, equipoId:', equipoId);
-
                 // Get currently assigned elements from originalSubElements state (not from initialElement)
                 if (equipoId) {
-                    console.log('Original elements:', originalSubElements, 'New selected elements:', selectedSubElements);
-
                     // First, remove ALL currently assigned elements
                     if (originalSubElements.length > 0) {
-                        console.log('Removing all original elements:', originalSubElements);
                         await dispatch(removeElements({
                             equipoId: equipoId,
                             elementosIds: originalSubElements
                         })).unwrap();
-                        console.log('Removed all original elements');
                     }
 
                     // Then, assign ONLY the selected elements
                     if (selectedSubElements.length > 0) {
-                        console.log('Assigning new elements:', selectedSubElements);
                         const assignResult = await dispatch(assignElements({
                             equipoId: equipoId,
                             elementosIds: selectedSubElements
                         })).unwrap();
-                        console.log('Assign elements response:', assignResult);
                     }
                 }
 

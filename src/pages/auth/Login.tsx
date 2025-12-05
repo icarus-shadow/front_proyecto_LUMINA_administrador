@@ -1,17 +1,19 @@
 import { useState } from "react";
-import {useAppDispatch} from "../../services/redux/hooks.tsx";
-import {login} from "../../services/redux/slices/AuthSlice.tsx";
-import "./login.css"
-import { Eye, EyeOff } from "lucide-react";
-
+import { useAppDispatch } from "../../services/redux/hooks.tsx";
+import { login } from "../../services/redux/slices/AuthSlice.tsx";
+import { Card } from "primereact/card";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { Button } from "primereact/button";
+import { Message } from "primereact/message";
+import "./login.css";
 
 const Login = () => {
-
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
-    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const dispatch = useAppDispatch();
 
     const ValidateInfo = () => {
@@ -29,40 +31,61 @@ const Login = () => {
             setPasswordError('');
         }
         return isValid;
-    }
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (ValidateInfo()) {
-            dispatch(login({email, password}));
+            setLoading(true);
+            try {
+                await dispatch(login({ email, password }));
+            } catch {
+                // Manejo de errores adicional si es necesario
+            } finally {
+                setLoading(false);
+            }
         }
-    }
+    };
 
-    return(
-        <div className="contForm">
-            <div className="header">INGRESE CREDENCIALES</div>
-            <div className="line"></div>
-            <div className="contEmail">
-                <div className="emailLabel">Email</div>
-                <input type="email" className="emailInput" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                <div className="error">{emailError}</div>
-            </div>
-            <div className="contPassword">
-                <div className="passwordLabel">Contraseña</div>
-                <div className="passwordInputContainer">
-                    <input type={showPassword ? "text" : "password"} className="passwordInput" value={password} onChange={(e) => setPassword(e.target.value)}/>
-                    <button type="button" className="passwordToggleButton" onClick={togglePasswordVisibility}>
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
+    return (
+        <div className="login-container">
+            <Card className="login-card">
+                <h2 className="login-header">INGRESE CREDENCIALES</h2>
+                <div className="login-line"></div>
+                <div className="field">
+                    <label htmlFor="email" className="field-label">Email</label>
+                    <InputText
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={`field-input ${emailError ? 'p-invalid' : ''}`}
+                        placeholder="Ingresa tu email"
+                        autoComplete="off"
+                    />
+                    {emailError && <Message severity="error" text={emailError} className="field-error" />}
                 </div>
-                <div className="error">{passwordError}</div>
-            </div>
-            <button type={"button"} className="signInButton" onClick={handleSubmit}>Ingresar</button>
+                <div className="field">
+                    <label htmlFor="password" className="field-label">Contraseña</label>
+                    <Password
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={`field-input ${passwordError ? 'p-invalid' : ''}`}
+                        placeholder="Ingresa tu contraseña"
+                        toggleMask
+                        feedback={false}
+                        autoComplete="off"
+                    />
+                    {passwordError && <Message severity="error" text={passwordError} className="field-error" />}
+                </div>
+                <Button
+                    label="Ingresar"
+                    onClick={handleSubmit}
+                    loading={loading}
+                    className="login-button"
+                />
+            </Card>
         </div>
-    )
-}
+    );
+};
 
 export default Login;

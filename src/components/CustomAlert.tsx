@@ -33,7 +33,6 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, severity, message, o
                     });
                 }
             }).catch((err) => {
-                console.warn('Error loading anime.js:', err);
                 // Si no carga anime, solo mostrar el alerta sin animación
                 if (alertRef.current) {
                     alertRef.current.style.opacity = '1';

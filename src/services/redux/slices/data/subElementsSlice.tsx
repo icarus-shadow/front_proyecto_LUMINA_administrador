@@ -38,7 +38,6 @@ export const deleteSubElement = createAsyncThunk(
     async (id: number, { dispatch }) => {
         try {
             const response = await subElementsApi.deleteSubElement(id);
-            console.log(response);
             if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }

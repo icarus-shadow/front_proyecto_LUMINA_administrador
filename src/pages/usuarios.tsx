@@ -19,10 +19,6 @@ const Usuarios = () => {
     const elements = useAppSelector((state) => state.elementsReducer.data);
     const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
 
-    // * registro de logs para depuración
-    console.log('Data users:', data);
-    console.log('Elements data:', elements);
-
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [selectedUserForEdit, setSelectedUserForEdit] = React.useState<any>(null);
@@ -36,9 +32,6 @@ const Usuarios = () => {
             dispatch(fetchFormations());
         }
     }, [dispatch, formations?.length]);
-
-    // * registro de logs para depuración
-    console.log('Formations data:', formations);
 
 
 

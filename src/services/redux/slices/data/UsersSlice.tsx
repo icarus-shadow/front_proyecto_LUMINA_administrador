@@ -1,10 +1,10 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {users} from "../../../api/data/Users.tsx";
-import type {responseDelete, responseUsersSlice, AddUserPayload, EditUserPayload} from "../../../../types/interfacesData.tsx";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { users } from "../../../api/data/Users.tsx";
+import type { responseDelete, responseUsersSlice, AddUserPayload, EditUserPayload } from "../../../../types/interfacesData.tsx";
 
 // Define the initial state using that type
 const initialState: responseUsersSlice = {
-    fetchSuccess:  null,
+    fetchSuccess: null,
     deleteSuccess: null,
     addSuccess: null,
     updateSuccess: null,
@@ -15,26 +15,25 @@ const initialState: responseUsersSlice = {
 
 export const fetchUsers = createAsyncThunk(
     'users/list',
-    async() => {
-    try {
-        const response = await users.getAll();
-        if (!response.data) {
-            throw new Error('Respuesta inválida del servidor');
+    async () => {
+        try {
+            const response = await users.getAll();
+            if (!response.data) {
+                throw new Error('Respuesta inválida del servidor');
+            }
+            return response as responseUsersSlice;
+        } catch (error) {
+            console.error("[usersSlice] error al obtener usuarios", error)
+            throw error;
         }
-        return response as responseUsersSlice;
-    } catch (error) {
-        console.error("[usersSlice] error al obtener usuarios", error)
-        throw error;
-    }
-})
+    })
 
 export const deleteUser = createAsyncThunk(
     'users/delete',
-    async(id: number, {dispatch}) => {
+    async (id: number, { dispatch }) => {
         try {
-            const response = await  users.deleteUser(id);
-            console.log(response);
-            if (!response){
+            const response = await users.deleteUser(id);
+            if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }
             dispatch(fetchUsers());
@@ -49,10 +48,10 @@ export const deleteUser = createAsyncThunk(
 
 export const addUser = createAsyncThunk(
     'users/add',
-    async(payload: AddUserPayload, {dispatch}) => {
+    async (payload: AddUserPayload, { dispatch }) => {
         try {
             const response = await users.addUser(payload);
-            if (!response){
+            if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }
             dispatch(fetchUsers());
@@ -67,11 +66,11 @@ export const addUser = createAsyncThunk(
 
 export const editUSer = createAsyncThunk(
     'users/edit',
-    async (payload: EditUserPayload, {dispatch} ) => {
+    async (payload: EditUserPayload, { dispatch }) => {
         try {
-            const {id, ...userData} = payload;
+            const { id, ...userData } = payload;
             const response = await users.editUser(id, userData);
-            if (!response){
+            if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }
             dispatch(fetchUsers());
@@ -88,14 +87,15 @@ export const usersSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {},
-    extraReducers: (builder) =>{
+    extraReducers: (builder) => {
         builder
             //fetch
             .addCase(fetchUsers.pending, (state) => {
                 state.fetchSuccess = null;
             })
             .addCase(fetchUsers.fulfilled, (state, action) => {
-                state.data = action.payload.data;
+                // Filtrar usuarios con ID 1 y 2 (datos por defecto) y valores null
+                state.data = action.payload.data.filter(user => user !== null && user.id !== 1 && user.id !== 2) as typeof state.data;
                 state.fetchSuccess = action.payload.success
                 state.count = state.data?.length || 0;
             })

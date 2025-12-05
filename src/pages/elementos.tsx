@@ -9,6 +9,7 @@ import DinamicTable from '../components/DinamicTable';
 import RegisterEquipmentModal from '../components/RegisterEquipmentModal';
 import type { GridColDef } from "@mui/x-data-grid";
 import { useAppDispatch, useAppSelector } from "../services/redux/hooks.tsx";
+import { useAlert } from '../components/AlertSystem';
 import { fetchUsers } from '../services/redux/slices/data/UsersSlice';
 import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
 import { deleteElement, fetchElementAssignments } from '../services/redux/slices/data/elementsSlice';
@@ -17,6 +18,7 @@ import type { RootState } from "../services/redux/store.tsx";
 const Elementos = () => {
 
     const dispatch = useAppDispatch();
+    const { showAlert } = useAlert();
     const users = useAppSelector((state: RootState) => state.usersReducer.data);
     const elementos = useAppSelector((state) => state.elementsReducer.data)
 
@@ -65,12 +67,8 @@ const Elementos = () => {
     };
 
     const handleDelete = (id: number, row: any) => {
-        console.log('handleDelete - row completo:', row);
-        console.log('handleDelete - sn_equipo:', row?.sn_equipo);
-        console.log('handleDelete - marca:', row?.marca);
-        console.log('handleDelete - tipo_elemento:', row?.tipo_elemento);
-        setElementToDelete({ 
-            id, 
+        setElementToDelete({
+            id,
             sn_equipo: row?.sn_equipo,
             marca: row?.marca,
             tipo_elemento: row?.tipo_elemento
@@ -86,19 +84,14 @@ const Elementos = () => {
             setElementToDelete(null);
         } catch (error) {
             console.error('Error al eliminar elemento:', error);
-            alert('Error al eliminar el elemento. Por favor intente nuevamente.');
+            showAlert("error", 'Error al eliminar el elemento. Por favor intente nuevamente.');
         }
     };
 
     const handleView = async (row: any) => {
-        console.log('handleView - row completo:', row);
-        
         // Obtener los elementos adicionales del equipo usando Redux
         try {
             const result = await dispatch(fetchElementAssignments(row.id)).unwrap();
-            console.log('Datos completos con elementos adicionales:', result);
-            console.log('result.data:', result.data);
-            console.log('result.data.elementos_adicionales:', result.data?.elementos_adicionales);
             // Combinar los datos del row con los elementos adicionales
             setSelectedRecord({
                 ...row,
@@ -108,7 +101,7 @@ const Elementos = () => {
             console.error('Error al obtener elementos adicionales:', error);
             setSelectedRecord(row);
         }
-        
+
         setDetailModalOpen(true);
     }
 
@@ -154,8 +147,6 @@ const Elementos = () => {
                                                     style={{ width: '100px', height: '100px', borderRadius: '8px', objectFit: 'cover' }}
                                                     onError={(e) => {
                                                         e.currentTarget.style.display = 'none';
-                                                        console.error('Error cargando imagen. URL intentada:', imageUrl);
-                                                        console.error('Path original:', selectedRecord.path_foto_equipo_implemento);
                                                     }}
                                                 />
                                             );

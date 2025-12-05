@@ -37,9 +37,7 @@ export const formation = {
                 ...rest,
                 nivel_formacion_id: tipos_programas_id,
             };
-            console.log('data enviado a API addFormation:', payload);
             const response = await instance.post(endpoint, payload);
-            console.log(response);
             if (response.data) {
                 return response.data;
             }
@@ -53,7 +51,6 @@ export const formation = {
     updateFormation: async function (id: number, data: formacion) {
         try {
             const response = await instance.put(`${endpoint}/${id}`, data);
-            console.log(response);
             if (response.data) {
                 return response.data;
             }

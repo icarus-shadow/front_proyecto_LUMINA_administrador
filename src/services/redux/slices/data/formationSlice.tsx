@@ -38,7 +38,6 @@ export const deleteFormation = createAsyncThunk(
     async (id: number, { dispatch }) => {
         try {
             const response = await formation.deleteFormation(id);
-            console.log(response);
             if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }
@@ -56,9 +55,7 @@ export const addFormation = createAsyncThunk(
     'formaciones/add',
     async (data: formacion, { dispatch }) => {
         try {
-            console.log('data en thunk addFormation:', data);
             const response = await formation.addFormation(data);
-            console.log(response);
             if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }
@@ -77,7 +74,6 @@ export const updateFormation = createAsyncThunk(
     async ({ id, data }: { id: number; data: formacion }, { dispatch }) => {
         try {
             const response = await formation.updateFormation(id, data);
-            console.log(response);
             if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }

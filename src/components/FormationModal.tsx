@@ -16,6 +16,7 @@ import type { formacion, nivelFormacion } from '../types/interfacesData';
 import { fetchFormations, addFormation, updateFormation, deleteFormation } from '../services/redux/slices/data/formationSlice';
 import { fetchLevelFormations } from '../services/redux/slices/data/LevelFormationSlice';
 import CustomAlert from './CustomAlert';
+import { useAlert } from './AlertSystem';
 
 // Formatea una fecha Date a YYYY-MM-DD sin alterar por zona horaria
 const formatDateToYMD = (date: Date) => {
@@ -32,6 +33,7 @@ interface FormationModalProps {
 
 const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     const dispatch = useAppDispatch();
+    const { showAlert: showConfirmAlert } = useAlert();
     const { data: formations, addSuccess, updateSuccess, deleteSuccess } = useSelector((state: any) => state.formationsReducer);
     const { data: levelFormations } = useSelector((state: any) => state.levelFormationReducer);
 
@@ -49,12 +51,10 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
-        console.log('FormData fechas -> inicio:', formData.fecha_inicio_programa, 'fin:', formData.fecha_fin_programa);
     }, [formData.fecha_inicio_programa, formData.fecha_fin_programa]);
 
     useEffect(() => {
         if (isOpen) {
-            console.log('Iniciando carga de formaciones y niveles de formación');
             dispatch(fetchFormations());
             dispatch(fetchLevelFormations());
         }
@@ -106,7 +106,6 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     const parseDateInput = (value: string | undefined) => {
         if (!value) return null;
         const dateOnly = normalizeDateString(value).split('T')[0];
-        console.log('parseDateInput value:', value, 'normalized:', dateOnly);
         const [y, m, d] = dateOnly.split('-').map(Number);
         return new Date(y, (m || 1) - 1, d || 1);
     };
@@ -123,10 +122,8 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     };
 
     const handleEdit = (formation: formacion) => {
-        console.log('handleEdit raw formation:', formation);
         const safeInicio = normalizeDateString(formation.fecha_inicio_programa);
         const safeFin = normalizeDateString(formation.fecha_fin_programa);
-        console.log('handleEdit normalized strings:', { safeInicio, safeFin });
 
         setFormData({
             tipos_programas_id: formation.tipos_programas_id || formation.nivel_formacion?.id,
@@ -139,20 +136,26 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
     };
 
     const handleDelete = (id: number) => {
-        if (window.confirm('¿Estás seguro de eliminar esta formación?')) {
-            dispatch(deleteFormation(id));
-        }
+        showConfirmAlert(
+            'confirm',
+            '¿Estás seguro de eliminar esta formación?',
+            { yesText: 'Eliminar', noText: 'Cancelar' },
+            (confirmed) => {
+                if (confirmed) {
+                    dispatch(deleteFormation(id));
+                }
+            }
+        );
     };
 
     const handleSave = () => {
-        console.log('formData antes de validación:', formData);
         if (!formData.tipos_programas_id || !formData.ficha || !formData.nombre_programa || !formData.fecha_inicio_programa || !formData.fecha_fin_programa) {
-            showAlert('warning', 'Todos los campos son obligatorios');
+            showAlert('error', 'Todos los campos son obligatorios');
             return;
         }
 
         if (new Date(formData.fecha_fin_programa) <= new Date(formData.fecha_inicio_programa)) {
-            showAlert('warning', 'La fecha de fin debe ser posterior a la fecha de inicio');
+            showAlert('error', 'La fecha de fin debe ser posterior a la fecha de inicio');
             return;
         }
 
@@ -164,7 +167,6 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
             fecha_inicio_programa: formData.fecha_inicio_programa,
             fecha_fin_programa: formData.fecha_fin_programa
         };
-        console.log('data a enviar:', data);
 
         if (editingId) {
             dispatch(updateFormation({ id: editingId, data }));
@@ -242,7 +244,7 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
                         </DataTable>
                     </div>
                     <div style={{ flex: 1 }}>
-                        <Card title="Formulario de Formación" className="p-mb-3 p-shadow-4 p-p-3" style={{ border: '2px solid #007bff' }}>
+                        <Card title="Formulario de Formación" className="p-mb-3 p-shadow-4 p-p-3" style={{ border: '2px solid #007bff', padding: '1.5rem' }}>
                             <div className="p-field p-mb-3">
                                 <label htmlFor="tipos_programas_id">Tipo de Programa</label>
                                 {isDropdownEmpty && <p>No hay tipos de programa disponibles</p>}
@@ -281,6 +283,9 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
                                         fecha_inicio_programa: e.value ? formatDateToYMD(e.value as Date) : ''
                                     })}
                                     dateFormat="yy-mm-dd"
+                                    readOnlyInput
+                                    showIcon
+                                    showOnFocus={false}
                                 />
                             </div>
                             <div className="p-field p-mb-5">
@@ -293,9 +298,12 @@ const FormationModal: React.FC<FormationModalProps> = ({ isOpen, onClose }) => {
                                         fecha_fin_programa: e.value ? formatDateToYMD(e.value as Date) : ''
                                     })}
                                     dateFormat="yy-mm-dd"
+                                    readOnlyInput
+                                    showIcon
+                                    showOnFocus={false}
                                 />
                             </div>
-                            <div className="p-mt-5 p-pt-3" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                            <div className="p-mt-5 p-pt-3" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem' }}>
                                 <Button label="Guardar" icon="pi pi-check" onClick={handleSave} />
                                 <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary" onClick={handleCancel} />
                             </div>

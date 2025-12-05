@@ -1,9 +1,9 @@
-import {instance} from "../baseApi.tsx";
+import { instance } from "../baseApi.tsx";
 
 const endpoint = "admin/equipos-elementos"
 
 export const elements = {
-    getAll: async function() {
+    getAll: async function () {
         try {
             const response = await instance.get(endpoint);
             return response;
@@ -12,8 +12,7 @@ export const elements = {
             throw error;
         }
     },
-    agregar: async function(formData: FormData) {
-        console.log(formData.getAll("usuarios_asignados[]"));
+    agregar: async function (formData: FormData) {
         try {
             const response = await instance.post(endpoint, formData, {
                 headers: {
@@ -26,7 +25,7 @@ export const elements = {
             throw error;
         }
     },
-    eliminar: async function(id: string) {
+    eliminar: async function (id: string) {
         try {
             const response = await instance.delete(`${endpoint}/${id}`);
             return response;
@@ -35,7 +34,7 @@ export const elements = {
             throw error;
         }
     },
-    editar: async function(id: string, formData: FormData) {
+    editar: async function (id: string, formData: FormData) {
         try {
             const response = await instance.put(`${endpoint}/${id}`, formData);
             return response;
@@ -45,7 +44,7 @@ export const elements = {
             throw error;
         }
     },
-    asignarElementos: async function(equipoId: number, elementosIds: number[]) {
+    asignarElementos: async function (equipoId: number, elementosIds: number[]) {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignar-elementos`, {
@@ -66,7 +65,7 @@ export const elements = {
             throw error;
         }
     },
-    quitarElementos: async function(equipoId: number, elementosIds: number[]) {
+    quitarElementos: async function (equipoId: number, elementosIds: number[]) {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/quitar-elementos`, {
@@ -87,7 +86,7 @@ export const elements = {
             throw error;
         }
     },
-    obtenerAsignaciones: async function(equipoId: number) {
+    obtenerAsignaciones: async function (equipoId: number) {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`https://lumina-testing.onrender.com/api/admin/equipos-elementos/asignaciones/${equipoId}`, {

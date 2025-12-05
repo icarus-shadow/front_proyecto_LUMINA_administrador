@@ -20,7 +20,7 @@ const initialState: responseLevelFormation & {
 
 export const fetchLevelFormations = createAsyncThunk(
     'levelFormations/list',
-    async () => { 
+    async () => {
         try {
             const response = await levelFormationApi.getAll();
             if (!response.data) {
@@ -38,7 +38,6 @@ export const deleteLevelFormation = createAsyncThunk(
     async (id: number, { dispatch }) => {
         try {
             const response = await levelFormationApi.deleteLevelFormation(id);
-            console.log(response);
             if (!response) {
                 throw new Error('Respuesta inválida del servidor');
             }

@@ -1,14 +1,25 @@
 import Pusher from "pusher-js";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { useAppDispatch } from "../redux/hooks";
 import { reloadHistory } from "../redux/slices/data/historySlice";
 
 export const HistoryEffects = () => {
     const dispatch = useAppDispatch();
+    const users = useSelector((state: any) => state.usersReducer?.data || []);
+    const elements = useSelector((state: any) => state.elementsReducer?.data || []);
+
+    // * Usar refs para mantener referencias actualizadas sin reconectar el WebSocket
+    const usersRef = useRef(users);
+    const elementsRef = useRef(elements);
+
+    // * Actualizar las refs cuando cambien los datos
+    useEffect(() => {
+        usersRef.current = users;
+        elementsRef.current = elements;
+    }, [users, elements]);
 
     useEffect(() => {
-        console.log('[HistoryEffects] Inicializando conexión WebSocket...');
-
         const pusher = new Pusher('3961091702fc34d8a2d3', {
             cluster: 'us2'
         });
@@ -17,8 +28,6 @@ export const HistoryEffects = () => {
 
         channel.bind('historial.updated', function (data: any) {
             try {
-                console.log('[HistoryEffects] Datos recibidos del WebSocket:', data);
-
                 // Extraer el array de historiales del objeto
                 let historyArray = null;
 
@@ -33,8 +42,23 @@ export const HistoryEffects = () => {
                     return;
                 }
 
-                console.log('[HistoryEffects] Array de historiales a enviar a Redux:', historyArray);
-                dispatch(reloadHistory(historyArray));
+                // * Enriquecer cada item del historial con objetos completos de usuario y equipo
+                // * Usar las refs para obtener los datos más actuales
+                const enrichedHistoryArray = historyArray.map((item: any) => {
+                    // * Buscar el usuario correspondiente por ID
+                    const usuario = usersRef.current.find((u: any) => u.id === item.usuario_id) || null;
+                    // * Buscar el equipo correspondiente por ID
+                    const equipo = elementsRef.current.find((e: any) => e.id === item.equipos_o_elementos_id) || null;
+
+                    // * Retornar el item enriquecido con las propiedades adicionales
+                    return {
+                        ...item,
+                        usuario,
+                        equipo
+                    };
+                });
+
+                dispatch(reloadHistory(enrichedHistoryArray));
 
             } catch (error) {
                 console.error('[HistoryEffects] Error al procesar datos del WebSocket:', error);
@@ -43,7 +67,6 @@ export const HistoryEffects = () => {
 
         // Función de limpieza: desconectar cuando el componente se desmonte
         return () => {
-            console.log('[HistoryEffects] Desconectando WebSocket...');
             channel.unbind('historial.updated');
             pusher.unsubscribe('historial-updates');
             pusher.disconnect();

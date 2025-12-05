@@ -8,10 +8,10 @@ const ContNav = () => {
     const historyCount = useAppSelector(state => state.historyReducer.count);
     const historyData = useAppSelector(state => state.historyReducer.data);
 
-    const activeElements = (historyData && Array.isArray(historyData)) ? new Set(historyData.filter((item: any) => !item.salida || item.salida === '').map((item: any) => item.equipos_o_elementos_id)).size : 0;
+    const activeElements = (historyData && Array.isArray(historyData)) ? historyData.filter((item: any) => !item.salida || item.salida === '').length : 0;
 
     const today = new Date().toISOString().split('T')[0];
-    const exitedToday = (historyData && Array.isArray(historyData)) ? new Set(historyData.filter((item: any) => item.salida && item.salida.startsWith(today)).map((item: any) => item.equipos_o_elementos_id)).size : 0;
+    const exitedToday = (historyData && Array.isArray(historyData)) ? historyData.filter((item: any) => item.salida && item.salida.startsWith(today)).length : 0;
 
     return (
         <div className="contMain">

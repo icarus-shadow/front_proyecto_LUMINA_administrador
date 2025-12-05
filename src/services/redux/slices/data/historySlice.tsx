@@ -21,7 +21,6 @@ export const fetchHistory = createAsyncThunk(
     async () => {
         try {
             const response = await history.getAll();
-            console.log(response);
             if (!response.data) {
                 throw new Error('Respuesta inválida del servidor');
             }

@@ -5,6 +5,7 @@ import { animate as anime, stagger } from 'animejs';
 import ModalForm, { type FieldConfig } from './modalForm';
 import RegisterEquipmentModal from './RegisterEquipmentModal';
 import FormationModal from './FormationModal';
+import { useAlert } from './AlertSystem';
 import { useAppSelector, useAppDispatch } from '../services/redux/hooks';
 import { logoutAsync } from '../services/redux/slices/AuthSlice';
 import { addUser } from '../services/redux/slices/data/UsersSlice';
@@ -20,6 +21,7 @@ const Banner = () => {
   const [modalType, setModalType] = useState<'usuario' | 'elemento' | null>(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showAlert } = useAlert();
   const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
   const subElements = useAppSelector((state: RootState) => state.subElementsReducer.data);
 
@@ -59,7 +61,7 @@ const Banner = () => {
         });
       }
     }
-  }, []);
+  }, [isAuthenticated]);
 
 
   const tiposDocumentos = [
@@ -111,7 +113,7 @@ const Banner = () => {
   ];
 
   const rightFields: FieldConfig[] = [
-    { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: `${f.nombre_programa} (${f.nivel_formacion?.nivel_formacion || 'Sin nivel'})` })) || [] },
+    { name: 'formacion_id', label: 'Formación', type: 'select', options: formations?.map(f => ({ value: f.id, label: `Ficha ${f.ficha} - ${f.nombre_programa} (${f.nivel_formacion?.nivel_formacion || 'Sin nivel'})` })) || [] },
   ];
 
   const leftTitle = 'Información del Usuario';
@@ -156,8 +158,6 @@ const Banner = () => {
         path_foto: data.path_foto,
       };
       dispatch(addUser(payload));
-    } else {
-      console.log('Datos del formulario:', data);
     }
     setIsModalOpen(false);
   };
@@ -169,9 +169,9 @@ const Banner = () => {
       // Mostrar alerta según el resultado
       if (result.message) {
         if (result.message.includes('inválido') || result.message.includes('expirado')) {
-          alert('⚠️ ' + result.message);
+          showAlert('error', '⚠️ ' + result.message);
         } else if (result.error) {
-          alert('⚠️ ' + result.message);
+          showAlert('error', '⚠️ ' + result.message);
         }
       }
 
@@ -180,7 +180,7 @@ const Banner = () => {
     } catch (error) {
       // Incluso si hay error, cerramos sesión localmente
       console.error('Error en logout:', error);
-      alert('⚠️ Error al cerrar sesión. Sesión cerrada localmente.');
+      showAlert('error', '⚠️ Error al cerrar sesión. Sesión cerrada localmente.');
       navigate('/login');
     }
   };
@@ -266,45 +266,107 @@ const Banner = () => {
       </div>
       {isAuthenticated && (
         <div ref={buttonsRef} style={{ display: 'flex', gap: '20px', marginLeft: '50px' }}>
-          <button onClick={() => handleButtonClick('usuario', '/usuarios')} style={{
-            marginLeft: '60px',
-            padding: '10px 15px',
-            backgroundColor: 'var(--primary)',
-            color: 'var(--text)',
-            borderRadius: '5px',
-            border: 'none',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            height: '70px',
-            opacity: 0,
-          }}>
-            Agregar Nuevo Usuario
+          <button
+            onClick={() => handleButtonClick('usuario', '/usuarios')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(var(--secondary-rgb), 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(var(--primary-rgb), 0.3)';
+            }}
+            style={{
+              marginLeft: '60px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 20px',
+              background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+              color: 'var(--text)',
+              borderRadius: '12px',
+              border: 'none',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              height: '70px',
+              boxShadow: '0 4px 15px rgba(var(--primary-rgb), 0.3)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              opacity: 0,
+            }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Agregar Usuario</span>
           </button>
-          <button onClick={() => handleButtonClick('elemento', '/elementos')} style={{
-            padding: '10px 15px',
-            backgroundColor: 'var(--primary)',
-            color: 'var(--text)',
-            borderRadius: '5px',
-            border: 'none',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            height: '70px',
-            opacity: 0,
-          }}>
-            Agregar Nuevo Elemento
+          <button
+            onClick={() => handleButtonClick('elemento', '/elementos')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(var(--secondary-rgb), 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(var(--primary-rgb), 0.3)';
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 20px',
+              background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+              color: 'var(--text)',
+              borderRadius: '12px',
+              border: 'none',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              height: '70px',
+              boxShadow: '0 4px 15px rgba(var(--primary-rgb), 0.3)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              opacity: 0,
+            }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>Agregar Elemento</span>
           </button>
-          <button onClick={handleLogout} style={{
-            padding: '10px 15px',
-            backgroundColor: 'var(--danger, #e74c3c)',
-            color: 'white',
-            borderRadius: '5px',
-            border: 'none',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            height: '70px',
-            opacity: 0,
-          }}>
-            Cerrar sesión
+          <button
+            onClick={handleLogout}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(var(--accent-rgb), 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(var(--error-color), 0.3)';
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 20px',
+              background: 'linear-gradient(135deg, var(--error-color), var(--accent))',
+              color: 'var(--text)',
+              borderRadius: '12px',
+              border: 'none',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              height: '70px',
+              boxShadow: '0 4px 15px rgba(201, 122, 122, 0.3)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              opacity: 0,
+            }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Cerrar Sesión</span>
           </button>
         </div>
       )}

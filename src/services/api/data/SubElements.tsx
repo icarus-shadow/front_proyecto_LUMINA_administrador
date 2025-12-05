@@ -33,7 +33,6 @@ export const subElementsApi = {
     addSubElement: async function (data: subElements) {
         try {
             const response = await instance.post(endpoint, data);
-            console.log(response);
             if (response.data) {
                 return response.data;
             }

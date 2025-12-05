@@ -310,6 +310,9 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         onChange={(e) => handleChange(field.name!, e.value)}
                         placeholder={field.placeholder || `Seleccione ${field.label}`}
                         className="w-full"
+                        filter
+                        filterPlaceholder="Buscar por ficha o nombre..."
+                        emptyFilterMessage="No se encontraron formaciones"
                     />
                     {touched[field.name!] && errors[field.name!] && (
                         <small className="field-error">{errors[field.name!]}</small>
