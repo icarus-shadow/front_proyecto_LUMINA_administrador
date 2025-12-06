@@ -2,7 +2,7 @@
 import * as React from 'react';
 import '../components/styles/modal.css';
 import {
-    Box, Typography, Button,
+    Box, Typography, Button as MuiButton,
     Dialog, DialogTitle, DialogContent, DialogActions, Avatar
 } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
@@ -13,14 +13,29 @@ import { useAlert } from '../components/AlertSystem';
 import { fetchUsers } from '../services/redux/slices/data/UsersSlice';
 import { fetchSubElements } from '../services/redux/slices/data/subElementsSlice';
 import { deleteElement, fetchElementAssignments } from '../services/redux/slices/data/elementsSlice';
+import { fetchFormations } from '../services/redux/slices/data/formationSlice';
 import QRCode from 'react-qr-code';
 import type { RootState } from "../services/redux/store.tsx";
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+
 const Elementos = () => {
 
     const dispatch = useAppDispatch();
     const { showAlert } = useAlert();
     const users = useAppSelector((state: RootState) => state.usersReducer.data);
-    const elementos = useAppSelector((state) => state.elementsReducer.data)
+    const elementos = useAppSelector((state) => state.elementsReducer.data);
+    const formations = useAppSelector((state: RootState) => state.formationsReducer.data);
+
+    const [userDocSearch, setUserDocSearch] = React.useState('');
+    const [selectedFormation, setSelectedFormation] = React.useState<any>(null);
+
+    React.useEffect(() => {
+        if (!formations || formations.length === 0) {
+            dispatch(fetchFormations());
+        }
+    }, [dispatch, formations?.length]);
 
     React.useEffect(() => {
     }, [elementos, users]);
@@ -31,6 +46,30 @@ const Elementos = () => {
     const [editElement, setEditElement] = React.useState<any>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [elementToDelete, setElementToDelete] = React.useState<{ id: number; sn_equipo?: string; marca?: string; tipo_elemento?: string } | null>(null);
+    const qrRef = React.useRef<HTMLDivElement>(null);
+
+    // Filter logic
+    const filteredElementos = React.useMemo(() => {
+        return elementos?.filter((elemento: any) => {
+            // Check owner document filter
+            const matchesDoc = userDocSearch
+                ? elemento.usuarios && elemento.usuarios.some((u: any) => {
+                    const userDoc = u.user?.documento || u.documento; // Handle potentially nested user object
+                    return userDoc && userDoc.toLowerCase().includes(userDocSearch.toLowerCase());
+                })
+                : true;
+
+            // Check owner formation filter
+            const matchesFormation = selectedFormation
+                ? elemento.usuarios && elemento.usuarios.some((u: any) => {
+                    const userFormationId = u.user?.formacion_id || u.formacion_id;
+                    return userFormationId === selectedFormation.id;
+                })
+                : true;
+
+            return matchesDoc && matchesFormation;
+        }) || [];
+    }, [elementos, userDocSearch, selectedFormation]);
 
 
     // Columnas para la tabla de elementos
@@ -47,7 +86,8 @@ const Elementos = () => {
                 if (!row || !row.usuarios || row.usuarios.length === 0) {
                     return 'Sin propietario';
                 } else if (row.usuarios.length === 1) {
-                    return row.usuarios[0].nombre + ' ' + row.usuarios[0].apellido;
+                    const user = row.usuarios[0].user || row.usuarios[0];
+                    return user.nombre + ' ' + user.apellido;
                 } else {
                     return row.usuarios.length + ' propietarios';
                 }
@@ -105,14 +145,196 @@ const Elementos = () => {
         setDetailModalOpen(true);
     }
 
+    const handleDownloadQR = () => {
+        if (!qrRef.current || !selectedRecord) return;
+
+        const svg = qrRef.current.querySelector('svg');
+        if (!svg) return;
+
+        // Crear un canvas para convertir el SVG a imagen
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Configurar el tamaño del canvas
+        const svgSize = 300; // Tamaño más grande para mejor calidad
+        canvas.width = svgSize;
+        canvas.height = svgSize;
+
+        // Convertir SVG a string
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        // Crear una imagen desde el SVG
+        const img = new Image();
+        img.onload = () => {
+            // Dibujar la imagen en el canvas con fondo blanco
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, svgSize, svgSize);
+            ctx.drawImage(img, 0, 0, svgSize, svgSize);
+
+            // Convertir canvas a blob y descargar
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const link = document.createElement('a');
+                    const downloadUrl = URL.createObjectURL(blob);
+                    link.href = downloadUrl;
+                    link.download = `QR_${selectedRecord.qr_hash || 'codigo'}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(downloadUrl);
+                }
+            }, 'image/png');
+
+            URL.revokeObjectURL(url);
+        };
+        img.src = url;
+    };
+
+    const handlePrintQR = () => {
+        if (!qrRef.current || !selectedRecord) return;
+
+        const svg = qrRef.current.querySelector('svg');
+        if (!svg) return;
+
+        // Crear ventana de impresión
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+
+        const svgData = new XMLSerializer().serializeToString(svg);
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Imprimir QR - ${selectedRecord.marca || 'Elemento'}</title>
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 20px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 100vh;
+                        font-family: Arial, sans-serif;
+                    }
+                    .qr-container {
+                        text-align: center;
+                    }
+                    svg {
+                        width: 300px;
+                        height: 300px;
+                        margin: 20px 0;
+                    }
+                    h2 {
+                        margin: 10px 0;
+                        color: #333;
+                    }
+                    p {
+                        margin: 5px 0;
+                        color: #666;
+                    }
+                    @media print {
+                        body {
+                            padding: 0;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="qr-container">
+                    <h2>${selectedRecord.marca || 'Elemento'}</h2>
+                    <p><strong>Tipo:</strong> ${selectedRecord.tipo_elemento || 'N/A'}</p>
+                    <p><strong>Serie:</strong> ${selectedRecord.sn_equipo || 'N/A'}</p>
+                    ${svgData}
+                </div>
+            </body>
+            </html>
+        `);
+
+        printWindow.document.close();
+        printWindow.focus();
+
+        // Esperar a que se cargue antes de imprimir
+        setTimeout(() => {
+            printWindow.print();
+        }, 250);
+    };
+
+    const formationOptionTemplate = (option: any) => {
+        return (
+            <div className="flex align-items-center">
+                <div>{option.nombre_programa} - {option.ficha}</div>
+            </div>
+        );
+    };
+
+    const selectedFormationTemplate = (option: any, props: any) => {
+        if (option) {
+            return (
+                <div className="flex align-items-center">
+                    <div>{option.nombre_programa} - {option.ficha}</div>
+                </div>
+            );
+        }
+        return <span>{props.placeholder}</span>;
+    };
+
     return (
         <Box>
             <Typography variant="h4" sx={{ mb: 2, color: "var(--text)" }}>
                 Lista de Elementos
             </Typography>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" style={{ color: 'var(--primary)' }} />
+                    <InputText
+                        value={userDocSearch}
+                        onChange={(e) => setUserDocSearch(e.target.value)}
+                        placeholder="Buscar por doc. propietario"
+                        style={{
+                            backgroundColor: 'var(--background)',
+                            color: 'var(--text)',
+                            borderColor: 'var(--secondary)',
+                            borderRadius: 'var(--button-border-radius)'
+                        }}
+                    />
+                </span>
+                <Dropdown
+                    value={selectedFormation}
+                    onChange={(e) => setSelectedFormation(e.value)}
+                    options={formations || []}
+                    optionLabel="nombre_programa"
+                    placeholder="Filtrar por Formación (prop.)"
+                    filter
+                    filterBy="nombre_programa,ficha"
+                    showClear
+                    itemTemplate={formationOptionTemplate}
+                    valueTemplate={selectedFormationTemplate}
+                    style={{
+                        width: '300px',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--text)',
+                        borderColor: 'var(--secondary)',
+                        borderRadius: 'var(--button-border-radius)'
+                    }}
+                    pt={{
+                        root: { style: { backgroundColor: 'var(--background)' } },
+                        input: { style: { color: 'var(--text)' } },
+                        trigger: { style: { color: 'var(--secondary)' } },
+                        panel: { style: { backgroundColor: 'var(--background)', border: '1px solid var(--secondary)' } },
+                        item: { style: { color: 'var(--text)' } }
+                    }}
+                />
+            </Box>
+
             <Box>
                 <DinamicTable
-                    rows={elementos || []}
+                    rows={filteredElementos}
                     columns={columnasElementos}
                     onView={handleView}
                     onEdit={handleEdit}
@@ -151,7 +373,45 @@ const Elementos = () => {
                                                 />
                                             );
                                         })()}
-                                        <QRCode value={selectedRecord.qr_hash} size={100} />
+                                        <div ref={qrRef}>
+                                            <QRCode value={selectedRecord.qr_hash} size={100} />
+                                        </div>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', gap: 2, mt: 2, justifyContent: 'center' }}>
+                                        <Button
+                                            icon="pi pi-download"
+                                            label="Descargar QR"
+                                            onClick={handleDownloadQR}
+                                            style={{
+                                                backgroundColor: 'var(--primary)',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '0.5rem 1rem',
+                                                borderRadius: 'var(--button-border-radius)',
+                                                fontSize: '0.9rem',
+                                                cursor: 'pointer',
+                                                transition: 'background-color 0.3s'
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
+                                        />
+                                        <Button
+                                            icon="pi pi-print"
+                                            label="Imprimir QR"
+                                            onClick={handlePrintQR}
+                                            style={{
+                                                backgroundColor: 'var(--secondary)',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '0.5rem 1rem',
+                                                borderRadius: 'var(--button-border-radius)',
+                                                fontSize: '0.9rem',
+                                                cursor: 'pointer',
+                                                transition: 'background-color 0.3s'
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--secondary)'}
+                                        />
                                     </Box>
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Marca:</strong> {selectedRecord.marca}</Typography>
                                     <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Tipo:</strong> {selectedRecord.tipo_elemento}</Typography>
@@ -171,7 +431,11 @@ const Elementos = () => {
                                                 }
                                                 return (
                                                     <Box key={index} sx={{ display: 'flex', backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', flexDirection: 'column', alignItems: 'center', mb: 2, textAlign: 'left', padding: 3, borderRadius: 5, marginBottom: 5 }}>
-                                                        <Avatar src={user.path_foto} alt={user.nombre} sx={{ width: 50, height: 50, mb: 2, border: '2px solid var(--secondary)' }} />
+                                                        {(() => {
+                                                            const filename = user.path_foto ? (user.path_foto.split('/').pop() || user.path_foto) : '';
+                                                            const imageUrl = filename ? `https://lumina-testing.onrender.com/api/images/${filename}` : '';
+                                                            return <Avatar src={imageUrl} alt={user.nombre} sx={{ width: 50, height: 50, mb: 2, border: '2px solid var(--secondary)' }} />;
+                                                        })()}
                                                         <Box>
                                                             <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Nombre:</strong> {user.nombre} {user.apellido}</Typography>
                                                             <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Email:</strong> {user.email}</Typography>
@@ -190,16 +454,16 @@ const Elementos = () => {
                                     )}
                                 </Box>
                             </Box>
-                            
+
                             {/* Sección Elementos Adicionales */}
                             {selectedRecord.elementos_adicionales && selectedRecord.elementos_adicionales.length > 0 && (
-                                <Box sx={{ 
+                                <Box sx={{
                                     mx: 4,
                                     mb: 2,
-                                    p: 3, 
-                                    backgroundColor: 'rgba(var(--primary-rgb), 0.05)', 
-                                    borderRadius: 2, 
-                                    border: '1px solid rgba(var(--primary-rgb), 0.2)' 
+                                    p: 3,
+                                    backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+                                    borderRadius: 2,
+                                    border: '1px solid rgba(var(--primary-rgb), 0.2)'
                                 }}>
                                     <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2.5, fontWeight: 'bold' }}>
                                         Elementos Adicionales
@@ -230,15 +494,15 @@ const Elementos = () => {
                     )}
                 </DialogContent>
                 <DialogActions sx={{ backgroundColor: 'var(--background)' }}>
-                    <Button onClick={() => setDetailModalOpen(false)} sx={{ color: 'white', backgroundColor: '#f44336', '&:hover': { backgroundColor: '#d32f2f' }, fontSize: '1.1rem', padding: '8px 16px' }}>Cerrar</Button>
+                    <MuiButton onClick={() => setDetailModalOpen(false)} sx={{ color: 'white', backgroundColor: '#f44336', '&:hover': { backgroundColor: '#d32f2f' }, fontSize: '1.1rem', padding: '8px 16px' }}>Cerrar</MuiButton>
                 </DialogActions>
             </Dialog>
 
             {/* Delete Confirmation Dialog */}
-            <Dialog 
-                open={deleteDialogOpen} 
-                onClose={() => setDeleteDialogOpen(false)} 
-                maxWidth="sm" 
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                maxWidth="sm"
                 fullWidth
                 PaperProps={{
                     sx: {
@@ -248,8 +512,8 @@ const Elementos = () => {
                     }
                 }}
             >
-                <DialogTitle sx={{ 
-                    backgroundColor: 'var(--background)', 
+                <DialogTitle sx={{
+                    backgroundColor: 'var(--background)',
                     color: 'var(--secondary)',
                     borderBottom: '1px solid rgba(var(--secondary-rgb), 0.2)',
                     fontWeight: 'bold',
@@ -262,35 +526,35 @@ const Elementos = () => {
                     <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem' }}>
                         ¿Está seguro que desea eliminar el siguiente elemento?
                     </Typography>
-                    <Box sx={{ 
-                        p: 3, 
-                        backgroundColor: 'rgba(var(--primary-rgb), 0.08)', 
+                    <Box sx={{
+                        p: 3,
+                        backgroundColor: 'rgba(var(--primary-rgb), 0.08)',
                         borderRadius: '8px',
                         border: '1px solid rgba(var(--primary-rgb), 0.2)'
                     }}>
                         {elementToDelete?.sn_equipo?.trim() && (
                             <Typography sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <strong style={{ minWidth: '80px', color: 'var(--primary)' }}>Serial:</strong> 
+                                <strong style={{ minWidth: '80px', color: 'var(--primary)' }}>Serial:</strong>
                                 <span style={{ color: 'var(--text)' }}>{elementToDelete.sn_equipo}</span>
                             </Typography>
                         )}
                         {elementToDelete?.marca?.trim() && (
                             <Typography sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <strong style={{ minWidth: '80px', color: 'var(--primary)' }}>Marca:</strong> 
+                                <strong style={{ minWidth: '80px', color: 'var(--primary)' }}>Marca:</strong>
                                 <span style={{ color: 'var(--text)' }}>{elementToDelete.marca}</span>
                             </Typography>
                         )}
                         {elementToDelete?.tipo_elemento?.trim() && (
                             <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <strong style={{ minWidth: '80px', color: 'var(--primary)' }}>Tipo:</strong> 
+                                <strong style={{ minWidth: '80px', color: 'var(--primary)' }}>Tipo:</strong>
                                 <span style={{ color: 'var(--text)' }}>{elementToDelete.tipo_elemento}</span>
                             </Typography>
                         )}
                     </Box>
-                    <Box sx={{ 
-                        mt: 3, 
-                        p: 2, 
-                        backgroundColor: 'rgba(244, 67, 54, 0.1)', 
+                    <Box sx={{
+                        mt: 3,
+                        p: 2,
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
                         borderRadius: '8px',
                         border: '1px solid rgba(244, 67, 54, 0.3)',
                         display: 'flex',
@@ -303,16 +567,16 @@ const Elementos = () => {
                         </Typography>
                     </Box>
                 </DialogContent>
-                <DialogActions sx={{ 
-                    backgroundColor: 'var(--background)', 
-                    p: 3, 
+                <DialogActions sx={{
+                    backgroundColor: 'var(--background)',
+                    p: 3,
                     gap: 2,
                     borderTop: '1px solid rgba(var(--secondary-rgb), 0.2)'
                 }}>
-                    <Button 
-                        onClick={() => setDeleteDialogOpen(false)} 
+                    <MuiButton
+                        onClick={() => setDeleteDialogOpen(false)}
                         variant="outlined"
-                        sx={{ 
+                        sx={{
                             color: 'var(--text)',
                             borderColor: 'rgba(var(--text-rgb), 0.3)',
                             px: 3,
@@ -326,12 +590,12 @@ const Elementos = () => {
                         }}
                     >
                         Cancelar
-                    </Button>
-                    <Button 
-                        onClick={confirmDelete} 
+                    </MuiButton>
+                    <MuiButton
+                        onClick={confirmDelete}
                         variant="contained"
-                        sx={{ 
-                            color: 'white', 
+                        sx={{
+                            color: 'white',
                             backgroundColor: '#f44336',
                             px: 3,
                             py: 1,
@@ -339,14 +603,14 @@ const Elementos = () => {
                             fontWeight: 600,
                             textTransform: 'none',
                             boxShadow: '0 4px 6px rgba(244, 67, 54, 0.3)',
-                            '&:hover': { 
+                            '&:hover': {
                                 backgroundColor: '#d32f2f',
                                 boxShadow: '0 6px 8px rgba(244, 67, 54, 0.4)'
                             }
                         }}
                     >
                         Eliminar Elemento
-                    </Button>
+                    </MuiButton>
                 </DialogActions>
             </Dialog>
         </Box>

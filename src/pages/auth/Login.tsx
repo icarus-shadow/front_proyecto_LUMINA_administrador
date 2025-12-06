@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../services/redux/hooks.tsx";
-import { login } from "../../services/redux/slices/AuthSlice.tsx";
+import { login, logoutAsync } from "../../services/redux/slices/AuthSlice.tsx";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
+import { useAlert } from "../../components/AlertSystem.tsx";
 import "./login.css";
 
 const Login = () => {
@@ -15,6 +16,7 @@ const Login = () => {
     const [passwordError, setPasswordError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const dispatch = useAppDispatch();
+    const { showAlert } = useAlert();
 
     const ValidateInfo = () => {
         let isValid = true;
@@ -37,9 +39,60 @@ const Login = () => {
         if (ValidateInfo()) {
             setLoading(true);
             try {
-                await dispatch(login({ email, password }));
-            } catch {
-                // Manejo de errores adicional si es necesario
+                const result = await dispatch(login({ email, password }));
+
+                // Si el login fue exitoso
+                if (login.fulfilled.match(result)) {
+                    const user = result.payload.data.user;
+
+                    // Validar si el usuario es administrador (role_id = 2)
+                    if (user.role_id !== 2) {
+                        // No es administrador, cerrar sesión automáticamente
+                        // Limpiar localStorage inmediatamente para evitar que quede logueado
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('token');
+
+                        await dispatch(logoutAsync());
+
+                        showAlert(
+                            'error',
+                            'Acceso denegado. Solo los administradores pueden acceder a esta aplicación.',
+                            { duration: 5 }
+                        );
+                    } else {
+                        // Es administrador, login exitoso
+                        showAlert(
+                            'success',
+                            'Inicio de sesión exitoso',
+                            { duration: 3 }
+                        );
+                    }
+                }
+                // Si el login falló
+                else if (login.rejected.match(result)) {
+                    const errorMessage = result.payload as string;
+
+                    // Mostrar error específico
+                    if (errorMessage === 'CREDENCIALES_INCORRECTAS') {
+                        showAlert(
+                            'error',
+                            'Credenciales incorrectas. Verifica tu email y contraseña.',
+                            { duration: 4 }
+                        );
+                    } else {
+                        showAlert(
+                            'error',
+                            errorMessage || 'Error en el inicio de sesión',
+                            { duration: 4 }
+                        );
+                    }
+                }
+            } catch (error) {
+                showAlert(
+                    'error',
+                    'Error inesperado. Por favor, intenta nuevamente.',
+                    { duration: 4 }
+                );
             } finally {
                 setLoading(false);
             }

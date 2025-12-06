@@ -18,8 +18,11 @@ instance.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            localStorage.removeItem("token");
-            window.location.href = "/";
+            // Evitar redirigir si el error proviene del login
+            if (!error.config.url.includes('auth/login')) {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            }
         }
         return Promise.reject(error);
     }

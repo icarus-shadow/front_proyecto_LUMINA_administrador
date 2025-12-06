@@ -3,8 +3,9 @@ import { Box, Button, Typography, Dialog as MuiDialog, DialogTitle, DialogConten
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
-import { useAppSelector } from "../services/redux/hooks.tsx";
+import { useAppDispatch, useAppSelector } from "../services/redux/hooks.tsx";
 import { selectHistorialConSalidaHoy } from "../services/redux/slices/data/historySlice.tsx";
+import { fetchElementAssignments } from '../services/redux/slices/data/elementsSlice';
 import DinamicTable from '../components/DinamicTable';
 import type { historial } from '../types/interfacesData';
 import type { GridColDef } from "@mui/x-data-grid";
@@ -182,8 +183,22 @@ const Salidas = () => {
     };
 
     // * Manejo la vista de detalles
-    const handleView = (row: any) => {
-        setSelectedRecord(row);
+    const dispatch = useAppDispatch();
+    const handleView = async (row: any) => {
+        try {
+            if (row.equipo?.id) {
+                const result = await dispatch(fetchElementAssignments(row.equipo.id)).unwrap();
+                setSelectedRecord({
+                    ...row,
+                    elementos_adicionales: result.data?.elementos_adicionales || []
+                });
+            } else {
+                setSelectedRecord(row);
+            }
+        } catch (error) {
+            console.error('Error al obtener elementos adicionales:', error);
+            setSelectedRecord(row);
+        }
         setDetailModalOpen(true);
     };
 
@@ -384,6 +399,41 @@ const Salidas = () => {
                                     <Typography variant="body1" sx={{ color: selectedRecord.salida ? 'var(--error-color)' : 'var(--success-color)' }}><strong>Salida:</strong> {selectedRecord.salida ? dayjs(selectedRecord.salida).format('DD/MM/YYYY HH:mm') : 'Activo'}</Typography>
                                 </Box>
                             </Box>
+                            {/* Sección Elementos Adicionales */}
+                            {selectedRecord.elementos_adicionales && selectedRecord.elementos_adicionales.length > 0 && (
+                                <Box sx={{
+                                    mx: 3,
+                                    mb: 2,
+                                    p: 3,
+                                    backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+                                    borderRadius: 2,
+                                    border: '1px solid rgba(var(--primary-rgb), 0.2)'
+                                }}>
+                                    <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2.5, fontWeight: 'bold' }}>
+                                        Elementos Adicionales
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                                        {selectedRecord.elementos_adicionales.map((elemento: any, index: number) => (
+                                            <Box
+                                                key={index}
+                                                sx={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    backgroundColor: 'var(--primary)',
+                                                    color: 'white',
+                                                    padding: '8px 16px',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 500,
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                }}
+                                            >
+                                                {elemento.elemento_adicional?.nombre_elemento || elemento.nombre_elemento || 'Sin nombre'}
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
                         </Box>
                     )}
                 </DialogContent>

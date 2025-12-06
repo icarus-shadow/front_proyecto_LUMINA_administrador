@@ -5,7 +5,8 @@ import {
 } from "@mui/material";
 import DinamicTable from '../components/DinamicTable';
 import type { GridColDef } from "@mui/x-data-grid";
-import { useAppSelector } from "../services/redux/hooks.tsx";
+import { useAppDispatch, useAppSelector } from "../services/redux/hooks.tsx";
+import { fetchElementAssignments } from '../services/redux/slices/data/elementsSlice';
 
 import type { RootState } from "../services/redux/store.tsx";
 import dayjs from 'dayjs';
@@ -58,8 +59,23 @@ const Historial = () => {
     // * Estado para el modal de reportes
     const [reportesModalOpen, setReportesModalOpen] = useState(false);
 
-    const handleView = (row: any) => {
-        setSelectedRecord(row);
+    const dispatch = useAppDispatch();
+
+    const handleView = async (row: any) => {
+        try {
+            if (row.equipo?.id) {
+                const result = await dispatch(fetchElementAssignments(row.equipo.id)).unwrap();
+                setSelectedRecord({
+                    ...row,
+                    elementos_adicionales: result.data?.elementos_adicionales || []
+                });
+            } else {
+                setSelectedRecord(row);
+            }
+        } catch (error) {
+            console.error('Error al obtener elementos adicionales:', error);
+            setSelectedRecord(row);
+        }
         setDetailModalOpen(true);
     }
     // * Función que obtiene el historial completo aplicando los filtros seleccionados
@@ -328,7 +344,7 @@ const Historial = () => {
                                 {/* Sección Usuario Izquierda */}
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--primary-rgb), 0.1)', borderRadius: 2, border: '1px solid rgba(var(--primary-rgb), 0.3)' }}>
                                     <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2, fontWeight: 'bold' }}>Usuario</Typography>
-                                    <Avatar src={selectedRecord.usuario?.path_foto} alt={selectedRecord.usuarioNombreCompleto} sx={{ width: 100, height: 100, mb: 2, border: '2px solid var(--primary)' }} />
+                                    <Avatar src={`https://lumina-testing.onrender.com/api/images/${selectedRecord.usuario?.path_foto}`} alt={selectedRecord.usuarioNombreCompleto} sx={{ width: 100, height: 100, mb: 2, border: '2px solid var(--primary)' }} />
                                     <Typography variant="body1" sx={{ mb: 1 }}><strong>Nombre:</strong> {selectedRecord.usuarioNombreCompleto}</Typography>
                                     <Typography variant="body1" sx={{ mb: 1 }}><strong>Email:</strong> {selectedRecord.usuario?.email || 'N/A'}</Typography>
                                     <Typography variant="body1" sx={{ mb: 1 }}><strong>Documento:</strong> {selectedRecord.usuario?.documento || 'N/A'}</Typography>
@@ -340,7 +356,7 @@ const Historial = () => {
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--secondary-rgb), 0.1)', borderRadius: 2, border: '1px solid rgba(var(--secondary-rgb), 0.3)' }}>
                                     <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold' }}>Dispositivo</Typography>
                                     {selectedRecord.equipo?.path_foto_equipo_implemento && (
-                                        <img src={selectedRecord.equipo.path_foto_equipo_implemento} alt="Imagen del Equipo" style={{ width: '100px', height: '100px', marginBottom: '16px', borderRadius: '8px' }} />
+                                        <img src={`https://lumina-testing.onrender.com/api/images/${selectedRecord.equipo.path_foto_equipo_implemento.split('/').pop()}`} alt="Imagen del Equipo" style={{ width: '100px', height: '100px', marginBottom: '16px', borderRadius: '8px' }} />
                                     )}
                                     <Typography variant="body1" sx={{ mb: 1 }}><strong>Marca:</strong> {selectedRecord.marcaEquipo}</Typography>
                                     <Typography variant="body1" sx={{ mb: 1 }}><strong>Modelo:</strong> {selectedRecord.equipo?.descripcion || 'N/A'}</Typography>
@@ -357,6 +373,41 @@ const Historial = () => {
                                     <Typography variant="body1" sx={{ color: selectedRecord.salida ? 'var(--error-color)' : 'var(--success-color)' }}><strong>Salida:</strong> {selectedRecord.salida ? dayjs(selectedRecord.salida).format('DD/MM/YYYY HH:mm') : 'Activo'}</Typography>
                                 </Box>
                             </Box>
+                            {/* Sección Elementos Adicionales */}
+                            {selectedRecord.elementos_adicionales && selectedRecord.elementos_adicionales.length > 0 && (
+                                <Box sx={{
+                                    mx: 3,
+                                    mb: 2,
+                                    p: 3,
+                                    backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+                                    borderRadius: 2,
+                                    border: '1px solid rgba(var(--primary-rgb), 0.2)'
+                                }}>
+                                    <Typography variant="h6" sx={{ color: 'var(--primary)', mb: 2.5, fontWeight: 'bold' }}>
+                                        Elementos Adicionales
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                                        {selectedRecord.elementos_adicionales.map((elemento: any, index: number) => (
+                                            <Box
+                                                key={index}
+                                                sx={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    backgroundColor: 'var(--primary)',
+                                                    color: 'white',
+                                                    padding: '8px 16px',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 500,
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                }}
+                                            >
+                                                {elemento.elemento_adicional?.nombre_elemento || elemento.nombre_elemento || 'Sin nombre'}
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
                         </Box>
                     )}
                 </DialogContent>
@@ -374,7 +425,7 @@ const Historial = () => {
             >
                 <Reportes titleSeccion1="Historial" dataSeccion1={filteredData} />
             </Dialog>
-        </Box>
+        </Box >
     );
 };
 

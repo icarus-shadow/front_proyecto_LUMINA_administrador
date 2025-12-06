@@ -12,6 +12,10 @@ import type { RootState } from '../services/redux/store';
 import type { EditUserPayload, AddUserPayload } from '../types/interfacesData';
 import '../components/styles/modal.css';
 
+// PrimeReact imports
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+
 const Usuarios = () => {
 
     const dispatch = useAppDispatch();
@@ -26,6 +30,9 @@ const Usuarios = () => {
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isFormationModalOpen, setIsFormationModalOpen] = React.useState(false);
 
+    // State for filters
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const [selectedFormation, setSelectedFormation] = React.useState<any>(null);
 
     React.useEffect(() => {
         if (formations && formations.length === 0) {
@@ -33,7 +40,14 @@ const Usuarios = () => {
         }
     }, [dispatch, formations?.length]);
 
-
+    // Filter logic
+    const filteredData = React.useMemo(() => {
+        return data?.filter((user: any) => {
+            const matchesSearch = user.documento ? user.documento.toLowerCase().includes(searchTerm.toLowerCase()) : false;
+            const matchesFormation = selectedFormation ? user.formacion?.id === selectedFormation.id : true;
+            return matchesSearch && matchesFormation;
+        }) || [];
+    }, [data, searchTerm, selectedFormation]);
 
     const columnasUsuarios: GridColDef[] = [
         { field: 'nombre', headerName: 'Nombre', flex: 1 },
@@ -175,11 +189,74 @@ const Usuarios = () => {
         setIsAddModalOpen(false);
     }
 
+    const formationOptionTemplate = (option: any) => {
+        return (
+            <div className="flex align-items-center">
+                <div>{option.nombre_programa} - {option.ficha}</div>
+            </div>
+        );
+    };
+
+    const selectedFormationTemplate = (option: any, props: any) => {
+        if (option) {
+            return (
+                <div className="flex align-items-center">
+                    <div>{option.nombre_programa} - {option.ficha}</div>
+                </div>
+            );
+        }
+        return <span>{props.placeholder}</span>;
+    };
+
     return (
         <Box>
             <Typography variant="h4" sx={{ mb: 2, color: 'var(--text)' }}>
                 Lista de Usuarios
             </Typography>
+
+            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" style={{ color: 'var(--primary)' }} />
+                    <InputText
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Buscar por documento"
+                        style={{
+                            backgroundColor: 'var(--background)',
+                            color: 'var(--text)',
+                            borderColor: 'var(--secondary)',
+                            borderRadius: 'var(--button-border-radius)'
+                        }}
+                    />
+                </span>
+                <Dropdown
+                    value={selectedFormation}
+                    onChange={(e) => setSelectedFormation(e.value)}
+                    options={formations || []}
+                    optionLabel="nombre_programa"
+                    placeholder="Filtrar por Formación"
+                    filter
+                    filterBy="nombre_programa,ficha"
+                    showClear
+                    itemTemplate={formationOptionTemplate}
+                    valueTemplate={selectedFormationTemplate}
+                    style={{
+                        width: '300px',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--text)',
+                        borderColor: 'var(--secondary)',
+                        borderRadius: 'var(--button-border-radius)'
+                    }}
+                    pt={{
+                        root: { style: { backgroundColor: 'var(--background)' } },
+                        input: { style: { color: 'var(--text)' } },
+                        trigger: { style: { color: 'var(--secondary)' } },
+                        panel: { style: { backgroundColor: 'var(--background)', border: '1px solid var(--secondary)' } },
+                        item: { style: { color: 'var(--text)' } }
+                    }}
+                />
+            </Box>
+
             <Button
                 variant="contained"
                 onClick={() => setIsAddModalOpen(true)}
@@ -188,7 +265,7 @@ const Usuarios = () => {
                 Agregar Usuario
             </Button>
             <DinamicTable
-                rows={data}
+                rows={filteredData}
                 columns={columnasUsuarios}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
@@ -227,16 +304,22 @@ const Usuarios = () => {
                                 {/* Sección Derecha: Información de la Formación */}
                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'center', p: 3, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
                                     <Typography variant="h6" sx={{ color: 'var(--secondary)', mb: 2, fontWeight: 'bold', alignSelf: 'flex-start' }}>Formación</Typography>
-                                    {selectedUser.formacion ? (
-                                        <Box>
-                                            <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Ficha:</strong> {selectedUser.formacion.ficha}</Typography>
-                                            <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Programa:</strong> {selectedUser.formacion.nombre_programa}</Typography>
-                                        </Box>
-                                    ) : (
-                                        <Box sx={{ p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
-                                            <Typography variant="body1">FUNCIONARIO</Typography>
-                                        </Box>
-                                    )}
+                                    {(() => {
+                                        const formationData = formations?.find(f => f.id === selectedUser.formacion?.id || f.id === selectedUser.formacion_id);
+                                        return formationData ? (
+                                            <Box>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Ficha:</strong> {formationData.ficha}</Typography>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Programa:</strong> {formationData.nombre_programa}</Typography>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Nivel Formación:</strong> {formationData.nivel_formacion?.nivel_formacion || 'N/A'}</Typography>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Fecha Inicio:</strong> {new Date(formationData.fecha_inicio_programa).toLocaleDateString('es-ES')}</Typography>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Fecha Fin:</strong> {new Date(formationData.fecha_fin_programa).toLocaleDateString('es-ES')}</Typography>
+                                            </Box>
+                                        ) : (
+                                            <Box sx={{ p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
+                                                <Typography variant="body1">FUNCIONARIO</Typography>
+                                            </Box>
+                                        );
+                                    })()}
                                 </Box>
                             </Box>
                         </Box>
@@ -309,7 +392,7 @@ const Usuarios = () => {
                 isOpen={isFormationModalOpen}
                 onClose={() => setIsFormationModalOpen(false)}
             />
-        </Box>
+        </Box >
     );
 };
 
