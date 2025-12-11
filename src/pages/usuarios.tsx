@@ -311,8 +311,8 @@ const Usuarios = () => {
                                                 <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Ficha:</strong> {formationData.ficha}</Typography>
                                                 <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Programa:</strong> {formationData.nombre_programa}</Typography>
                                                 <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Nivel Formación:</strong> {formationData.nivel_formacion?.nivel_formacion || 'N/A'}</Typography>
-                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Fecha Inicio:</strong> {new Date(formationData.fecha_inicio_programa).toLocaleDateString('es-ES')}</Typography>
-                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Fecha Fin:</strong> {new Date(formationData.fecha_fin_programa).toLocaleDateString('es-ES')}</Typography>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Fecha Inicio:</strong> {new Date(formationData.fecha_inicio_programa).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</Typography>
+                                                <Typography variant="body1" sx={{ mb: 1, alignSelf: 'flex-start' }}><strong>Fecha Fin:</strong> {new Date(formationData.fecha_fin_programa).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</Typography>
                                             </Box>
                                         ) : (
                                             <Box sx={{ p: 2, backgroundColor: 'rgba(var(--secondary-rgb), 0.2)', borderRadius: 5 }}>
@@ -382,8 +382,8 @@ const Usuarios = () => {
                             <Typography>ficha: {selectedFormation.ficha}</Typography>
                             <Typography>nombre: {selectedFormation.nombre_programa}</Typography>
                             <Typography>Nivel: {selectedFormation.nivel_formacion?.nivel_formacion || 'No disponible'}</Typography>
-                            <Typography>inicio: {new Date(selectedFormation.fecha_inicio_programa).toLocaleDateString('es-ES')}</Typography>
-                            <Typography>fin: {new Date(selectedFormation.fecha_fin_programa).toLocaleDateString('es-ES')}</Typography>
+                            <Typography>inicio: {new Date(selectedFormation.fecha_inicio_programa).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</Typography>
+                            <Typography>fin: {new Date(selectedFormation.fecha_fin_programa).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</Typography>
                         </Box>
                     ) : null;
                 }}

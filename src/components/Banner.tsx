@@ -248,8 +248,8 @@ const Banner = () => {
                 <p>ficha: {selectedFormation.ficha}</p>
                 <p>nombre: {selectedFormation.nombre_programa}</p>
                 <p>Nivel: {selectedFormation.nivel_formacion?.nivel_formacion || 'No disponible'}</p>
-                <p>inicio: {new Date(selectedFormation.fecha_inicio_programa).toLocaleDateString('es-ES')}</p>
-                <p>fin: {new Date(selectedFormation.fecha_fin_programa).toLocaleDateString('es-ES')}</p>
+                <p>inicio: {new Date(selectedFormation.fecha_inicio_programa).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</p>
+                <p>fin: {new Date(selectedFormation.fecha_fin_programa).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</p>
               </div>
             ) : null;
           } : undefined}

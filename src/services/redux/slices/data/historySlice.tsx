@@ -47,8 +47,8 @@ export const selectHistorialSinSalida = createSelector(
         if (!data) return { hoy: [], otros: [] };
         const sinSalida = data.filter(h => !h.salida);
         return {
-            hoy: sinSalida.filter(h => h.ingreso && h.ingreso.slice(0, 10) === today),
-            otros: sinSalida.filter(h => h.ingreso && h.ingreso.slice(0, 10) !== today)
+            hoy: sinSalida.filter(h => h.ingreso && dayjs(h.ingreso).format("YYYY-MM-DD") === today),
+            otros: sinSalida.filter(h => h.ingreso && dayjs(h.ingreso).format("YYYY-MM-DD") !== today)
         };
     }
 );

@@ -25,7 +25,7 @@ const TURNOS = [
 const RANGOS_TURNOS = {
     mañana: { inicio: '06:00', fin: '12:00' },
     tarde: { inicio: '12:00', fin: '18:00' },
-    noche: { inicio: '18:00', fin: '24:00' }
+    noche: { inicio: '18:00', fin: '00:00' }
 };
 
 const Entradas = () => {
@@ -128,13 +128,13 @@ const Entradas = () => {
                 const horaFin = parseInt(horaFinStr);
                 const minFin = parseInt(minFinStr);
                 const inicio = item.horaIngreso.clone().hour(horaInicio).minute(minInicio).second(0);
-                const fin = item.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
-                if (filtrosHoy.turno === 'noche') {
-                    // ! Para turno noche, verifico si está entre 22:00 y 06:00
-                    if (!(!item.horaIngreso.isBefore(item.horaIngreso.clone().hour(22).minute(0), 'minute') || !item.horaIngreso.isAfter(item.horaIngreso.clone().hour(6).minute(0), 'minute'))) return false;
-                } else {
-                    if (!item.horaIngreso.isBetween(inicio, fin, 'minute', '[)')) return false;
+                let fin = item.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
+
+                if (horaFin === 0 && minFin === 0) {
+                    fin = fin.add(1, 'day');
                 }
+
+                if (!item.horaIngreso.isBetween(inicio, fin, 'minute', '[)')) return false;
             }
 
             return true;
@@ -170,13 +170,13 @@ const Entradas = () => {
                 const horaFin = parseInt(horaFinStr);
                 const minFin = parseInt(minFinStr);
                 const inicio = item.horaIngreso.clone().hour(horaInicio).minute(minInicio).second(0);
-                const fin = item.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
-                if (filtrosOtros.turno === 'noche') {
-                    // ! Para turno noche, verifico si está entre 22:00 y 06:00
-                    if (!(!item.horaIngreso.isBefore(item.horaIngreso.clone().hour(22).minute(0), 'minute') || !item.horaIngreso.isAfter(item.horaIngreso.clone().hour(6).minute(0), 'minute'))) return false;
-                } else {
-                    if (!item.horaIngreso.isBetween(inicio, fin, 'minute', '[)')) return false;
+                let fin = item.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
+
+                if (horaFin === 0 && minFin === 0) {
+                    fin = fin.add(1, 'day');
                 }
+
+                if (!item.horaIngreso.isBetween(inicio, fin, 'minute', '[)')) return false;
             }
 
             return true;

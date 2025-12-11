@@ -480,6 +480,120 @@ Authorization: Bearer {token}
 
 ---
 
+ # manual de uso
+
+
+1\. esta es la página inicial que recibe al administrador en la cual debe ingresar sus respectivas credenciales
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/8bfe2fff-c0f9-4ee8-9fb5-3316a48aaaaf/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0)
+
+
+2\. Este es el dashboard inicial que se encontrara el administrador al entrar a la página en este se puede ver en la parte superior los botones de acción en la parte central y ocupando la mayor parte del espacio está el listado de usuarios registrados junto con sus botones de acción, por la parte derecha se encuentran los botones de navegacion
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/5b1bf8c1-85b1-4f90-ba54-fd0dd6b84878/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=1044,480)
+
+
+3\. Estos son los botones de navegación cada uno cuenta con un contador a modo de información para el administrador, al darle click en cualquier botón redireccionara a su respectiva pagina
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/7715eed9-32ea-4741-8c31-a1a8ce8cc955/user_cropped_screenshot.webp?tl_px=0,0&br_px=302,417&force_format=jpeg&q=100&width=542&wat_scale=48&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=427,678)
+
+
+4\. de las acciones de usuarios esta es para ver la información detallada del usuario
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/a5d8eeb5-6eb1-484b-a027-a155cd6ed8d1/ascreenshot.jpeg?tl_px=684,46&br_px=1167,316&force_format=jpeg&q=100&width=483&wat_scale=43&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=233,141)
+
+
+5\. luego de darle click en el botón aparecerá el siguiente modal el cual se encuentra dividido en 2 secciones, la sección de la izquierda se encuentra toda la información del usuario, en la parte inferior de esa información se encuentra un contador que indica el número de elementos asignados al usuario, por la sección de la derecha se encuentra listada la información de la formación
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/304782b3-b17a-42d9-a921-5318e0129889/ascreenshot.jpeg?tl_px=257,0&br_px=1357,615&force_format=jpeg&q=100&width=1101&wat_scale=98&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=667,56)
+
+
+6\. este es el dashboard principal de elementos, no hay muchos cambios comparados con usuarios cuenta con sus datos, y sus respectivos botones de acción.
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/a278723d-b63d-4309-a751-501503d43ca3/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=1032,473)
+
+
+7\. Este es el modal para la información de elementos este tiene 3 secciones, la sección de la izquierda contiene la información del elemento junto con las opciones para descargar o imprimir el QR, por parte de la sección de la derecha se listan el/los propietario(s) con su respectiva información
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/4e233523-c6e7-4f4b-91c3-c936b2539520/ascreenshot.jpeg?tl_px=47,0&br_px=1357,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=740,22)
+
+
+8\. por la sección inferior se listan los elementos adicionales
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/e7772bb5-bf18-42b0-b02b-685934e0fe00/ascreenshot.jpeg?tl_px=257,38&br_px=1357,653&force_format=jpeg&q=100&width=1101&wat_scale=98&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=669,366)
+
+
+9\. este es el dashboard de historial a diferencia de las anteriores tablas este solo cuenta con un botón de acción que es para listar la información de forma más detallada, esta página cuenta con unos respectivos filtros para listar la información a gusto
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/446fda50-3065-4cf4-8983-2e9669d9373e/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=643,199)
+
+
+10\. este es el modal de información del historial, este tiene 3 secciones, la sección de la izquierda contiene la información del usuario y la de la derecha contiene la información del dispositivo, por último en la parte inferior esta listada los datos de fecha y hora del registro
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/b6649abb-f3b6-4c07-8927-06b2cbc0485c/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=733,36)
+
+
+11\. por debajo de estos se encuentra listados los elementos adicionales
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/6a05008f-6b54-4e74-a32e-d75f1ebee76d/ascreenshot.jpeg?tl_px=257,0&br_px=1357,615&force_format=jpeg&q=100&width=1101&wat_scale=98&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=707,272)
+
+
+12\. este es el modal de los filtros que se pueden aplicar a la información del historial, entre estos se encuentran el poder filtrar la información por una fecha específica, un rango de fechas, por turno/ jornada (mañana, tarde y noche) y por usuario en especifico
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/0493911e-7b9c-454a-9ddc-ffd21b2f95ad/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=788,386)
+
+
+13\. el filtro de usuario especifico también cuenta con un filtro para poder buscar el usuario deseado
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/e47f723e-acee-42bf-8a73-adaf4163266b/ascreenshot.jpeg?tl_px=180,238&br_px=924,654&force_format=jpeg&q=100&width=744&wat_scale=66&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=247,269)
+
+
+14\. al darle a la opción de generar reportes aparecerá el siguiente modal en el que se podrá visualizar unas estadísticas de la información listada, al usar la información que se encuentra listada al usar los filtros se puede escoger con que información de puede realizar el reporte en este modal también cuenta con un botón para generar pdf en este se mostrará la información listada junto con las estadísticas mostradas
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/bc52d2f2-9567-4d34-aa60-fa90f00bd867/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=994,446)
+
+
+15\. este es el dashboard de entradas al igual que historial cuenta con las opciones de filtrar y generar reportes (esta desactivado porque no hay información), en entradas se encuentra la información divida en 2 las entradas realizadas en el dia actual y las entradas anteriores (esto se debe a que el sistema permite la permanencia prolongada)
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/48504929-8ad7-43e3-bddb-edec7d4d541e/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=1009,396)
+
+
+16\.
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/cde1837e-4ae8-493a-8305-494c0a60c6c9/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=1032,445)
+
+
+17\. este es el dashboard de salidas este al igual que los anteriores cuenta con sus opciones de ver la información, filtrarla y generar reportes
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/0acc3313-f16c-4b08-90a2-644157b50015/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=1017,469)
+
+
+18\. este es el modal para poder realizar el registro de un nuevo usuario se encuentra dividido en 2 secciones la de la izquierda se encuentran los campos para rellenar la información del usuario y en la parte de la derecha se puede seleccionar la formación a la que pertenece el usuario (en caso de ser un funcionario se puede dejar vació este campo), en caso de no encontrarse la formación deseada en la parte superior derecha se encuentra un botón que permite gestionar las formaciones
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/7d4d73a8-5316-4a2e-8885-834e65896400/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=491,371)
+
+
+19\. este es el modal que aparece cuando se quiere administrar las formaciones este se encuentra divida en 2 secciones por parte de la izquierda se encuentran listados las formaciones actualmente registradas con las opciones para editar o eliminar al darle a editar se autocompletara la información de la derecha  en la que se encuentra un modal que hace la función de agregar y editar, al darle al botón de cancelar este limpiara la información del modal
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/f40feb32-bd7e-4a48-acd0-1149a7b6f9f9/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=881,430)
+
+
+20\. al darle a la opción de registrar equipo aparece el siguiente modal el cual está dividido en 3 secciones generales la de la izquierda se encuentra un formulario para registrar la información del equipo, por parte de la sección de la izquierda se encuentra listados los usuarios con un checkbox a su izquierda esto se debe a que el sistema permite tener multiples propietarios (en caso de elementos compartidos)
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/37c1be25-f9f2-417a-b343-51975121233f/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=656,60)
+
+
+21\. por la parte inferior se encuentra este minicrud el cual está enfocado en los elementos adicionales en donde se pueden agregar editar o eliminar uno
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/4fbeaff2-99c7-4b6f-9f99-1275f44da926/ascreenshot.jpeg?tl_px=0,0&br_px=1358,654&force_format=jpeg&q=100&width=1120.0&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=813,347)
+
+
+22\. esta es la alerta que mostrara cuando una acción es efectiva
+
+![](https://ajeuwbhvhr.cloudimg.io/https://colony-recorder.s3.amazonaws.com/files/2025-12-05/0601e2d1-0bd1-4677-9092-2737ce7f2c89/ascreenshot.jpeg?tl_px=988,0&br_px=1349,201&force_format=jpeg&q=100&width=361&wat_scale=32&wat=1&wat_opacity=1&wat_gravity=northwest&wat_url=https://colony-recorder.s3.amazonaws.com/images/watermarks/FB923C_standard.png&wat_pad=298,42)
+#### [Made with Scribe](https://scribehow.com/shared/Aplicacin_web_de_administrador_para_el_sistema_LUMINA__3muwBLAMRPO3jLyzAyuhSA)
+
+
 
 
 

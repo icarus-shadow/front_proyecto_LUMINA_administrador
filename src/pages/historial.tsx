@@ -28,7 +28,7 @@ const TURNOS = [
 const RANGOS_TURNOS = {
     mañana: { inicio: '06:00', fin: '12:00' },
     tarde: { inicio: '12:00', fin: '18:00' },
-    noche: { inicio: '18:00', fin: '24:00' }
+    noche: { inicio: '18:00', fin: '00:00' }
 };
 
 
@@ -126,13 +126,13 @@ const Historial = () => {
                 const horaFin = parseInt(horaFinStr);
                 const minFin = parseInt(minFinStr);
                 const inicio = entry.horaIngreso.clone().hour(horaInicio).minute(minInicio).second(0);
-                const fin = entry.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
-                if (filtros.turno === 'noche') {
-                    // ! Para turno noche, verifico si está entre 22:00 y 06:00
-                    return !entry.horaIngreso.isBefore(entry.horaIngreso.clone().hour(22).minute(0), 'minute') || !entry.horaIngreso.isAfter(entry.horaIngreso.clone().hour(6).minute(0), 'minute');
-                } else {
-                    return entry.horaIngreso.isBetween(inicio, fin, 'minute', '[)');
+                let fin = entry.horaIngreso.clone().hour(horaFin).minute(minFin).second(0);
+
+                if (horaFin === 0 && minFin === 0) {
+                    fin = fin.add(1, 'day');
                 }
+
+                return entry.horaIngreso.isBetween(inicio, fin, 'minute', '[)');
             });
         }
 
