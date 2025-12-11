@@ -38,10 +38,13 @@ interface ReportesProps {
     titleSeccion2?: string; // ? Título opcional de la segunda sección
     dataSeccion1: any[]; // * Datos para la primera sección
     dataSeccion2?: any[]; // ? Datos opcionales para la segunda sección
+    fileName?: string; // ? Nombre personalizado del archivo
+    mainTitle?: string; // ? Título principal del PDF
+    subtitle?: string; // ? Subtítulo del PDF
 }
 
 // * Componente Reportes que genera PDFs con información proporcionada
-const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataSeccion1, dataSeccion2 }) => {
+const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataSeccion1, dataSeccion2, fileName, mainTitle, subtitle }) => {
     // * Refs para capturar los gráficos con html2canvas
     const barChartRef = useRef<HTMLDivElement>(null);
     const pieChartRef = useRef<HTMLDivElement>(null);
@@ -49,7 +52,7 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
 
     // * Combino los datos de ambas secciones si existen
     const allData = useMemo(() => {
-        return [...dataSeccion1, ...(dataSeccion2 || [])];
+        return [...(dataSeccion1 || []), ...(dataSeccion2 || [])];
     }, [dataSeccion1, dataSeccion2]);
 
     // * Proceso datos para gráfico de barras: frecuencia de equipos por marca
@@ -138,46 +141,64 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
     // * Función para generar el PDF con las secciones y gráficos
     const generarPDF = async () => {
         const doc = new jsPDF();
+        let yPos = 20;
 
-        // * Agrego el título de la primera sección
-        doc.setFontSize(16);
-        doc.text(titleSeccion1, 20, 20);
+        // * Título Principal
+        if (mainTitle) {
+            doc.setFontSize(22);
+            doc.text(mainTitle, 105, yPos, { align: 'center' });
+            yPos += 10;
+        }
 
-        // * Preparo las filas para la tabla de la primera sección
-        const rows1 = dataSeccion1.map(item => [
-            dayjs(item.ingreso).format('DD/MM/YYYY HH:mm'), // * Formateo la fecha de entrada
-            item.salida ? dayjs(item.salida).format('DD/MM/YYYY HH:mm') : 'Activo', // * Formateo la fecha de salida o 'Activo' si no hay
-            item.marcaEquipo, // * Nombre del equipo usando marca
-            item.usuarioNombreCompleto, // * Propietario con nombre y apellido
-            item.descripcion // * Descripción del equipo
-        ]);
+        // * Subtítulo
+        if (subtitle) {
+            doc.setFontSize(14);
+            doc.setTextColor(100);
+            doc.text(subtitle, 105, yPos, { align: 'center' });
+            doc.setTextColor(0); // Reset color
+            yPos += 15;
+        } else if (mainTitle) {
+            yPos += 10;
+        }
 
-        // * Agrego la tabla para la primera sección
-        autoTable(doc, {
-            head: [['Fecha y hora entrada', 'Fecha y hora salida', 'Equipo nombre', 'Propietario', 'Descripción del equipo']],
-            body: rows1,
-            startY: 30
-        });
 
-        // * Obtengo la posición Y después de la tabla
-        let yPos = (doc as any).lastAutoTable.finalY + 10;
+        // * Agrego la primera sección si hay datos
+        if (dataSeccion1 && dataSeccion1.length > 0) {
+            doc.setFontSize(16);
+            doc.text(titleSeccion1, 20, yPos);
+            yPos += 5;
+
+            const rows1 = dataSeccion1.map(item => [
+                dayjs(item.ingreso).format('DD/MM/YYYY HH:mm'),
+                item.salida ? dayjs(item.salida).format('DD/MM/YYYY HH:mm') : 'Activo',
+                item.marcaEquipo,
+                item.usuarioNombreCompleto,
+                item.descripcion
+            ]);
+
+            autoTable(doc, {
+                head: [['Fecha y hora entrada', 'Fecha y hora salida', 'Equipo nombre', 'Propietario', 'Descripción del equipo']],
+                body: rows1,
+                startY: yPos
+            });
+            yPos = (doc as any).lastAutoTable.finalY + 10;
+        }
+
 
         // * Si hay segunda sección, agrego su título y tabla
-        if (titleSeccion2 && dataSeccion2) {
+        if (titleSeccion2 && dataSeccion2 && dataSeccion2.length > 0) {
             doc.setFontSize(16);
             doc.text(titleSeccion2, 20, yPos);
             yPos += 10;
 
-            // * Preparo las filas para la tabla de la segunda sección
             const rows2 = dataSeccion2.map(item => [
-                dayjs(item.ingreso).format('DD/MM/YYYY HH:mm'), // * Formateo la fecha de entrada
-                item.salida ? dayjs(item.salida).format('DD/MM/YYYY HH:mm') : 'Activo', // * Formateo la fecha de salida o 'Activo' si no hay
-                item.marcaEquipo, // * Nombre del equipo usando marca
-                item.usuarioNombreCompleto, // * Propietario con nombre y apellido
-                item.descripcion // * Descripción del equipo
+                dayjs(item.ingreso).format('DD/MM/YYYY HH:mm'),
+                item.salida ? dayjs(item.salida).format('DD/MM/YYYY HH:mm') : 'Activo',
+                item.marcaEquipo,
+                item.usuarioNombreCompleto,
+                item.descripcion
             ]);
 
-            // * Agrego la tabla para la segunda sección
             autoTable(doc, {
                 head: [['Fecha y hora entrada', 'Fecha y hora salida', 'Equipo nombre', 'Propietario', 'Descripción del equipo']],
                 body: rows2,
@@ -185,11 +206,16 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
             });
 
             yPos = (doc as any).lastAutoTable.finalY + 10;
-        } else {
-            yPos = (doc as any).lastAutoTable.finalY + 10;
         }
 
         // * Agrego sección de gráficos
+        // Check conditions to start a new page if not enough space
+        if (yPos > 250) {
+            doc.addPage();
+            yPos = 20;
+        }
+
+
         doc.setFontSize(16);
         doc.text('Gráficos', 20, yPos);
         yPos += 10;
@@ -198,6 +224,7 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
         if (barChartRef.current) {
             const barCanvas = await html2canvas(barChartRef.current);
             const barImgData = barCanvas.toDataURL('image/png');
+            if (yPos + 60 > 280) { doc.addPage(); yPos = 20; }
             doc.addImage(barImgData, 'PNG', 20, yPos, 80, 60);
             yPos += 70;
         }
@@ -206,6 +233,7 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
         if (pieChartRef.current) {
             const pieCanvas = await html2canvas(pieChartRef.current);
             const pieImgData = pieCanvas.toDataURL('image/png');
+            if (yPos + 60 > 280) { doc.addPage(); yPos = 20; }
             doc.addImage(pieImgData, 'PNG', 20, yPos, 80, 60);
             yPos += 70;
         }
@@ -214,11 +242,13 @@ const Reportes: React.FC<ReportesProps> = ({ titleSeccion1, titleSeccion2, dataS
         if (lineChartRef.current) {
             const lineCanvas = await html2canvas(lineChartRef.current);
             const lineImgData = lineCanvas.toDataURL('image/png');
+            if (yPos + 60 > 280) { doc.addPage(); yPos = 20; }
             doc.addImage(lineImgData, 'PNG', 20, yPos, 80, 60);
         }
 
-        // * Guardo el PDF con nombre fijo
-        doc.save('reporte.pdf');
+        // * Guardo el PDF con nombre personalizado o por defecto
+        const finalFileName = fileName ? (fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`) : 'reporte.pdf';
+        doc.save(finalFileName);
     };
 
     // * Renderizo los gráficos y el botón para generar el PDF

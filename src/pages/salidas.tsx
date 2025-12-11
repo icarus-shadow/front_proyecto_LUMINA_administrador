@@ -359,6 +359,8 @@ const Salidas = () => {
                 <Reportes
                     titleSeccion1="Salidas"
                     dataSeccion1={datosFiltrados}
+                    fileName={`reporte_salidas_${dayjs().format('YYYY-MM-DD')}.pdf`}
+                    mainTitle={`Reporte de Salidas - ${dayjs().format('YYYY-MM-DD')}`}
                 />
             </Dialog>
             <MuiDialog open={detailModalOpen} onClose={() => setDetailModalOpen(false)} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>

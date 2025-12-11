@@ -307,7 +307,7 @@ const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ visible
 
                     // Then, assign ONLY the selected elements
                     if (selectedSubElements.length > 0) {
-                        const assignResult = await dispatch(assignElements({
+                        await dispatch(assignElements({
                             equipoId: equipoId,
                             elementosIds: selectedSubElements
                         })).unwrap();

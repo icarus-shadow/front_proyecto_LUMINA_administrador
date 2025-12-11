@@ -611,6 +611,8 @@ const Entradas = () => {
                     dataSeccion1={dataSeccion1}
                     titleSeccion2="Entradas Otras Fechas"
                     dataSeccion2={dataSeccion2}
+                    fileName={`reporte_entradas_${dayjs().format('YYYY-MM-DD')}.pdf`}
+                    mainTitle={`Reporte de Entradas - ${dayjs().format('YYYY-MM-DD')}`}
                 />
             </Dialog>
             <MuiDialog open={detailModalOpen} onClose={() => setDetailModalOpen(false)} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>

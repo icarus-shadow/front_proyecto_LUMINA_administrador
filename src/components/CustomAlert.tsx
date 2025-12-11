@@ -21,7 +21,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, severity, message, o
 
             // Cargar anime.js y animar entrada
             import('animejs').then((animeModule) => {
-                const anime = animeModule.default;
+                const anime = (animeModule as any).default || animeModule;
                 if (anime && typeof anime === 'function' && alertRef.current) {
                     anime({
                         targets: alertRef.current,
@@ -32,7 +32,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, severity, message, o
                         easing: 'easeOutElastic(1, .8)'
                     });
                 }
-            }).catch((err) => {
+            }).catch(() => {
                 // Si no carga anime, solo mostrar el alerta sin animación
                 if (alertRef.current) {
                     alertRef.current.style.opacity = '1';

@@ -423,7 +423,13 @@ const Historial = () => {
                 modal
                 maximizable
             >
-                <Reportes titleSeccion1="Historial" dataSeccion1={filteredData} />
+                <Reportes
+                    titleSeccion1="Historial"
+                    dataSeccion1={filteredData}
+                    fileName={`reporte_historial_general_${dayjs().format('YYYY-MM-DD')}.pdf`}
+                    mainTitle={`Reporte Historial General - ${dayjs().format('YYYY-MM-DD')}`}
+                    subtitle="Reporte generado desde Historial General"
+                />
             </Dialog>
         </Box >
     );
